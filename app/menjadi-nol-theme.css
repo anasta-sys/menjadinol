@@ -1,0 +1,212 @@
+/* =========================================================
+   MENJADI NOL — SITE-WIDE NATURE THEME
+   File: app/menjadi-nol-theme.css
+
+   Dipakai global melalui app/layout.tsx.
+   Tidak mengubah logic auth / OTP / protected shell.
+   Image wajib: public/menjadi-nol-nature.png
+   ========================================================= */
+
+:root {
+  --mn-green-950: #123b28;
+  --mn-green-800: #1f5f3b;
+  --mn-green-700: #2f7548;
+  --mn-green-600: #3d9658;
+  --mn-cream: #f8f5ec;
+  --mn-paper: rgba(255,255,255,.88);
+  --mn-text: #173d2b;
+  --mn-muted: #68746b;
+  --mn-border: rgba(35,83,56,.13);
+  --mn-shadow: 0 20px 60px rgba(42,65,48,.10);
+}
+
+html {
+  min-height: 100%;
+  background: var(--mn-cream);
+}
+
+body {
+  min-height: 100vh;
+  color: var(--mn-text);
+  background:
+    linear-gradient(180deg,
+      rgba(255,253,247,.72) 0%,
+      rgba(249,247,239,.60) 48%,
+      rgba(235,242,225,.72) 100%),
+    url("/menjadi-nol-nature.png") center / cover fixed no-repeat;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Semua area halaman yang sebelumnya memakai warna polos dibuat transparan
+   agar lanskap global tetap terlihat. */
+main,
+.mn-page,
+.page,
+.page-shell,
+.site-main {
+  background-color: transparent;
+}
+
+/* Header Menjadi Nol */
+.mn-header {
+  background: rgba(255,253,247,.88) !important;
+  border-bottom: 1px solid rgba(35,83,56,.08) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.mn-brand-title,
+.mn-nav a {
+  color: var(--mn-green-950);
+}
+
+.mn-brand-tagline {
+  color: #526a59;
+}
+
+.mn-account .reader-logout-button {
+  background: var(--mn-green-800) !important;
+  color: #fff !important;
+  border-radius: 999px !important;
+}
+
+/* Footer */
+.mn-footer,
+.site-footer,
+footer {
+  background: linear-gradient(
+    180deg,
+    rgba(248,247,239,.80),
+    rgba(226,237,218,.91)
+  );
+  border-top-color: rgba(35,83,56,.09);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Surface umum untuk halaman konten.
+   Tidak memaksa layout; hanya menyatukan tone lama dengan tema baru. */
+article,
+.card,
+.content-card,
+.panel,
+.surface {
+  border-color: var(--mn-border);
+}
+
+/* Tombol/link umum yang memang memakai class tema baru */
+.mn-button {
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg,var(--mn-green-800),var(--mn-green-600));
+  color: #fff;
+  box-shadow: 0 10px 24px rgba(35,91,59,.18);
+}
+
+.mn-card {
+  background: var(--mn-paper);
+  border: 1px solid var(--mn-border);
+  border-radius: 26px;
+  box-shadow: var(--mn-shadow);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* =========================================================
+   AUTH FAMILY
+   Berlaku pada login / register / reset / forgot selama
+   komponen menggunakan class reader-* yang sudah ada.
+   ========================================================= */
+
+.reader-login-page,
+.reader-register-page,
+.reader-reset-page,
+.reader-forgot-page,
+.reader-auth-page {
+  background-image:
+    linear-gradient(
+      180deg,
+      rgba(255,253,247,.54) 0%,
+      rgba(249,247,239,.45) 48%,
+      rgba(235,242,225,.58) 100%
+    ),
+    url("/menjadi-nol-nature.png") !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+/* Panel brand auth: foto alam tetap tampak, tulisan tetap terbaca. */
+.reader-login-right,
+.reader-register-right,
+.reader-reset-right,
+.reader-forgot-right,
+.reader-auth-brand {
+  background-image:
+    linear-gradient(
+      180deg,
+      rgba(255,253,247,.22) 0%,
+      rgba(255,250,239,.18) 48%,
+      rgba(232,242,226,.30) 100%
+    ),
+    url("/menjadi-nol-nature.png") !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+/* Gradient dekoratif lama jangan menutup image alam. */
+.reader-nature-layer {
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,.10),
+    rgba(255,250,238,.07) 48%,
+    rgba(232,242,226,.16)
+  ) !important;
+}
+
+/* Form auth tetap bersih/terbaca. */
+.reader-login-left,
+.reader-register-left,
+.reader-reset-left,
+.reader-forgot-left,
+.reader-auth-form {
+  background: rgba(255,255,255,.94) !important;
+  border-color: rgba(82,94,78,.08) !important;
+  box-shadow: var(--mn-shadow) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Mobile: jangan kembali putih polos; pertahankan nature lembut. */
+@media (max-width: 700px) {
+  body {
+    background-attachment: scroll;
+    background-position: 54% top;
+  }
+
+  .reader-login-page,
+  .reader-register-page,
+  .reader-reset-page,
+  .reader-forgot-page,
+  .reader-auth-page {
+    background-image:
+      linear-gradient(rgba(255,253,247,.76),rgba(244,247,237,.76)),
+      url("/menjadi-nol-nature.png") !important;
+  }
+
+  .reader-login-left,
+  .reader-register-left,
+  .reader-reset-left,
+  .reader-forgot-left,
+  .reader-auth-form {
+    background: rgba(255,255,255,.90) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+  }
+}

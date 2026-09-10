@@ -1,0 +1,110 @@
+import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
+import "./globals.css";
+
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import ReaderProtectedShell from "@/app/components/ReaderProtectedShell";
+import PageViewTracker from "@/app/components/PageViewTracker";
+
+const site =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://jalanpulang.com";
+
+export const metadata: Metadata = {
+  metadataBase: new URL(site),
+
+  title: {
+    default: "Jalan Pulang — kembali ke nol",
+    template: "%s | Jalan Pulang",
+  },
+
+  description:
+    "Ruang untuk berjeda, menyelami rasa, memahami makna, dan kembali pada diri.",
+
+  applicationName: "Jalan Pulang",
+
+  authors: [{ name: "Jalan Pulang" }],
+
+  creator: "Jalan Pulang",
+
+  category: "reflection",
+
+  robots: {
+    index: true,
+    follow: true,
+
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+
+  openGraph: {
+    type: "website",
+    locale: "id_ID",
+    url: site,
+    siteName: "Jalan Pulang",
+
+    title: "Jalan Pulang — kembali ke nol",
+
+    description:
+      "Ruang untuk berjeda, menyelami rasa, memahami makna, dan kembali pada diri.",
+
+    images: [
+      {
+        url: "/og-jalan-pulang.png",
+        width: 1200,
+        height: 630,
+        alt: "Jalan Pulang — kembali ke nol",
+      },
+    ],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+
+    title: "Jalan Pulang — kembali ke nol",
+
+    description:
+      "Ruang untuk berjeda, menyelami rasa, memahami makna, dan kembali pada diri.",
+
+    images: ["/og-jalan-pulang.png"],
+  },
+
+  icons: {
+    icon: "/icon.png",
+    apple: "/icon.png",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="id">
+      <body>
+        <ReaderProtectedShell>
+          <PageViewTracker />
+
+          <Suspense fallback={null}>
+            <Header />
+          </Suspense>
+
+          {children}
+
+          <Footer />
+        </ReaderProtectedShell>
+      </body>
+    </html>
+  );
+}

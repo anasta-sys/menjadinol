@@ -1,0 +1,9 @@
+Ikon per section:
+Tentang = 🦋
+Perjalanan = 🪷
+Ruang Belajar = ☘️
+Sinopsis = 🌸
+Artikel = ✨
+Kontak = 💌
+
+Tulisan FOLDER dihapus. Fungsi login/MFA/Supabase/CRUD tidak diubah.

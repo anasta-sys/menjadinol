@@ -1,0 +1,104 @@
+import { createClient } from "@/lib/supabase/server";
+import { createClient as createServiceClient } from "@supabase/supabase-js";
+
+export type AdminRole = "writer" | "admin" | "superadmin";
+
+export async function requireAdminSession() {
+  const supabase = await createClient();
+
+  const {
+    data: claims,
+    error: claimsError,
+  } = await supabase.auth.getClaims();
+
+  if (claimsError || !claims?.claims?.sub) {
+    throw new Error("ADMIN_SESSION_MISSING");
+  }
+
+  if (claims.claims.aal !== "aal2") {
+    throw new Error("ADMIN_MFA_REQUIRED");
+  }
+
+  const userId = claims.claims.sub as string;
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !serviceRoleKey) {
+    throw new Error("ADMIN_SERVER_CONFIG_MISSING");
+  }
+
+  const adminDb = createServiceClient(
+    supabaseUrl,
+    serviceRoleKey,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    }
+  );
+
+  const {
+    data: admin,
+    error: adminError,
+  } = await adminDb
+    .from("admin_users")
+    .select("user_id, role")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (adminError) {
+    console.error("Admin lookup failed:", adminError);
+    throw new Error("ADMIN_LOOKUP_FAILED");
+  }
+
+  if (!admin) {
+    throw new Error("ADMIN_ACCESS_DENIED");
+  }
+
+  let role: AdminRole;
+
+  if (admin.role === "superadmin") {
+    role = "superadmin";
+  } else if (admin.role === "admin") {
+    role = "admin";
+  } else if (admin.role === "writer") {
+    role = "writer";
+  } else {
+    throw new Error("ADMIN_ROLE_INVALID");
+  }
+
+  return {
+    supabase,
+    userId,
+    role,
+    isWriter: role === "writer",
+    isAdmin: role === "admin" || role === "superadmin",
+    isSuperAdmin: role === "superadmin",
+    claims: claims.claims,
+  };
+}
+
+export async function requireAdminOrSuperAdmin() {
+  const session = await requireAdminSession();
+
+  if (
+    session.role !== "admin" &&
+    session.role !== "superadmin"
+  ) {
+    throw new Error("ADMIN_PRIVILEGE_REQUIRED");
+  }
+
+  return session;
+}
+
+export async function requireSuperAdmin() {
+  const session = await requireAdminSession();
+
+  if (session.role !== "superadmin") {
+    throw new Error("SUPERADMIN_ACCESS_DENIED");
+  }
+
+  return session;
+}

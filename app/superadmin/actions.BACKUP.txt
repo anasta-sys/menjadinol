@@ -1,0 +1,376 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { createClient as createAdminClient } from "@supabase/supabase-js";
+import { requireSuperAdmin } from "@/lib/admin-auth";
+
+const MATERIAL_BUCKET = "learning-materials";
+
+function publicPath(section?: string | null) {
+  if (section === "layanan") return "/perjalanan";
+  if (section === "ruang-belajar") return "/ruang-belajar";
+  if (section === "artikel") return "/artikel";
+  if (section === "tentang") return "/tentang";
+  if (section === "sinopsis") return "/sinopsis";
+  if (section === "kontak") return "/kontak";
+  return "/";
+}
+
+async function getSecureAdminClient() {
+  const session = await requireSuperAdmin();
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !serviceRoleKey) {
+    throw new Error("Konfigurasi server Supabase belum lengkap.");
+  }
+
+  const admin = createAdminClient(
+    supabaseUrl,
+    serviceRoleKey,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    }
+  );
+
+  return {
+    admin,
+    userId: session.userId,
+  };
+}
+
+async function getEntryMeta(
+  admin: ReturnType<typeof createAdminClient>,
+  entryId: string
+) {
+  const { data: entry, error: entryError } = await admin
+    .from("content_folder_entries")
+    .select("id,folder_id,attachment_path")
+    .eq("id", entryId)
+    .maybeSingle();
+
+  if (entryError || !entry) {
+    throw new Error("Tulisan tidak ditemukan.");
+  }
+
+  const { data: folder, error: folderError } = await admin
+    .from("content_folders")
+    .select("section")
+    .eq("id", entry.folder_id)
+    .maybeSingle();
+
+  if (folderError || !folder) {
+    throw new Error("Folder tulisan tidak ditemukan.");
+  }
+
+  return {
+    folderId: entry.folder_id as string,
+    attachmentPath:
+      (entry.attachment_path as string | null) ?? null,
+    section: folder.section as string,
+  };
+}
+
+function revalidateAll(section?: string | null) {
+  revalidatePath("/admin");
+  revalidatePath("/admin/superadmin");
+  revalidatePath(publicPath(section));
+}
+
+export async function publishEntry(entryId: string) {
+  if (!entryId) {
+    throw new Error("ID tulisan tidak valid.");
+  }
+
+  const { admin, userId } =
+    await getSecureAdminClient();
+
+  const meta = await getEntryMeta(admin, entryId);
+  const now = new Date().toISOString();
+
+  const { error } = await admin
+    .from("content_folder_entries")
+    .update({
+      status: "published",
+      published_at: now,
+      updated_by: userId,
+      last_published_by: userId,
+    })
+    .eq("id", entryId);
+
+  if (error) {
+    throw new Error(
+      `Gagal mem-publish tulisan: ${error.message}`
+    );
+  }
+
+  revalidateAll(meta.section);
+
+  return { success: true };
+}
+
+export async function unpublishEntry(entryId: string) {
+  if (!entryId) {
+    throw new Error("ID tulisan tidak valid.");
+  }
+
+  const { admin, userId } =
+    await getSecureAdminClient();
+
+  const meta = await getEntryMeta(admin, entryId);
+
+  const { error } = await admin
+    .from("content_folder_entries")
+    .update({
+      status: "draft",
+      published_at: null,
+      updated_by: userId,
+    })
+    .eq("id", entryId);
+
+  if (error) {
+    throw new Error(
+      `Gagal menarik publikasi: ${error.message}`
+    );
+  }
+
+  revalidateAll(meta.section);
+
+  return { success: true };
+}
+
+export async function deleteEntry(entryId: string) {
+  if (!entryId) {
+    throw new Error("ID tulisan tidak valid.");
+  }
+
+  const { admin } =
+    await getSecureAdminClient();
+
+  const meta = await getEntryMeta(admin, entryId);
+
+  const { error } = await admin
+    .from("content_folder_entries")
+    .delete()
+    .eq("id", entryId);
+
+  if (error) {
+    throw new Error(
+      `Gagal menghapus tulisan: ${error.message}`
+    );
+  }
+
+  if (meta.attachmentPath) {
+    const { error: storageError } =
+      await admin.storage
+        .from(MATERIAL_BUCKET)
+        .remove([meta.attachmentPath]);
+
+    if (storageError) {
+      console.error(
+        "Tulisan terhapus, tetapi lampiran gagal dibersihkan:",
+        storageError.message
+      );
+    }
+  }
+
+  revalidateAll(meta.section);
+
+  return { success: true };
+}
+
+export async function approveWriterApplication(
+  applicationId: string
+) {
+  if (!applicationId) {
+    throw new Error("ID permohonan tidak valid.");
+  }
+
+  const { admin, userId } =
+    await getSecureAdminClient();
+
+  const { data: application, error: applicationError } =
+    await admin
+      .from("writer_applications")
+      .select(
+        "id,user_id,email,display_name,requested_access,status"
+      )
+      .eq("id", applicationId)
+      .maybeSingle();
+
+  if (applicationError || !application) {
+    throw new Error("Permohonan tidak ditemukan.");
+  }
+
+  if (application.status !== "pending") {
+    throw new Error("Permohonan ini sudah pernah diproses.");
+  }
+
+  const { data: authData, error: authError } =
+    await admin.auth.admin.getUserById(application.user_id);
+
+  const authUser = authData?.user;
+
+  if (authError || !authUser) {
+    throw new Error("Akun pendaftar tidak ditemukan.");
+  }
+
+  if (
+    !authUser.email ||
+    authUser.email.toLowerCase() !==
+      String(application.email).toLowerCase()
+  ) {
+    throw new Error("Email akun pendaftar tidak cocok.");
+  }
+
+  if (!authUser.email_confirmed_at) {
+    throw new Error(
+      "Email pendaftar belum dikonfirmasi."
+    );
+  }
+
+  const approvedRole =
+    application.requested_access === "admin"
+      ? "admin"
+      : "writer";
+
+  const { data: existingAccess, error: existingAccessError } =
+    await admin
+      .from("admin_users")
+      .select("user_id,role")
+      .eq("user_id", application.user_id)
+      .maybeSingle();
+
+  if (existingAccessError) {
+    throw new Error(
+      `Gagal memeriksa akses lama: ${existingAccessError.message}`
+    );
+  }
+
+  if (existingAccess?.role === "superadmin") {
+    throw new Error(
+      "Akun Superadmin tidak dapat diubah melalui permohonan publik."
+    );
+  }
+
+  const { error: adminUserError } = await admin
+    .from("admin_users")
+    .upsert(
+      {
+        user_id: application.user_id,
+        role: approvedRole,
+        display_name:
+          application.display_name?.trim() ||
+          (approvedRole === "writer"
+            ? "Penulis"
+            : "Admin"),
+      },
+      {
+        onConflict: "user_id",
+      }
+    );
+
+  if (adminUserError) {
+    throw new Error(
+      `Gagal memberikan akses: ${adminUserError.message}`
+    );
+  }
+
+  const now = new Date().toISOString();
+
+  const { error: applicationUpdateError } = await admin
+    .from("writer_applications")
+    .update({
+      status: "approved",
+      reviewed_by: userId,
+      reviewed_at: now,
+      updated_at: now,
+    })
+    .eq("id", applicationId)
+    .eq("status", "pending");
+
+  if (applicationUpdateError) {
+    /*
+     * Jangan rollback akun yang memang sudah ada sebelum approval.
+     * Kalau sebelumnya belum ada akses, hapus baris yang baru dibuat.
+     */
+    if (!existingAccess) {
+      await admin
+        .from("admin_users")
+        .delete()
+        .eq("user_id", application.user_id);
+    }
+
+    throw new Error(
+      `Gagal menyelesaikan persetujuan: ${applicationUpdateError.message}`
+    );
+  }
+
+  revalidatePath("/superadmin");
+  revalidatePath("/admin/superadmin");
+  revalidatePath("/admin");
+
+  return {
+    success: true,
+    role: approvedRole,
+  };
+}
+
+export async function rejectWriterApplication(
+  applicationId: string
+) {
+  if (!applicationId) {
+    throw new Error("ID permohonan tidak valid.");
+  }
+
+  const { admin, userId } =
+    await getSecureAdminClient();
+
+  const { data: application, error: applicationError } =
+    await admin
+      .from("writer_applications")
+      .select("id,user_id,status")
+      .eq("id", applicationId)
+      .maybeSingle();
+
+  if (applicationError || !application) {
+    throw new Error("Permohonan tidak ditemukan.");
+  }
+
+  if (application.status !== "pending") {
+    throw new Error("Permohonan ini sudah pernah diproses.");
+  }
+
+  const now = new Date().toISOString();
+
+  const { error } = await admin
+    .from("writer_applications")
+    .update({
+      status: "rejected",
+      reviewed_by: userId,
+      reviewed_at: now,
+      updated_at: now,
+    })
+    .eq("id", applicationId)
+    .eq("status", "pending");
+
+  if (error) {
+    throw new Error(
+      `Gagal menolak permohonan: ${error.message}`
+    );
+  }
+
+  /*
+   * Menolak permohonan tidak menghapus akun Auth.
+   * Akun tersebut mungkin juga dipakai sebagai reader.
+   */
+  revalidatePath("/superadmin");
+  revalidatePath("/admin/superadmin");
+
+  return { success: true };
+}
+

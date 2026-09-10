@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 220">
+  <defs>
+    <linearGradient id="r" x1="0" x2="1">
+      <stop offset="0" stop-color="#a875d0"/>
+      <stop offset=".28" stop-color="#56b9d8"/>
+      <stop offset=".55" stop-color="#59a878"/>
+      <stop offset=".78" stop-color="#d5b34f"/>
+      <stop offset="1" stop-color="#d58d6f"/>
+    </linearGradient>
+    <linearGradient id="g" x1="0" x2="1">
+      <stop offset="0" stop-color="#ad7729"/>
+      <stop offset=".5" stop-color="#d5ad64"/>
+      <stop offset="1" stop-color="#a96f27"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(22,9)">
+    <path d="M90 82 C52 53 43 25 65 10 C84 27 92 50 90 82Z" fill="none" stroke="#aa70d0" stroke-width="4"/>
+    <path d="M90 82 C128 53 137 25 115 10 C96 27 88 50 90 82Z" fill="none" stroke="#aa70d0" stroke-width="4"/>
+    <path d="M90 82 C62 65 38 59 18 68 C36 89 58 98 90 82Z" fill="none" stroke="#54a994" stroke-width="4"/>
+    <path d="M90 82 C118 65 142 59 162 68 C144 89 122 98 90 82Z" fill="none" stroke="#54a994" stroke-width="4"/>
+    <path d="M90 29 C106 45 108 59 90 74 C72 59 74 45 90 29Z" fill="none" stroke="#c878d1" stroke-width="4"/>
+    <circle cx="90" cy="37" r="4.5" fill="#7448e8"/>
+    <circle cx="90" cy="49" r="4.5" fill="#28a7e4"/>
+    <circle cx="90" cy="61" r="4.5" fill="#41b666"/>
+    <circle cx="90" cy="73" r="4.5" fill="#e0b82e"/>
+    <path d="M90 77 C67 83 75 107 94 98 C111 90 108 72 93 73 C78 74 80 92 93 93" fill="none" stroke="#d5a14e" stroke-width="4" stroke-linecap="round"/>
+    <path d="M92 100 C71 118 69 133 50 146 C70 141 91 132 107 118 C124 132 144 140 160 146 C142 130 133 116 109 100" fill="none" stroke="url(#r)" stroke-width="6" stroke-linecap="round"/>
+    <path d="M30 22 A76 76 0 0 1 150 22" fill="none" stroke="#caa052" stroke-width="2.5"/>
+  </g>
+  <text x="213" y="101" font-family="Georgia,Times New Roman,serif" font-size="58" fill="url(#g)">Jalan Pulang</text>
+  <line x1="215" y1="124" x2="520" y2="124" stroke="#be934d"/>
+  <text x="216" y="160" font-family="Arial,sans-serif" font-size="20" letter-spacing="8" fill="#775c45">kembali ke nol</text>
+</svg>
