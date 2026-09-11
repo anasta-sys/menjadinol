@@ -107,6 +107,11 @@ export async function POST(
     const from =
       process.env.OTP_FROM_EMAIL;
 
+      console.log("ENV CHECK", {
+      RESEND_API_KEY: Boolean(resendKey),
+      OTP_FROM_EMAIL: Boolean(from),
+      });
+
     if (!resendKey || !from) {
       console.error(
         "RESEND_API_KEY atau OTP_FROM_EMAIL belum tersedia."

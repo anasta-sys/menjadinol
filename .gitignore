@@ -8,3 +8,5 @@ node_modules
 *.tsbuildinfo
 npm-debug.log*
 .evc.local
+.vercel
+.env*
