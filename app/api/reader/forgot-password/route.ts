@@ -107,9 +107,9 @@ export async function POST(
     const from =
       process.env.OTP_FROM_EMAIL;
 
-      console.log("ENV CHECK", {
-      RESEND_API_KEY: Boolean(resendKey),
-      OTP_FROM_EMAIL: Boolean(from),
+      console.error("ENV STATUS", {
+      RESEND_API_KEY: resendKey ? "ADA" : "TIDAK ADA",
+      OTP_FROM_EMAIL: from ? "ADA" : "TIDAK ADA",
       });
 
     if (!resendKey || !from) {
