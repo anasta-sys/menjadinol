@@ -68,6 +68,7 @@ export async function POST(
 
     const missingEnv: string[] = [];
 
+
     if (!url) {
       missingEnv.push(
         "NEXT_PUBLIC_SUPABASE_URL"
@@ -115,6 +116,25 @@ export async function POST(
         }
       );
     }
+
+
+    /*
+     * Setelah pengecekan di atas,
+     * paksa TypeScript mengenali
+     * nilai sebagai string.
+     */
+
+    const supabaseUrl =
+      url as string;
+
+    const supabaseServiceRole =
+      serviceRole as string;
+
+    const resendApiKey =
+      resendKey as string;
+
+    const otpFromEmail =
+      fromEmail as string;
 
 
     /*
@@ -256,8 +276,8 @@ export async function POST(
 
     const admin =
       createAdminClient(
-        url,
-        serviceRole,
+        supabaseUrl,
+        supabaseServiceRole,
         {
           auth: {
             persistSession: false,
@@ -375,7 +395,7 @@ export async function POST(
 
     const resend =
       new Resend(
-        resendKey
+        resendApiKey
       );
 
 
@@ -384,7 +404,7 @@ export async function POST(
     } =
       await resend.emails.send({
         from:
-          fromEmail,
+          otpFromEmail,
 
         to: [
           email,
