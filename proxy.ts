@@ -460,11 +460,23 @@ export async function proxy(
     );
 
   if (!currentSession) {
-    return redirectToReaderLogin(
-      request,
-      "session-replaced"
-    );
-  }
+  const loginUrl =
+    request.nextUrl.clone();
+
+  loginUrl.pathname =
+    "/reader-login";
+
+  loginUrl.search = "";
+
+  const response =
+    NextResponse.redirect(loginUrl);
+
+  response.cookies.delete(
+    READER_ACCESS_COOKIE
+  );
+
+  return response;
+}
 
   return supabaseResponse;
 }
