@@ -120,25 +120,25 @@ export default function ReaderLoginClient() {
        * Sekalian ambil name bila kolomnya tersedia.
        */
       const {
-        data: reader,
-        error: readerError,
-      } = await supabase
-        .from("reader_users")
-        .select("user_id,is_active,full_name")
-        .eq("user_id", data.user.id)
-        .maybeSingle();
+  data: reader,
+  error: readerError,
+} = await supabase
+  .from("reader_users")
+  .select("user_id,status,full_name")
+  .eq("user_id", data.user.id)
+  .maybeSingle();
 
-      if (
-        readerError ||
-        !reader ||
-        !reader.is_active
-      ) {
-        await supabase.auth.signOut();
+if (
+  readerError ||
+  !reader ||
+  reader.status !== "active"
+) {
+  await supabase.auth.signOut();
 
-        throw new Error(
-          "Akun ini belum memiliki izin membaca."
-        );
-      }
+  throw new Error(
+    "Akun ini belum memiliki izin membaca."
+  );
+}
 
       const readerName =
         typeof reader.full_name === "string"
