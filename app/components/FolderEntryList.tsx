@@ -24,6 +24,7 @@ type Entry = {
   created_at?: string | null;
   updated_at?: string | null;
   author_name?: string | null;
+  writer_location?: string | null;
 };
 
 function formatWib(value: string | null | undefined) {
@@ -363,20 +364,43 @@ function EntryContent({
       </div>
 
       <div className="entry-time-meta">
-        <span>
-          Ditulis oleh {entry.author_name || "Penulis belum tercatat"}
-          {entry.created_at ? ` · ${formatWib(entry.created_at)}` : ""}
-        </span>
+  <span>
+    Ditulis oleh{" "}
+    <strong>
+      {entry.author_name ||
+        "Penulis belum tercatat"}
+    </strong>
 
-        {entry.updated_at &&
-          entry.created_at &&
-          new Date(entry.updated_at).getTime() >
-            new Date(entry.created_at).getTime() + 1000 && (
-            <span>
-              Diperbarui {formatWib(entry.updated_at)}
-            </span>
-          )}
-      </div>
+    {entry.created_at
+      ? ` · ${formatWib(
+          entry.created_at
+        )}`
+      : ""}
+  </span>
+
+  {entry.writer_location && (
+    <span>
+      📍 {entry.writer_location}
+    </span>
+  )}
+
+  {entry.updated_at &&
+    entry.created_at &&
+    new Date(
+      entry.updated_at
+    ).getTime() >
+      new Date(
+        entry.created_at
+      ).getTime() +
+        1000 && (
+      <span>
+        Diperbarui{" "}
+        {formatWib(
+          entry.updated_at
+        )}
+      </span>
+    )}
+</div>
 
       {entry.excerpt && (
         <p className="folder-entry-excerpt">

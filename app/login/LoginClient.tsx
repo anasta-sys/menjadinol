@@ -324,7 +324,7 @@ export default function LoginClient() {
         </div>
 
         <div className="login-tagline">
-          kembali ke nol
+          menjadi nol
         </div>
 
         <p>

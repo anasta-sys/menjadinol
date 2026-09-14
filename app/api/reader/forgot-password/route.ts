@@ -146,7 +146,7 @@ export async function POST(
             to: [email],
 
             subject:
-              "Buat password baru — Kembali ke Nol",
+              "Buat password baru — Menjadi Nol",
 
             html: `
               <div
@@ -219,7 +219,7 @@ export async function POST(
                     font-size: 12px;
                   "
                 >
-                  Kembali ke Nol
+                  Menjadi Nol
                 </p>
               </div>
             `,

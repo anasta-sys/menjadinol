@@ -112,7 +112,7 @@ export default function ReaderResetPasswordClient() {
             src="/jalan-pulang-symbol.png"
             alt=""
           />
-          <span>kembali ke nol</span>
+          <span>menjadi nol</span>
         </div>
 
         {!success ? (

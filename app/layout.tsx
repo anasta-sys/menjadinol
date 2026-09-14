@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import "./globals.css";
 import "./menjadi-nol-theme.css";
 
+import SectionBackground from "@/app/components/SectionBackground";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import ReaderProtectedShell from "@/app/components/ReaderProtectedShell";
@@ -57,8 +58,6 @@ export const metadata: Metadata = {
 
     images: [
       {
-        // Untuk sementara tetap gunakan file OG yang SUDAH ADA.
-        // Nanti kalau og-menjadi-nol.png sudah dibuat, baru diganti.
         url: "/og-jalan-pulang.png",
         width: 1200,
         height: 630,
@@ -75,7 +74,6 @@ export const metadata: Metadata = {
     description:
       "Ruang untuk berjeda, menyelami rasa, memahami makna, dan kembali pada diri.",
 
-    // Tetap gunakan file yang sudah ada dulu.
     images: ["/og-jalan-pulang.png"],
   },
 
@@ -104,6 +102,8 @@ export default function RootLayout({
           <Suspense fallback={null}>
             <Header />
           </Suspense>
+
+          <SectionBackground />
 
           {children}
 

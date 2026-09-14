@@ -1,4 +1,4 @@
--- KEMBALI KE NOL
+-- MENJADI NOL
 -- FINAL WRITER PERMISSION LOCK
 -- Jalankan SEKALI di Supabase SQL Editor SETELAH replace file aplikasi.
 --

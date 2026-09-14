@@ -104,7 +104,7 @@ export default function SuperAdminLogin() {
   return (
     <main className="sa-page">
       <section className="sa-shell">
-        {/* KIRI — identitas Kembali ke Nol */}
+        {/* KIRI — identitas Menjadi Nol */}
         <aside className="sa-brand" aria-hidden="true">
           <div className="sa-nature" />
           <div className="sa-glow" />
@@ -115,12 +115,12 @@ export default function SuperAdminLogin() {
               alt=""
               className="sa-symbol"
             />
-            <h2>kembali ke nol</h2>
+            <h2>menjadi nol</h2>
             <div className="sa-divider" />
             <p>
               Ruang untuk berhenti, merasa,
               <br />
-              memahami, dan kembali ke nol.
+              memahami, dan menjadi nol.
             </p>
           </div>
         </aside>
@@ -129,7 +129,7 @@ export default function SuperAdminLogin() {
         <section className="sa-login">
           <div className="sa-mobile-brand" aria-hidden="true">
             <img src="/jalan-pulang-symbol.png" alt="" />
-            <span>kembali ke nol</span>
+            <span>menjadi nol</span>
           </div>
 
           <div className="sa-content">
@@ -181,6 +181,12 @@ export default function SuperAdminLogin() {
                 </button>
               </div>
 
+            <div className="sa-forgot-wrap">
+              <a href="/superadmin-forgot-password" className="sa-forgot">
+                Lupa password?
+              </a>
+            </div>
+
               {error && (
                 <div className="sa-error" role="alert">
                   {error}
@@ -224,20 +230,25 @@ export default function SuperAdminLogin() {
         }
 
         .sa-page {
-          width: 100%;
-          min-height: 100dvh;
-          padding: 24px 24px 0;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: flex-start;
-          overflow-x: hidden;
-          color: #29412f;
-          background:
-            radial-gradient(circle at 14% 12%, rgba(255, 248, 225, .66), transparent 34%),
-            radial-gradient(circle at 88% 88%, rgba(224, 234, 213, .42), transparent 35%),
-            #f7f3e9;
-        }
+  width: 100%;
+  min-height: 100dvh;
+  padding: 24px 24px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  overflow-x: hidden;
+  color: #29412f;
+
+  background:
+    linear-gradient(
+      rgba(248,247,239,.68),
+      rgba(248,247,239,.68)
+    ),
+    url("/menjadi-nol-nature.png") center center / cover no-repeat;
+
+  background-attachment: fixed;
+}
 
         .sa-shell {
           width: min(1180px, 100%);
@@ -258,22 +269,31 @@ export default function SuperAdminLogin() {
         }
 
         .sa-brand {
-          position: relative;
-          overflow: hidden;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: linear-gradient(180deg, #fffdf8 0%, #fbf6ea 57%, #edf2e4 100%);
-        }
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    linear-gradient(
+      rgba(248, 247, 239, .46),
+      rgba(248, 247, 239, .46)
+    ),
+    url("/menjadi-nol-nature.png") center center / cover no-repeat;
+}
 
         .sa-nature {
-          position: absolute;
-          inset: 0;
-          background:
-            radial-gradient(circle at 50% 69%, rgba(255, 239, 192, .58), transparent 27%),
-            linear-gradient(155deg, transparent 0 59%, rgba(177, 192, 158, .13) 59% 69%, transparent 69%),
-            linear-gradient(205deg, transparent 0 63%, rgba(151, 174, 139, .12) 63% 76%, transparent 76%);
-        }
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,.10) 0%,
+      rgba(248,247,239,.12) 55%,
+      rgba(235,240,226,.18) 100%
+    );
+}
 
         .sa-glow {
           position: absolute;
@@ -444,6 +464,29 @@ export default function SuperAdminLogin() {
         .sa-eye:hover:not(:disabled) {
           background: #f5f7f3;
         }
+
+        .sa-eye:hover:not(:disabled) {
+          background: #f5f7f3;
+        }
+
+        /* TEMPEL DI SINI */
+            .sa-forgot-wrap {
+            margin-top: -3px;
+            text-align: right;
+      }
+
+        .sa-forgot {
+          color: #5f745f;
+          font-size: 12px;
+          font-weight: 700;
+          text-decoration: none;
+        }
+
+        .sa-forgot:hover {
+           text-decoration: underline;
+        }
+
+      /* YANG SUDAH ADA */
 
         .sa-error {
           padding: 11px 13px;

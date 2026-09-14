@@ -253,7 +253,7 @@ export async function POST(
       await admin
         .from("reader_users")
         .select(
-          "user_id,is_active,status,name"
+          "user_id,is_active,status,full_name"
         )
         .eq("user_id", userId)
         .maybeSingle();
@@ -467,8 +467,8 @@ export async function POST(
       parseDeviceInfo(userAgent);
 
     const readerName =
-      typeof reader.name === "string"
-        ? reader.name.trim().slice(0, 160)
+      typeof reader.full_name === "string"
+        ? reader.full_name.trim().slice(0, 160)
         : null;
 
     const {

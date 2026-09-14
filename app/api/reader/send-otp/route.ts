@@ -380,7 +380,7 @@ export async function POST(
         ],
 
         subject:
-          "Kode OTP Kembali ke Nol",
+          "Kode OTP Menjadi Nol",
 
         html: `
           <div
@@ -395,7 +395,7 @@ export async function POST(
 
             <h2>
               Kode Verifikasi
-              Kembali ke Nol
+              Menjadi Nol
             </h2>
 
             <p>

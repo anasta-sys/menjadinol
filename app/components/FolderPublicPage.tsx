@@ -34,6 +34,7 @@ type Entry = {
   status: EntryStatus;
   created_at: string | null;
   updated_at: string | null;
+  writer_location?: string | null;
 
   // Identitas penulis disimpan sebagai UUID di database.
   // Nama yang dikirim ke client hanya display_name.
@@ -98,7 +99,7 @@ export default async function FolderPublicPage({
   let query = supabase
     .from("content_folder_entries")
     .select(
-      "id,folder_id,title,slug,excerpt,body,table_data,attachment_path,attachment_name,attachment_mime,attachment_size,status,created_at,updated_at,author_id"
+      "id,folder_id,title,slug,excerpt,body,table_data,attachment_path,attachment_name,attachment_mime,attachment_size,status,created_at,updated_at,writer_location,author_id"
     )
     .eq("folder_id", folder.id);
 
@@ -176,7 +177,7 @@ export default async function FolderPublicPage({
           ...publicEntry,
           author_name: authorName,
           has_attachment: false,
-          attachment_url: null
+          attachment_url: null,
         };
       }
 
@@ -185,12 +186,7 @@ export default async function FolderPublicPage({
           .from(MATERIAL_BUCKET)
           .createSignedUrl(entry.attachment_path, 60 * 15);
 
-        if (error) {
-          console.error(
-            "Gagal membuat signed URL materi:",
-            error.message
-          );
-
+        if (error || !data?.signedUrl) {
           const {
             attachment_path: _privatePath,
             author_id: _privateAuthorId,
@@ -201,7 +197,7 @@ export default async function FolderPublicPage({
             ...publicEntry,
             author_name: authorName,
             has_attachment: true,
-            attachment_url: null
+            attachment_url: null,
           };
         }
 
@@ -215,7 +211,7 @@ export default async function FolderPublicPage({
           ...publicEntry,
           author_name: authorName,
           has_attachment: true,
-          attachment_url: data.signedUrl
+          attachment_url: data.signedUrl,
         };
       } catch (error) {
         console.error(
@@ -233,7 +229,7 @@ export default async function FolderPublicPage({
           ...publicEntry,
           author_name: authorName,
           has_attachment: true,
-          attachment_url: null
+          attachment_url: null,
         };
       }
     })

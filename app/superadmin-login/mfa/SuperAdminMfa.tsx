@@ -33,6 +33,15 @@ export default function SuperAdminMfa() {
   const [secondsLeft, setSecondsLeft] =
     useState(30);
 
+  const [mfaMode, setMfaMode] =
+    useState<"enroll" | "challenge">("challenge");
+
+  const [qrCode, setQrCode] =
+    useState("");
+
+  const [secret, setSecret] =
+    useState("");
+
   /*
    * =========================================================
    * TOTP COUNTDOWN
@@ -398,15 +407,58 @@ export default function SuperAdminMfa() {
         );
 
       if (!totp) {
-        setError(
-          "Authenticator belum terdaftar pada akun Super Admin."
-        );
+        /*
+         * Akun Auth baru belum mempunyai TOTP terverifikasi.
+         * Buat enrollment baru dan tampilkan QR Authenticator.
+         */
+        const {
+          data: enrolled,
+          error: enrollError,
+        } =
+          await supabase.auth.mfa.enroll({
+            factorType: "totp",
+            friendlyName:
+              "Menjadi Nol Superadmin",
+          });
 
+        if (cancelled) {
+          return;
+        }
+
+        if (
+          enrollError ||
+          !enrolled?.id ||
+          !enrolled?.totp?.qr_code
+        ) {
+          console.error(
+            "Superadmin MFA enroll error:",
+            enrollError
+          );
+
+          setError(
+            "Gagal menyiapkan Authenticator baru. Silakan kembali ke login lalu coba lagi."
+          );
+
+          setLoading(false);
+          return;
+        }
+
+        setFactorId(enrolled.id);
+        setQrCode(
+          enrolled.totp.qr_code
+        );
+        setSecret(
+          enrolled.totp.secret || ""
+        );
+        setMfaMode("enroll");
         setLoading(false);
         return;
       }
 
       setFactorId(totp.id);
+      setQrCode("");
+      setSecret("");
+      setMfaMode("challenge");
       setLoading(false);
     }
 
@@ -672,10 +724,9 @@ export default function SuperAdminMfa() {
               fontSize: "14px",
             }}
           >
-            Masukkan kode 6 digit
-            dari aplikasi authenticator
-            untuk melanjutkan ke Super
-            Admin Control Center.
+            {mfaMode === "enroll"
+              ? "Scan QR di bawah dengan aplikasi Authenticator, lalu masukkan kode 6 digit yang muncul."
+              : "Masukkan kode 6 digit dari aplikasi authenticator untuk melanjutkan ke Super Admin Control Center."}
           </p>
         </div>
 
@@ -690,11 +741,136 @@ export default function SuperAdminMfa() {
             keamanan...
           </p>
         ) : (
-          <form
-            onSubmit={
-              handleSubmit
-            }
-          >
+          <>
+            {mfaMode === "enroll" && qrCode && (
+              <div
+                style={{
+                  marginBottom: "24px",
+                  padding: "18px",
+                  borderRadius: "18px",
+                  border:
+                    "1px solid rgba(41,76,59,.12)",
+                  background:
+                    "rgba(247,250,246,.92)",
+                  textAlign: "center",
+                }}
+              >
+                <p
+                  style={{
+                    margin:
+                      "0 0 14px",
+                    color:
+                      "#31483c",
+                    fontSize:
+                      "13px",
+                    fontWeight: 700,
+                    lineHeight: 1.6,
+                  }}
+                >
+                  Daftarkan Authenticator
+                  Superadmin
+                </p>
+
+                <div
+                  style={{
+                    width:
+                      "min(230px, 100%)",
+                    margin:
+                      "0 auto",
+                    padding:
+                      "12px",
+                    borderRadius:
+                      "16px",
+                    background:
+                      "#fff",
+                    boxShadow:
+                      "0 8px 24px rgba(45,65,52,.08)",
+                  }}
+                >
+                  <img
+                    src={qrCode}
+                    alt="QR Authenticator Superadmin"
+                    style={{
+                      display:
+                        "block",
+                      width:
+                        "100%",
+                      height:
+                        "auto",
+                    }}
+                  />
+                </div>
+
+                <p
+                  style={{
+                    margin:
+                      "14px 0 0",
+                    color:
+                      "#66726b",
+                    fontSize:
+                      "12px",
+                    lineHeight:
+                      1.65,
+                  }}
+                >
+                  Scan QR dengan Google
+                  Authenticator, Microsoft
+                  Authenticator, atau aplikasi
+                  TOTP lainnya. Setelah akun
+                  tersimpan, masukkan kode
+                  6 digit di bawah.
+                </p>
+
+                {secret && (
+                  <details
+                    style={{
+                      marginTop:
+                        "12px",
+                      color:
+                        "#66726b",
+                      fontSize:
+                        "11px",
+                    }}
+                  >
+                    <summary
+                      style={{
+                        cursor:
+                          "pointer",
+                      }}
+                    >
+                      Tidak bisa scan QR?
+                    </summary>
+
+                    <code
+                      style={{
+                        display:
+                          "block",
+                        marginTop:
+                          "8px",
+                        padding:
+                          "9px",
+                        borderRadius:
+                          "9px",
+                        background:
+                          "#fff",
+                        overflowWrap:
+                          "anywhere",
+                        userSelect:
+                          "all",
+                      }}
+                    >
+                      {secret}
+                    </code>
+                  </details>
+                )}
+              </div>
+            )}
+
+            <form
+              onSubmit={
+                handleSubmit
+              }
+            >
             <label
               htmlFor="mfa-code"
               style={{
@@ -953,7 +1129,8 @@ export default function SuperAdminMfa() {
                 cursor:
                   verifying
                     ? "wait"
-                    : code.length !==
+                    : !factorId ||
+                        code.length !==
                           6 ||
                         secondsLeft <=
                           3
@@ -982,9 +1159,12 @@ export default function SuperAdminMfa() {
             >
               {verifying
                 ? "Memverifikasi..."
-                : "Verifikasi & masuk"}
+                : mfaMode === "enroll"
+                  ? "Aktifkan MFA & masuk"
+                  : "Verifikasi & masuk"}
             </button>
           </form>
+          </>
         )}
 
         <button

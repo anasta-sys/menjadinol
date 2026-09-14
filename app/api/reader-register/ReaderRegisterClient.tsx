@@ -172,7 +172,7 @@ export default function ReaderRegisterClient() {
 
             <img
               src="/jalan-pulang-symbol.png"
-              alt="Kembali ke Nol"
+              alt="Menjadi Nol"
             />
 
           </div>
@@ -261,7 +261,7 @@ export default function ReaderRegisterClient() {
 
           <img
             src="/jalan-pulang-symbol.png"
-            alt="Kembali ke Nol"
+            alt="Menjadi Nol"
           />
 
         </div>
@@ -273,7 +273,7 @@ export default function ReaderRegisterClient() {
 
 
         <h1>
-          Kembali ke Nol
+          Menjadi Nol
         </h1>
 
 
@@ -281,7 +281,7 @@ export default function ReaderRegisterClient() {
 
           Buat akun terlebih dahulu
           untuk mengakses ruang dan
-          materi Kembali ke Nol.
+          materi Menjadi Nol.
 
         </p>
 

@@ -183,7 +183,7 @@ export default function WriterRegisterClient() {
           </div>
 
           <div className="login-tagline">
-            kembali ke nol
+            menjadi nol
           </div>
 
           <p>
@@ -201,7 +201,7 @@ export default function WriterRegisterClient() {
         <div className="writer-form-panel">
           <div className="writer-mobile-brand">
             <img src="/jalan-pulang-symbol.png" alt="" />
-            <span>kembali ke nol</span>
+            <span>menjadi nol</span>
           </div>
 
           <div className="writer-form-content">
@@ -327,7 +327,7 @@ export default function WriterRegisterClient() {
                     onChange={(event) =>
                       setReason(event.target.value)
                     }
-                    placeholder="Ceritakan secara singkat alasan ingin menjadi bagian dari Kembali ke Nol."
+                    placeholder="Ceritakan secara singkat alasan ingin menjadi bagian dari Menjadi Nol."
                     minLength={10}
                     maxLength={1200}
                     rows={5}

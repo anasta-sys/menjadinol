@@ -8,7 +8,7 @@ import {
 import AdminExtras from "./AdminExtras";
 
 export const metadata = {
-  title: "Admin · kembali ke nol",
+  title: "Admin · menjadi nol",
   robots: {
     index: false,
     follow: false,
@@ -208,7 +208,7 @@ export default async function AdminPage({
             textTransform: "uppercase",
           }}
         >
-          Kembali ke Nol
+          Menjadi Nol
         </p>
 
         <h1
@@ -235,7 +235,7 @@ export default async function AdminPage({
         >
           Selamat datang kembali. Silakan mulai
           membuat dan mengelola konten untuk ruang
-          Kembali ke Nol.
+          Menjadi Nol.
         </p>
       </section>
 

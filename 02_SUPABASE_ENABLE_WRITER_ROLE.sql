@@ -1,4 +1,4 @@
--- KEMBALI KE NOL
+-- MENJADI NOL
 -- Tambahkan role "writer" TANPA mengubah data role yang sudah ada.
 -- Jalankan SEKALI di Supabase SQL Editor.
 

@@ -1,7 +1,7 @@
 import SuperAdminLogin from "./SuperAdminLogin";
 
 export const metadata = {
-  title: "Super Admin Login · kembali ke nol",
+  title: "Super Admin Login · Menjadi Nol",
   robots: {
     index: false,
     follow: false,

@@ -49,6 +49,9 @@ async function requireAdminAal2() {
     throw new Error("Unauthorized");
   }
 
+  const userId =
+    claims.claims.sub;
+
   const { data: aal } =
     await supabase.auth.mfa
       .getAuthenticatorAssuranceLevel();
@@ -63,7 +66,7 @@ async function requireAdminAal2() {
       .select("user_id")
       .eq(
         "user_id",
-        claims.claims.sub
+        userId
       )
       .maybeSingle();
 
@@ -71,13 +74,19 @@ async function requireAdminAal2() {
     throw new Error("Forbidden");
   }
 
-  return supabase;
+  return {
+    supabase,
+    userId,
+  };
 }
 
 export async function updatePageContent(
   formData: FormData
 ) {
-  const supabase =
+  const {
+    supabase,
+    userId,
+  } =
     await requireAdminAal2();
 
   const pageKey =
@@ -110,22 +119,34 @@ export async function updatePageContent(
       2000
     );
 
+  const writerLocation = clean(
+    formData.get("writer_location"),
+    160
+  );
+
   if (!title) {
     throw new Error(
       "Judul halaman wajib diisi."
     );
   }
 
+  const payload = {
+    page_key: pageKey,
+    eyebrow,
+    title,
+    description,
+    author_id: userId,
+    writer_location:
+      writerLocation || null,
+    updated_at:
+      new Date().toISOString(),
+  };
+
   const { error } =
     await supabase
       .from("page_content")
       .upsert(
-        {
-          page_key: pageKey,
-          eyebrow,
-          title,
-          description,
-        },
+        payload,
         {
           onConflict: "page_key",
         }
@@ -135,5 +156,7 @@ export async function updatePageContent(
     throw new Error(error.message);
   }
 
-  revalidatePath(pagePath(pageKey));
+  revalidatePath(
+    pagePath(pageKey)
+  );
 }

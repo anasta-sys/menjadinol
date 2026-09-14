@@ -200,7 +200,7 @@ export default function AdminLoginClient() {
     const {data,error} =
       await supabase.auth.mfa.enroll({
         factorType:"totp",
-        friendlyName:"Jalan Pulang Admin"
+        friendlyName:"Menjadi Nol Admin"
       });
 
     if(error) {
@@ -310,7 +310,13 @@ export default function AdminLoginClient() {
 
   return (
     <div className="proper-login-layout">
-      <section className="proper-login-visual">
+      <section
+        className="proper-login-visual"
+        style={{
+          background:
+            'linear-gradient(rgba(248,247,239,.46), rgba(248,247,239,.46)), url("/menjadi-nol-nature.png") center center / cover no-repeat',
+        }}
+      >
         <div className="login-symbol-wrap">
           <img
             src="/jalan-pulang-symbol.png"
@@ -320,16 +326,16 @@ export default function AdminLoginClient() {
         </div>
 
         <div className="login-wordmark">
-          Jalan Pulang
+          MENJADI NOL
         </div>
 
         <div className="login-tagline">
-          kembali ke nol
+          Perjalanan pulang dalam diri
         </div>
 
         <p>
-          Ruang admin pribadi untuk merawat
-          catatan perjalanan dengan aman.
+          Ruang untuk berhenti, merasa,
+          memahami, dan MENJADI NOL.
         </p>
 
         <div className="login-security-list">
@@ -353,7 +359,7 @@ export default function AdminLoginClient() {
 
             <p className="login-help">
               Masuk menggunakan akun Admin
-              Jalan Pulang.
+              Menjadi Nol.
             </p>
 
             <form
@@ -471,7 +477,7 @@ export default function AdminLoginClient() {
                   </span>
 
                   <a
-                    href="/reader-forgot-password"
+                    href="/admin-forgot-password"
                     style={{
                       color: "#5f745f",
                       fontSize: "12px",
@@ -525,7 +531,7 @@ export default function AdminLoginClient() {
                 <div className="qr-box">
                   <img
                     src={qr}
-                    alt="QR code MFA Jalan Pulang"
+                    alt="QR code MFA Menjadi Nol"
                   />
                 </div>
 

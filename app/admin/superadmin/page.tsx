@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import SuperAdminDashboard from "./SuperAdminDashboard";
 
 export const metadata = {
-  title: "Super Admin · kembali ke nol",
+  title: "Super Admin · menjadi nol",
   robots: { index: false, follow: false },
 };
 

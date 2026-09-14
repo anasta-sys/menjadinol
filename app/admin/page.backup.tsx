@@ -4,7 +4,7 @@ import AdminExtras from "./AdminExtras";
 import type { AdminRole } from "@/lib/admin-auth";
 
 export const metadata = {
-  title: "Admin · kembali ke nol",
+  title: "Admin · menjadi nol",
   robots: { index: false, follow: false },
 };
 

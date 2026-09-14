@@ -391,13 +391,13 @@ export default async function DashboardOverview({
           <div className={styles.brandLogoWrap}>
             <img
               src="/jalan-pulang-symbol.png"
-              alt="Logo kembali ke nol"
+              alt="Logo menjadi nol"
               className={styles.brandLogo}
             />
           </div>
 
           <div>
-            <strong>kembali ke nol</strong>
+            <strong>menjadi nol</strong>
             <span>Spiritual Journey</span>
           </div>
         </div>
@@ -1069,7 +1069,7 @@ export default async function DashboardOverview({
             alt=""
           />
 
-          <strong>kembali ke nol</strong>
+          <strong>menjadi nol</strong>
 
           <span>•</span>
 

@@ -148,10 +148,10 @@ insert into public.posts(
   title,slug,excerpt,body,category,status,published_at
 )
 values(
-  'Kembali ke nol bukan berarti menjadi kosong',
-  'kembali-ke-nol-bukan-berarti-menjadi-kosong',
-  'Kembali ke nol adalah memberi diri kesempatan melihat kehidupan tanpa terlalu banyak kebisingan.',
-  'Kembali ke nol bukan menghapus siapa diri kita. Ia adalah memberi ruang untuk melihat lebih jernih.
+  'Menjadi nol bukan berarti menjadi kosong',
+  'menjadi-nol-bukan-berarti-menjadi-kosong',
+  'Menjadi nol adalah memberi diri kesempatan melihat kehidupan tanpa terlalu banyak kebisingan.',
+  'Menjadi nol bukan menghapus siapa diri kita. Ia adalah memberi ruang untuk melihat lebih jernih.
 
 Rasa boleh hadir tanpa menjadi identitas. Masa lalu boleh menjadi pelajaran tanpa menjadi penjara.
 

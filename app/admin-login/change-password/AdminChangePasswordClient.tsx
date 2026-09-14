@@ -196,7 +196,7 @@ export default function AdminChangePasswordClient() {
               opacity: 0.5,
             }}
           >
-            kembali ke nol
+            menjadi nol
           </p>
           <h1 style={{ margin: "9px 0 7px", fontSize: "28px" }}>
             Ganti Password Admin

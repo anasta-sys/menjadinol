@@ -337,7 +337,7 @@ export default function SuperAdminDashboard({
               textTransform: "uppercase",
             }}
           >
-            kembali ke nol
+            menjadi nol
           </p>
 
           <h1 style={{ margin: "7px 0 5px", fontSize: "32px" }}>

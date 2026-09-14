@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { requireAdminSession } from "@/lib/admin-auth";
 
 export const metadata = {
-  title: "Selamat Datang · kembali ke nol",
+  title: "Selamat Datang · menjadi nol",
   robots: {
     index: false,
     follow: false,
@@ -70,14 +70,14 @@ export default async function AdminWelcomePage() {
               className="brand-symbol"
             />
 
-            <h2>kembali ke nol</h2>
+            <h2>menjadi nol</h2>
 
             <div className="brand-line" />
 
             <p>
               Ruang untuk berhenti, merasa,
               <br />
-              memahami, dan kembali ke nol.
+              memahami, dan menjadi nol.
             </p>
           </div>
         </aside>
@@ -111,7 +111,7 @@ export default async function AdminWelcomePage() {
                 <p>
                   Silakan mulai membuat,
                   mengelola, dan meninjau konten
-                  untuk ruang Kembali ke Nol.
+                  untuk ruang Menjadi Nol.
                 </p>
               </div>
             </div>

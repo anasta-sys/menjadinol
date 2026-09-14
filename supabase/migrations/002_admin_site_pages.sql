@@ -64,7 +64,7 @@ values
   'tentang jalan pulang',
   'Setiap orang punya jalannya sendiri.',
   'Jalan Pulang adalah ruang refleksi untuk memahami rasa, perjalanan hidup, penerimaan, makna, dan kesadaran.',
-  '“Kembali ke nol” bukan berarti kehilangan diri. Ia adalah ajakan untuk berhenti sejenak dari kebisingan agar kita dapat melihat kehidupan dengan lebih jernih.'
+  '“Menjadi nol” bukan berarti kehilangan diri. Ia adalah ajakan untuk berhenti sejenak dari kebisingan agar kita dapat melihat kehidupan dengan lebih jernih.'
 ),
 (
   'layanan',

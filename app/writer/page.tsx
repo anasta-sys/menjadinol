@@ -2,10 +2,11 @@ import { redirect } from "next/navigation";
 import { createClient as createServiceClient } from "@supabase/supabase-js";
 
 import { createClient } from "@/lib/supabase/server";
+import { isOwnerEmail } from "@/lib/owner-access";
 import FolderManager from "@/app/admin/FolderManager";
 
 export const metadata = {
-  title: "Ruang Penulis · kembali ke nol",
+  title: "Ruang Penulis · menjadi nol",
   robots: { index: false, follow: false },
 };
 
@@ -28,10 +29,14 @@ const allowedSections = new Set<WriterSection>([
   "kontak",
 ]);
 
-function normalizeSection(value?: string): WriterSection {
+function normalizeSection(
+  value?: string
+): WriterSection {
   if (
     value &&
-    allowedSections.has(value as WriterSection)
+    allowedSections.has(
+      value as WriterSection
+    )
   ) {
     return value as WriterSection;
   }
@@ -48,18 +53,22 @@ export default async function WriterPage({
 }) {
   /*
    * =========================================================
-   * 1. CEK SESSION WRITER
+   * 1. CEK SESSION
    * =========================================================
    */
-  const supabase = await createClient();
+  const supabase =
+    await createClient();
 
   const {
     data: claims,
     error: claimsError,
-  } = await supabase.auth.getClaims();
+  } =
+    await supabase.auth.getClaims();
 
   const userId =
-    claims?.claims?.sub as string | undefined;
+    claims?.claims?.sub as
+      | string
+      | undefined;
 
   if (
     claimsError ||
@@ -79,24 +88,53 @@ export default async function WriterPage({
 
   /*
    * =========================================================
-   * 2. SECTION
+   * 2. AMBIL USER TERVERIFIKASI
    * =========================================================
+   *
+   * Dipakai untuk memeriksa exception owner.
    */
-  const params = await searchParams;
+  const {
+    data: userData,
+    error: userError,
+  } =
+    await supabase.auth.getUser();
 
-  const initialSection =
-    normalizeSection(params?.section);
+  if (
+    userError ||
+    !userData.user ||
+    userData.user.id !== userId
+  ) {
+    redirect("/writer-login");
+  }
+
+  const userEmail =
+    userData.user.email ?? null;
 
   /*
    * =========================================================
-   * 3. SERVICE ROLE
+   * 3. SECTION
+   * =========================================================
+   */
+  const params =
+    await searchParams;
+
+  const initialSection =
+    normalizeSection(
+      params?.section
+    );
+
+  /*
+   * =========================================================
+   * 4. SERVICE ROLE
    * =========================================================
    */
   const supabaseUrl =
-    process.env.NEXT_PUBLIC_SUPABASE_URL;
+    process.env
+      .NEXT_PUBLIC_SUPABASE_URL;
 
   const serviceRoleKey =
-    process.env.SUPABASE_SERVICE_ROLE_KEY;
+    process.env
+      .SUPABASE_SERVICE_ROLE_KEY;
 
   if (
     !supabaseUrl ||
@@ -121,22 +159,23 @@ export default async function WriterPage({
 
   /*
    * =========================================================
-   * 4. CEK ROLE
+   * 5. CEK ROLE
    * =========================================================
    */
   const {
     data: profile,
     error: profileError,
-  } = await adminDb
-    .from("admin_users")
-    .select(
-      "user_id,role,display_name"
-    )
-    .eq(
-      "user_id",
-      userId
-    )
-    .maybeSingle();
+  } =
+    await adminDb
+      .from("admin_users")
+      .select(
+        "user_id,role,display_name"
+      )
+      .eq(
+        "user_id",
+        userId
+      )
+      .maybeSingle();
 
   if (
     profileError ||
@@ -145,11 +184,35 @@ export default async function WriterPage({
     redirect("/writer-login");
   }
 
-  if (
-    profile.role !== "writer"
-  ) {
+  /*
+   * =========================================================
+   * 6. CEK AKSES WRITER
+   * =========================================================
+   *
+   * Writer biasa:
+   * role = writer
+   *
+   * Exception owner:
+   * role = superadmin
+   * DAN
+   * email = anaspuspita93@gmail.com
+   *
+   * Superadmin lain TIDAK otomatis
+   * mendapat akses ke Writer.
+   * =========================================================
+   */
+  const isOwnerSuperadmin =
+    profile.role === "superadmin" &&
+    isOwnerEmail(userEmail);
+
+  const canAccessWriter =
+    profile.role === "writer" ||
+    isOwnerSuperadmin;
+
+  if (!canAccessWriter) {
     if (
-      profile.role === "superadmin"
+      profile.role ===
+      "superadmin"
     ) {
       redirect(
         "/admin/superadmin"
@@ -159,63 +222,60 @@ export default async function WriterPage({
     if (
       profile.role === "admin"
     ) {
-      redirect(
-        "/admin"
-      );
+      redirect("/admin");
     }
 
-    redirect(
-      "/writer-login"
-    );
+    redirect("/writer-login");
   }
 
   /*
    * =========================================================
-   * 5. DATA WRITER
+   * 7. DATA WRITER
    * =========================================================
    */
   const [
     foldersResult,
     entriesResult,
-  ] = await Promise.all([
-    adminDb
-      .from(
-        "content_folders"
-      )
-      .select(
-        "id,section,title,slug,description"
-      )
-      .order(
-        "section",
-        {
-          ascending: true,
-        }
-      )
-      .order(
-        "title",
-        {
-          ascending: true,
-        }
-      ),
+  ] =
+    await Promise.all([
+      adminDb
+        .from(
+          "content_folders"
+        )
+        .select(
+          "id,section,title,slug,description"
+        )
+        .order(
+          "section",
+          {
+            ascending: true,
+          }
+        )
+        .order(
+          "title",
+          {
+            ascending: true,
+          }
+        ),
 
-    adminDb
-      .from(
-        "content_folder_entries"
-      )
-      .select(
-        "id,folder_id,title,slug,excerpt,body,table_data,attachment_path,attachment_name,attachment_mime,attachment_size,status,published_at,author_id"
-      )
-      .eq(
-        "author_id",
-        userId
-      )
-      .order(
-        "created_at",
-        {
-          ascending: false,
-        }
-      ),
-  ]);
+      adminDb
+        .from(
+          "content_folder_entries"
+        )
+        .select(
+          "id,folder_id,title,slug,excerpt,body,table_data,attachment_path,attachment_name,attachment_mime,attachment_size,status,published_at,author_id"
+        )
+        .eq(
+          "author_id",
+          userId
+        )
+        .order(
+          "created_at",
+          {
+            ascending: false,
+          }
+        ),
+    ]);
 
   if (
     foldersResult.error
@@ -235,11 +295,11 @@ export default async function WriterPage({
 
   /*
    * =========================================================
-   * 6. UI WRITER
+   * 8. UI WRITER
    *
-   * Header global tetap satu.
-   * Tidak ada tombol Keluar tambahan di area Writer.
-   * Logout tetap memakai header global.
+   * Walaupun akun owner memiliki role superadmin,
+   * saat masuk ke area Writer tetap diperlakukan
+   * sebagai Writer.
    * =========================================================
    */
   return (
@@ -247,7 +307,8 @@ export default async function WriterPage({
       style={{
         maxWidth: "1600px",
         margin: "0 auto",
-        padding: "20px 18px 40px",
+        padding:
+          "20px 18px 40px",
       }}
     >
       <section
@@ -260,7 +321,8 @@ export default async function WriterPage({
           style={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
+            justifyContent:
+              "space-between",
             gap: "16px",
             marginBottom: "18px",
             flexWrap: "wrap",
@@ -270,7 +332,8 @@ export default async function WriterPage({
             <p
               className="eyebrow"
               style={{
-                marginBottom: "4px",
+                marginBottom:
+                  "4px",
               }}
             >
               PENULIS
@@ -287,12 +350,14 @@ export default async function WriterPage({
 
             <p
               style={{
-                margin: "6px 0 0",
+                margin:
+                  "6px 0 0",
                 opacity: 0.68,
               }}
             >
-              Pilih bagian melalui header,
-              lalu tulis dan kirim untuk review.
+              Pilih bagian melalui
+              header, lalu tulis dan
+              kirim untuk review.
             </p>
           </div>
         </div>
@@ -300,10 +365,12 @@ export default async function WriterPage({
         <div id="content-manager">
           <FolderManager
             folders={
-              (foldersResult.data ?? []) as any
+              (foldersResult.data ??
+                []) as any
             }
             entries={
-              (entriesResult.data ?? []) as any
+              (entriesResult.data ??
+                []) as any
             }
             adminRole="writer"
             initialSection={

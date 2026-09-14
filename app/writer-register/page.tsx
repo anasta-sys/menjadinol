@@ -1,7 +1,7 @@
 import WriterRegisterClient from "./WriterRegisterClient";
 
 export const metadata = {
-  title: "Daftar Penulis · kembali ke nol",
+  title: "Daftar Penulis · menjadi nol",
   robots: { index: false, follow: false },
 };
 

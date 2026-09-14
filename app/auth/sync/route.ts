@@ -3,77 +3,83 @@ import {
   NextResponse,
 } from "next/server";
 
-import { createClient } from
-  "@/lib/supabase/server";
+import {
+  createClient,
+} from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
+
+function noStore(
+  body: Record<string, unknown>,
+  status = 200
+) {
+  return NextResponse.json(body, {
+    status,
+    headers: {
+      "Cache-Control":
+        "private, no-store, max-age=0",
+      Pragma: "no-cache",
+      Expires: "0",
+    },
+  });
+}
 
 export async function POST(
   request: NextRequest
 ) {
+  /*
+   * ==========================================
+   * SAME ORIGIN
+   * ==========================================
+   */
   const origin =
     request.headers.get("origin");
 
   const host =
     request.headers.get("host");
 
-  /*
-   * Hanya izinkan request dari website yang sama.
-   */
   if (origin && host) {
     try {
-      if (
-        new URL(origin).host !== host
-      ) {
-        return NextResponse.json(
+      const originHost =
+        new URL(origin).host;
+
+      if (originHost !== host) {
+        return noStore(
           {
             error:
               "Origin tidak diizinkan.",
           },
-          {
-            status: 403,
-            headers: {
-              "Cache-Control":
-                "no-store",
-            },
-          }
+          403
         );
       }
     } catch {
-      return NextResponse.json(
+      return noStore(
         {
           error:
             "Origin tidak valid.",
         },
-        {
-          status: 403,
-          headers: {
-            "Cache-Control":
-              "no-store",
-          },
-        }
+        403
       );
     }
   }
 
+  /*
+   * ==========================================
+   * BODY
+   * ==========================================
+   */
   let body: unknown;
 
   try {
     body =
       await request.json();
   } catch {
-    return NextResponse.json(
+    return noStore(
       {
         error:
           "Request tidak valid.",
       },
-      {
-        status: 400,
-        headers: {
-          "Cache-Control":
-            "no-store",
-        },
-      }
+      400
     );
   }
 
@@ -99,18 +105,12 @@ export async function POST(
     !accessToken ||
     !refreshToken
   ) {
-    return NextResponse.json(
+    return noStore(
       {
         error:
           "Token session tidak lengkap.",
       },
-      {
-        status: 400,
-        headers: {
-          "Cache-Control":
-            "no-store",
-        },
-      }
+      400
     );
   }
 
@@ -118,85 +118,132 @@ export async function POST(
     await createClient();
 
   /*
-   * Simpan session browser ke cookie SSR Next.js.
-   * Ini yang dibutuhkan /admin setelah MFA selesai.
+   * ==========================================
+   * VALIDASI ACCESS TOKEN
+   * ==========================================
+   *
+   * getUser(token) memvalidasi token langsung
+   * ke Supabase Auth server.
+   */
+  const {
+    data: userData,
+    error: userError,
+  } =
+    await supabase.auth.getUser(
+      accessToken
+    );
+
+  if (
+    userError ||
+    !userData.user
+  ) {
+    console.error(
+      "Auth sync getUser gagal:",
+      userError
+    );
+
+    return noStore(
+      {
+        error:
+          "Session browser tidak valid.",
+      },
+      401
+    );
+  }
+
+  /*
+   * ==========================================
+   * SIMPAN SESSION KE COOKIE SSR
+   * ==========================================
    */
   const {
     data: sessionData,
     error: sessionError,
   } =
     await supabase.auth.setSession({
-      access_token: accessToken,
-      refresh_token: refreshToken,
+      access_token:
+        accessToken,
+
+      refresh_token:
+        refreshToken,
     });
 
   if (
     sessionError ||
     !sessionData.session
   ) {
-    return NextResponse.json(
+    console.error(
+      "Auth sync setSession gagal:",
+      sessionError
+    );
+
+    return noStore(
       {
         error:
-          sessionError?.message ??
+          sessionError?.message ||
           "Session tidak dapat disimpan.",
       },
-      {
-        status: 401,
-        headers: {
-          "Cache-Control":
-            "no-store",
-        },
-      }
+      401
     );
   }
 
   /*
-   * Login Admin/Penulis memang harus sudah MFA AAL2.
+   * ==========================================
+   * PASTIKAN USER SESSION SAMA
+   * ==========================================
+   */
+  if (
+    sessionData.user?.id !==
+    userData.user.id
+  ) {
+    await supabase.auth
+      .signOut();
+
+    return noStore(
+      {
+        error:
+          "Identitas session tidak sesuai.",
+      },
+      401
+    );
+  }
+
+  /*
+   * ==========================================
+   * CEK MFA / AAL2
+   * ==========================================
    */
   const {
-    data: aalData,
+    data: aal,
     error: aalError,
   } =
     await supabase.auth.mfa
-      .getAuthenticatorAssuranceLevel(
-        sessionData.session
-          .access_token
-      );
+      .getAuthenticatorAssuranceLevel();
 
   if (
     aalError ||
-    aalData?.currentLevel !==
+    aal?.currentLevel !==
       "aal2"
   ) {
-    await supabase.auth.signOut();
+    console.error(
+      "Auth sync AAL gagal:",
+      aalError,
+      aal
+    );
 
-    return NextResponse.json(
+    return noStore(
       {
         error:
           "Session belum terverifikasi sebagai AAL2.",
       },
-      {
-        status: 403,
-        headers: {
-          "Cache-Control":
-            "no-store",
-        },
-      }
+      403
     );
   }
 
-  return NextResponse.json(
-    {
-      ok: true,
-    },
-    {
-      status: 200,
-      headers: {
-        "Cache-Control":
-          "private, no-store, max-age=0",
-        Pragma: "no-cache",
-        Expires: "0",
-      },
-    }
-  );
+  return noStore({
+    ok: true,
+    user_id:
+      userData.user.id,
+    aal: "aal2",
+  });
 }

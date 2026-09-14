@@ -116,7 +116,7 @@ export default function ReaderForgotPasswordClient() {
           />
 
           <span>
-            kembali ke nol
+            menjadi nol
           </span>
         </div>
 
@@ -212,24 +212,21 @@ export default function ReaderForgotPasswordClient() {
           justify-content: center;
 
           background:
-            radial-gradient(
-              circle at 18% 16%,
-              rgba(255, 247, 226, 0.56),
-              transparent 35%
+            linear-gradient(
+              rgba(248, 247, 239, 0.70),
+              rgba(248, 247, 239, 0.70)
             ),
-            radial-gradient(
-              circle at 86% 84%,
-              rgba(226, 236, 216, 0.36),
-              transparent 38%
-            ),
-            #f8f4ec;
+            url("/menjadi-nol-nature.png")
+              center center / cover no-repeat;
+
+          background-attachment: fixed;
         }
 
         .forgot-card {
-          width: min(
-            100%,
-            520px
-          );
+            width: min(
+              100%,
+              520px
+            );
 
           padding:
             52px
@@ -585,12 +582,17 @@ export default function ReaderForgotPasswordClient() {
         ) {
           .forgot-page {
             padding: 0;
-
-            align-items:
-              stretch;
+            align-items: stretch;
 
             background:
-              #ffffff;
+              linear-gradient(
+                rgba(248, 247, 239, 0.78),
+                rgba(248, 247, 239, 0.78)
+              ),
+              url("/menjadi-nol-nature.png")
+                center center / cover no-repeat;
+
+            background-attachment: scroll;
           }
 
           .forgot-card {

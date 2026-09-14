@@ -1,4 +1,4 @@
--- KEMBALI KE NOL
+--  MENJADI NOL
 -- Permohonan akses Penulis / Admin
 -- Jalankan SEKALI di Supabase SQL Editor.
 

@@ -630,9 +630,15 @@ button,input,textarea,select{font:inherit}
 .proper-login-page{
   min-height:calc(100vh - 82px);
   padding:54px 0;
+
   background:
-    radial-gradient(circle at 25% 30%,rgba(125,148,115,.10),transparent 28%),
-    linear-gradient(120deg,#faf7f1,#f1e9dc);
+    linear-gradient(
+      rgba(248,247,239,.68),
+      rgba(248,247,239,.68)
+    ),
+    url("/menjadi-nol-nature.png") center center / cover no-repeat;
+
+  background-attachment:fixed;
 }
 .proper-login-layout{
   min-height:600px;
@@ -3242,7 +3248,7 @@ button,input,textarea,select{font:inherit}
 }
 
 /* ========================================
-   READER LOGIN — KEMBALI KE NOL
+   READER LOGIN — MENJADI NOL
 ======================================== */
 
 .reader-login-page {
@@ -4751,7 +4757,7 @@ button,input,textarea,select{font:inherit}
 }
 
 /* =========================================================
-   KEMBALI KE NOL — READER CONTENT PROTECTION
+   MENJADI NOL — READER CONTENT PROTECTION
 ========================================================= */
 
 .reader-protected-shell,
@@ -4805,7 +4811,7 @@ button,input,textarea,select{font:inherit}
   }
 
   body::before {
-    content: "Konten Kembali ke Nol hanya tersedia untuk dibaca melalui website.";
+    content: "Konten Menjadi Nol hanya tersedia untuk dibaca melalui website.";
     display: block !important;
 
     padding: 40px;
@@ -4816,7 +4822,7 @@ button,input,textarea,select{font:inherit}
 }
 
 /* =========================================================
-   KEMBALI KE NOL — NO PRINT
+   MENJADI NOL — NO PRINT
 ========================================================= */
 
 @media print {
@@ -4832,7 +4838,7 @@ button,input,textarea,select{font:inherit}
   }
 
   body::before {
-    content: "Konten Kembali ke Nol hanya tersedia untuk dibaca melalui website.";
+    content: "Konten Menjadi Nol hanya tersedia untuk dibaca melalui website.";
     display: block !important;
     visibility: visible !important;
     padding: 40px;
@@ -4898,7 +4904,7 @@ body.reader-copy-protected
   }
 
   body.reader-copy-protected::before {
-    content: "Konten Kembali ke Nol hanya tersedia untuk dibaca melalui website.";
+    content: "Konten Menjadi Nol hanya tersedia untuk dibaca melalui website.";
     display: block !important;
     padding: 40px;
     font-family: Arial, sans-serif;
@@ -4908,3 +4914,2019 @@ body.reader-copy-protected
 
 /* ===== MENJADI NOL — FINAL HOME (namespaced, safe for existing dashboards) ===== */
 .mn-home{--mn-green:#174d38;--mn-ink:#17352a;--mn-soft:#6f907b;--mn-line:rgba(23,77,56,.13);background:#f8f6ef;color:var(--mn-ink);min-height:100vh}.mn-home *{box-sizing:border-box}.mn-home a{text-decoration:none;color:inherit}.mn-shell{width:min(1480px,92vw);margin-inline:auto}.mn-nav{height:94px;display:flex;align-items:center;gap:28px;position:relative;z-index:5}.mn-brand{display:flex;align-items:center;gap:13px;margin-right:auto}.mn-brand img{width:62px;height:62px;object-fit:contain}.mn-brand strong{display:block;font:500 22px Georgia,serif;letter-spacing:.16em}.mn-brand small{display:block;font-size:11px;letter-spacing:.08em;margin-top:3px;color:#668074}.mn-links{display:flex;align-items:center;gap:26px;font-size:14px}.mn-links a{transition:.2s}.mn-links a:hover{color:#72917e}.mn-login,.mn-primary,.mn-secondary{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:13px 22px}.mn-login,.mn-primary{background:var(--mn-green);color:#fff!important}.mn-hero{overflow:hidden;border-radius:0 0 52px 52px;background:radial-gradient(circle at 79% 18%,rgba(255,239,186,.72),transparent 25%),radial-gradient(circle at 92% 75%,rgba(213,232,218,.9),transparent 32%),linear-gradient(135deg,#fff 0%,#eef7f0 49%,#f8eddb 100%)}.mn-hero-grid{min-height:575px;display:grid;grid-template-columns:1.05fr .95fr;align-items:center}.mn-copy{padding:62px 0 88px}.mn-eyebrow{font-size:12px;letter-spacing:.28em;color:#5e846d;font-weight:700}.mn-copy h1{font:500 clamp(52px,6vw,91px)/.98 Georgia,serif;margin:18px 0 23px;letter-spacing:-.025em}.mn-copy h1 em{font-style:normal;color:#789683}.mn-copy p{font-size:19px;line-height:1.7;max-width:620px;color:#486056;margin:0}.mn-actions{display:flex;gap:14px;margin-top:30px}.mn-secondary{border:1px solid var(--mn-green);color:var(--mn-green)!important;background:rgba(255,255,255,.42)}.mn-art{min-height:500px;display:grid;place-items:center;position:relative}.mn-art img{width:min(570px,88%);position:relative;z-index:2;filter:drop-shadow(0 30px 42px rgba(54,83,61,.14))}.mn-glow{position:absolute;width:72%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.95),rgba(232,242,232,.35) 55%,transparent 72%)}.mn-cards{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:-48px;position:relative;z-index:3}.mn-card{background:rgba(255,255,255,.94);border:1px solid var(--mn-line);border-radius:23px;padding:25px;min-height:215px;box-shadow:0 16px 42px rgba(31,66,47,.07);transition:transform .2s,box-shadow .2s}.mn-card:hover{transform:translateY(-4px);box-shadow:0 20px 48px rgba(31,66,47,.11)}.mn-icon{width:54px;height:54px;border-radius:50%;background:#e8f1e9;display:grid;place-items:center;font-size:24px}.mn-card h2{font:500 22px Georgia,serif;margin:18px 0 9px}.mn-card p{font-size:14px;line-height:1.6;color:#60756b;margin:0 0 16px}.mn-card b{font-size:13px;color:#4e765f}.mn-footer{text-align:center;padding:70px 20px 38px;color:#5b7368}.mn-footer p{margin-bottom:12px}.mn-footer small{font-size:12px}.mn-primary,.mn-login,.mn-secondary{transition:transform .2s,opacity .2s}.mn-primary:hover,.mn-login:hover,.mn-secondary:hover{transform:translateY(-1px);opacity:.9}@media(max-width:1050px){.mn-links{gap:15px}.mn-hero-grid{grid-template-columns:1fr 1fr}.mn-cards{grid-template-columns:repeat(3,1fr)}}@media(max-width:820px){.mn-nav{height:80px}.mn-links{display:none}.mn-brand img{width:52px;height:52px}.mn-brand strong{font-size:18px}.mn-hero-grid{grid-template-columns:1fr}.mn-copy{text-align:center;padding:45px 0 25px}.mn-copy p{margin-inline:auto}.mn-actions{justify-content:center}.mn-art{min-height:380px}.mn-art img{width:min(440px,75%)}.mn-cards{grid-template-columns:1fr 1fr;margin-top:22px}}@media(max-width:540px){.mn-shell{width:min(92vw,460px)}.mn-brand small{display:none}.mn-login{padding:10px 15px;font-size:13px}.mn-copy h1{font-size:49px}.mn-copy p{font-size:16px}.mn-actions{flex-direction:column;align-items:stretch}.mn-art{min-height:310px}.mn-cards{grid-template-columns:1fr}.mn-card{min-height:auto}.mn-footer{padding-top:48px}}
+
+
+/* =========================================================
+   MENJADI NOL — SAFE HOMEPAGE NATURE OVERRIDE
+   ========================================================= */
+.mn-home .mn-hero{
+  position:relative;
+  overflow:hidden;
+  border-radius:0 0 52px 52px;
+  background:
+    linear-gradient(90deg,rgba(248,247,239,.82) 0%,rgba(248,247,239,.52) 38%,rgba(248,247,239,.18) 68%,rgba(248,247,239,.06) 100%),
+    url("/menjadi-nol-nature.png") center center / cover no-repeat !important;
+}
+.mn-home .mn-hero-grid{position:relative;z-index:2}
+.mn-home .mn-hero-overlay{
+  position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 72% 34%,rgba(255,245,205,.24),transparent 34%);
+}
+.mn-home .mn-art{
+  position:relative;z-index:2;min-height:500px;display:grid;place-items:center;
+}
+.mn-home .mn-art img{
+  width:min(570px,88%);height:auto;object-fit:contain;position:relative;z-index:2;
+  filter:drop-shadow(0 26px 40px rgba(39,73,51,.16));
+}
+@media(max-width:820px){.mn-home .mn-hero{background-position:62% center !important}}
+@media(max-width:540px){.mn-home .mn-hero{background-position:66% center !important}}
+
+/* =========================================================
+   MENJADI NOL — FINAL HOMEPAGE MATCH OVERRIDE
+   Aman: hanya class homepage .mn-*
+   ========================================================= */
+
+.mn-home{
+  background:#f8f6ef !important;
+}
+
+/* HERO */
+.mn-home .mn-hero{
+  position:relative !important;
+  min-height:555px !important;
+  overflow:hidden !important;
+  border-radius:0 0 52px 52px !important;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(250,249,243,.68) 0%,
+      rgba(250,249,243,.30) 30%,
+      rgba(250,249,243,.05) 58%,
+      rgba(250,249,243,0) 100%
+    ),
+    url("/menjadi-nol-nature.png") center center / cover no-repeat !important;
+}
+
+/* grid: kiri untuk copy, kanan untuk visual */
+.mn-home .mn-hero-grid{
+  position:relative !important;
+  z-index:2 !important;
+  min-height:555px !important;
+  display:grid !important;
+  grid-template-columns:minmax(500px,.95fr) minmax(520px,1.05fr) !important;
+  align-items:center !important;
+}
+
+/* copy kiri */
+.mn-home .mn-copy{
+  position:relative !important;
+  z-index:5 !important;
+  padding:56px 0 92px !important;
+}
+
+.mn-home .mn-eyebrow{
+  margin:0 0 17px !important;
+  font-size:12px !important;
+  line-height:1 !important;
+  letter-spacing:.31em !important;
+  color:#2b6650 !important;
+  font-weight:700 !important;
+}
+
+.mn-home .mn-copy h1{
+  margin:0 0 22px !important;
+  font-family:Georgia,"Times New Roman",serif !important;
+  font-size:clamp(58px,5.2vw,86px) !important;
+  line-height:.98 !important;
+  font-weight:400 !important;
+  letter-spacing:-.045em !important;
+  color:#102f23 !important;
+}
+
+.mn-home .mn-copy h1 em{
+  font-style:normal !important;
+  color:#6e927d !important;
+}
+
+.mn-home .mn-copy p{
+  margin:0 !important;
+  max-width:610px !important;
+  font-size:17px !important;
+  line-height:1.7 !important;
+  color:#304a3e !important;
+}
+
+.mn-home .mn-actions{
+  display:flex !important;
+  gap:15px !important;
+  margin-top:27px !important;
+}
+
+.mn-home .mn-primary,
+.mn-home .mn-secondary{
+  min-height:52px !important;
+  padding:0 27px !important;
+  border-radius:999px !important;
+}
+
+.mn-home .mn-primary{
+  background:#075a3b !important;
+  color:#fff !important;
+  box-shadow:0 10px 24px rgba(5,74,49,.16) !important;
+}
+
+.mn-home .mn-secondary{
+  border:1px solid #17553c !important;
+  background:rgba(255,255,255,.48) !important;
+  color:#174b35 !important;
+}
+
+/* visual lotus */
+.mn-home .mn-art{
+  position:relative !important;
+  z-index:4 !important;
+  min-height:555px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  overflow:visible !important;
+}
+
+.mn-home .mn-glow{
+  display:none !important;
+}
+
+/*
+  Gambar sumber masih punya putih.
+  multiply membuat putih menyatu ke background alam.
+*/
+.mn-home .mn-art > img{
+  position:relative !important;
+  z-index:3 !important;
+  display:block !important;
+  width:min(610px,49vw) !important;
+  max-width:none !important;
+  height:auto !important;
+  margin-left:-68px !important;
+  object-fit:contain !important;
+  background:transparent !important;
+  mix-blend-mode:multiply !important;
+  filter:drop-shadow(0 12px 18px rgba(46,76,57,.08)) !important;
+}
+
+/* quote kanan, bukan di bawah */
+.mn-home .mn-art blockquote{
+  position:absolute !important;
+  top:82px !important;
+  right:-10px !important;
+  z-index:8 !important;
+  width:220px !important;
+  margin:0 !important;
+  padding:0 !important;
+  text-align:center !important;
+  font-family:Georgia,"Times New Roman",serif !important;
+  font-size:19px !important;
+  line-height:1.55 !important;
+  font-style:italic !important;
+  font-weight:400 !important;
+  color:#27392e !important;
+  background:transparent !important;
+  border:0 !important;
+}
+
+.mn-home .mn-art blockquote::after{
+  content:"" !important;
+  display:block !important;
+  width:58px !important;
+  height:1px !important;
+  margin:17px auto 0 !important;
+  background:#5e806d !important;
+}
+
+/* CARDS */
+.mn-home .mn-cards{
+  position:relative !important;
+  z-index:10 !important;
+  display:grid !important;
+  grid-template-columns:repeat(5,1fr) !important;
+  gap:14px !important;
+  margin-top:-44px !important;
+  padding-bottom:56px !important;
+}
+
+.mn-home .mn-card{
+  min-height:220px !important;
+  padding:22px 22px 20px !important;
+  border-radius:21px !important;
+  background:rgba(255,255,255,.96) !important;
+  border:1px solid rgba(27,71,51,.08) !important;
+  box-shadow:0 16px 38px rgba(32,64,47,.075) !important;
+}
+
+.mn-home .mn-icon{
+  width:55px !important;
+  height:55px !important;
+  display:grid !important;
+  place-items:center !important;
+  border-radius:50% !important;
+  background:#e7efe6 !important;
+  font-size:24px !important;
+}
+
+.mn-home .mn-card:last-child .mn-icon{
+  background:#f7e8dc !important;
+}
+
+.mn-home .mn-card h2{
+  margin:15px 0 8px !important;
+  font-family:Georgia,"Times New Roman",serif !important;
+  font-size:21px !important;
+  font-weight:400 !important;
+  color:#153326 !important;
+}
+
+.mn-home .mn-card p{
+  min-height:44px !important;
+  margin:0 0 14px !important;
+  font-size:13px !important;
+  line-height:1.55 !important;
+  color:#577065 !important;
+}
+
+.mn-home .mn-card b{
+  font-size:13px !important;
+  color:#075437 !important;
+}
+
+/* tablet */
+@media(max-width:1050px){
+  .mn-home .mn-hero-grid{
+    grid-template-columns:1fr 1fr !important;
+  }
+
+  .mn-home .mn-art > img{
+    width:min(520px,52vw) !important;
+    margin-left:-15px !important;
+  }
+
+  .mn-home .mn-cards{
+    grid-template-columns:repeat(3,1fr) !important;
+  }
+}
+
+/* mobile */
+@media(max-width:820px){
+  .mn-home .mn-hero{
+    min-height:auto !important;
+    background-position:62% center !important;
+  }
+
+  .mn-home .mn-hero-grid{
+    min-height:auto !important;
+    grid-template-columns:1fr !important;
+  }
+
+  .mn-home .mn-copy{
+    text-align:center !important;
+    padding:48px 0 25px !important;
+  }
+
+  .mn-home .mn-copy p{
+    margin-inline:auto !important;
+  }
+
+  .mn-home .mn-actions{
+    justify-content:center !important;
+  }
+
+  .mn-home .mn-art{
+    min-height:390px !important;
+  }
+
+  .mn-home .mn-art > img{
+    width:min(500px,82vw) !important;
+    margin-left:0 !important;
+  }
+
+  .mn-home .mn-art blockquote{
+    position:absolute !important;
+    top:22px !important;
+    right:10px !important;
+    width:180px !important;
+    font-size:16px !important;
+  }
+
+  .mn-home .mn-cards{
+    grid-template-columns:repeat(2,1fr) !important;
+    margin-top:-34px !important;
+  }
+}
+
+@media(max-width:540px){
+  .mn-home .mn-copy h1{
+    font-size:48px !important;
+  }
+
+  .mn-home .mn-copy p{
+    font-size:15px !important;
+  }
+
+  .mn-home .mn-actions{
+    flex-direction:column !important;
+  }
+
+  .mn-home .mn-primary,
+  .mn-home .mn-secondary{
+    width:100% !important;
+  }
+
+  .mn-home .mn-art{
+    min-height:330px !important;
+  }
+
+  .mn-home .mn-art blockquote{
+    top:auto !important;
+    right:auto !important;
+    bottom:18px !important;
+    left:50% !important;
+    transform:translateX(-50%) !important;
+    width:220px !important;
+  }
+
+  .mn-home .mn-cards{
+    grid-template-columns:1fr !important;
+    margin-top:18px !important;
+  }
+
+  .mn-home .mn-card{
+    min-height:auto !important;
+  }
+}
+
+
+.mn-home .mn-art{
+  position:relative !important;
+  z-index:4 !important;
+
+  min-height:555px !important;
+
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+
+  overflow:visible !important;
+}
+
+.mn-home .mn-glow{
+  display:none !important;
+}
+
+.mn-home .mn-art > img{
+  position:relative !important;
+  z-index:3 !important;
+
+  display:block !important;
+
+  width:min(610px,49vw) !important;
+  max-width:none !important;
+  height:auto !important;
+
+  margin-left:-68px !important;
+
+  object-fit:contain !important;
+  background:transparent !important;
+
+  filter:
+    drop-shadow(
+      0 12px 18px
+      rgba(46,76,57,.10)
+    ) !important;
+}
+
+/* QUOTE KANAN */
+.mn-home .mn-art blockquote{
+  position:absolute !important;
+
+  top:82px !important;
+  right:-10px !important;
+
+  z-index:8 !important;
+
+  width:220px !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  text-align:center !important;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif !important;
+
+  font-size:19px !important;
+  line-height:1.55 !important;
+
+  font-style:italic !important;
+  font-weight:400 !important;
+
+  color:#27392e !important;
+
+  background:transparent !important;
+  border:0 !important;
+}
+
+.mn-home .mn-art blockquote::after{
+  content:"";
+
+  display:block;
+
+  width:58px;
+  height:1px;
+
+  margin:17px auto 0;
+
+  background:#5e806d;
+}
+
+/* ==========================================================
+   MENJADI NOL — FINAL ESTHETIC HOMEPAGE OVERRIDE
+   Scoped only to homepage .mn-* classes.
+   ========================================================== */
+
+.mn-home{
+  min-height:0 !important;
+  padding-bottom:0 !important;
+  background:#f7f4ec !important;
+}
+
+/* HERO: taller, fuller, and closer to approved reference */
+.mn-home .mn-hero{
+  position:relative !important;
+  min-height:640px !important;
+  height:640px !important;
+  overflow:hidden !important;
+  border-radius:0 0 44px 44px !important;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(248,247,240,.68) 0%,
+      rgba(248,247,240,.28) 30%,
+      rgba(248,247,240,.04) 58%,
+      rgba(248,247,240,0) 100%
+    ),
+    url("/menjadi-nol-nature.png") center 52% / cover no-repeat !important;
+}
+
+.mn-home .mn-hero-overlay{
+  position:absolute !important;
+  inset:0 !important;
+  pointer-events:none !important;
+  background:
+    radial-gradient(circle at 67% 27%, rgba(255,241,182,.24), transparent 26%) !important;
+}
+
+/* wider, larger content */
+.mn-home .mn-shell{
+  width:min(1420px,92vw) !important;
+  margin-inline:auto !important;
+}
+
+.mn-home .mn-hero-grid{
+  position:relative !important;
+  z-index:2 !important;
+  min-height:640px !important;
+  height:640px !important;
+  display:grid !important;
+  grid-template-columns:48% 52% !important;
+  align-items:center !important;
+}
+
+/* LEFT COPY */
+.mn-home .mn-copy{
+  position:relative !important;
+  z-index:5 !important;
+  padding:44px 0 86px !important;
+}
+
+.mn-home .mn-eyebrow{
+  margin:0 0 17px !important;
+  font-size:13px !important;
+  line-height:1 !important;
+  letter-spacing:.34em !important;
+  color:#2f6d54 !important;
+  font-weight:700 !important;
+}
+
+.mn-home .mn-copy h1{
+  margin:0 0 22px !important;
+  max-width:760px !important;
+  font-family:Georgia,"Times New Roman",serif !important;
+  font-size:clamp(64px,5.55vw,94px) !important;
+  line-height:.95 !important;
+  font-weight:400 !important;
+  letter-spacing:-.048em !important;
+  color:#143629 !important;
+}
+
+.mn-home .mn-copy h1 em{
+  font-style:normal !important;
+  color:#789b86 !important;
+}
+
+.mn-home .mn-copy p{
+  max-width:620px !important;
+  margin:0 !important;
+  font-size:18px !important;
+  line-height:1.65 !important;
+  color:#385247 !important;
+}
+
+.mn-home .mn-actions{
+  display:flex !important;
+  align-items:center !important;
+  gap:16px !important;
+  margin-top:28px !important;
+}
+
+.mn-home .mn-primary,
+.mn-home .mn-secondary{
+  min-height:54px !important;
+  padding:0 29px !important;
+  border-radius:999px !important;
+  font-size:15px !important;
+}
+
+.mn-home .mn-primary{
+  background:#075a3b !important;
+  color:#fff !important;
+  box-shadow:0 10px 28px rgba(5,74,49,.15) !important;
+}
+
+.mn-home .mn-secondary{
+  border:1px solid #17553c !important;
+  background:rgba(255,255,255,.52) !important;
+  color:#174b35 !important;
+}
+
+/* RIGHT LOTUS */
+.mn-home .mn-art{
+  position:relative !important;
+  z-index:4 !important;
+  min-height:640px !important;
+  height:640px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  overflow:visible !important;
+}
+
+.mn-home .mn-glow{
+  display:none !important;
+}
+
+.mn-home .mn-art > img{
+  position:relative !important;
+  z-index:3 !important;
+  display:block !important;
+  width:min(620px,46vw) !important;
+  max-width:none !important;
+  height:auto !important;
+  margin-left:-35px !important;
+  margin-top:6px !important;
+  object-fit:contain !important;
+  background:transparent !important;
+  filter:drop-shadow(0 18px 30px rgba(42,74,55,.10)) !important;
+}
+
+/* quote stays up/right */
+.mn-home .mn-art blockquote{
+  position:absolute !important;
+  top:86px !important;
+  right:4px !important;
+  z-index:8 !important;
+  width:235px !important;
+  margin:0 !important;
+  padding:0 !important;
+  text-align:center !important;
+  font-family:Georgia,"Times New Roman",serif !important;
+  font-size:20px !important;
+  line-height:1.5 !important;
+  font-style:italic !important;
+  font-weight:400 !important;
+  color:#273a30 !important;
+  background:transparent !important;
+  border:0 !important;
+}
+
+.mn-home .mn-art blockquote::after{
+  content:"" !important;
+  display:block !important;
+  width:62px !important;
+  height:1px !important;
+  margin:18px auto 0 !important;
+  background:#6c8f7b !important;
+}
+
+/* cards: larger and overlap hero more naturally */
+.mn-home .mn-cards{
+  position:relative !important;
+  z-index:12 !important;
+  display:grid !important;
+  grid-template-columns:repeat(5,1fr) !important;
+  gap:16px !important;
+  margin-top:-64px !important;
+  padding-bottom:36px !important;
+}
+
+.mn-home .mn-card{
+  min-height:235px !important;
+  padding:24px 24px 22px !important;
+  border-radius:22px !important;
+  background:rgba(255,255,255,.96) !important;
+  border:1px solid rgba(29,70,51,.08) !important;
+  box-shadow:0 18px 44px rgba(38,67,51,.08) !important;
+}
+
+.mn-home .mn-icon{
+  width:60px !important;
+  height:60px !important;
+  display:grid !important;
+  place-items:center !important;
+  border-radius:50% !important;
+  margin-bottom:14px !important;
+  background:#e7efe6 !important;
+  font-size:25px !important;
+}
+
+.mn-home .mn-card:last-child .mn-icon{
+  background:#f7e8dc !important;
+}
+
+.mn-home .mn-card h2{
+  margin:0 0 9px !important;
+  font-family:Georgia,"Times New Roman",serif !important;
+  font-size:23px !important;
+  line-height:1.15 !important;
+  font-weight:400 !important;
+  color:#143326 !important;
+}
+
+.mn-home .mn-card p{
+  min-height:50px !important;
+  margin:0 0 15px !important;
+  font-size:14px !important;
+  line-height:1.55 !important;
+  color:#587066 !important;
+}
+
+.mn-home .mn-card b{
+  font-size:13px !important;
+  color:#075437 !important;
+}
+
+/* remove the giant empty cream area before the global footer */
+.mn-home + .site-footer,
+.reader-protected-shell > .site-footer{
+  margin-top:0 !important;
+}
+
+@media(max-width:1100px){
+  .mn-home .mn-hero,
+  .mn-home .mn-hero-grid,
+  .mn-home .mn-art{
+    min-height:600px !important;
+    height:600px !important;
+  }
+
+  .mn-home .mn-copy h1{
+    font-size:clamp(56px,6.4vw,76px) !important;
+  }
+
+  .mn-home .mn-art > img{
+    width:min(520px,49vw) !important;
+    margin-left:-10px !important;
+  }
+
+  .mn-home .mn-cards{
+    grid-template-columns:repeat(3,1fr) !important;
+  }
+}
+
+@media(max-width:820px){
+  .mn-home .mn-hero{
+    height:auto !important;
+    min-height:auto !important;
+    background-position:60% center !important;
+  }
+
+  .mn-home .mn-hero-grid{
+    height:auto !important;
+    min-height:auto !important;
+    grid-template-columns:1fr !important;
+  }
+
+  .mn-home .mn-copy{
+    text-align:center !important;
+    padding:48px 0 20px !important;
+  }
+
+  .mn-home .mn-copy p{
+    margin-inline:auto !important;
+  }
+
+  .mn-home .mn-actions{
+    justify-content:center !important;
+  }
+
+  .mn-home .mn-art{
+    height:auto !important;
+    min-height:440px !important;
+  }
+
+  .mn-home .mn-art > img{
+    width:min(520px,80vw) !important;
+    margin:0 !important;
+  }
+
+  .mn-home .mn-art blockquote{
+    top:28px !important;
+    right:8px !important;
+    width:185px !important;
+    font-size:16px !important;
+  }
+
+  .mn-home .mn-cards{
+    grid-template-columns:repeat(2,1fr) !important;
+    margin-top:20px !important;
+  }
+}
+
+@media(max-width:540px){
+  .mn-home .mn-copy h1{
+    font-size:48px !important;
+  }
+
+  .mn-home .mn-copy p{
+    font-size:15px !important;
+  }
+
+  .mn-home .mn-actions{
+    flex-direction:column !important;
+  }
+
+  .mn-home .mn-primary,
+  .mn-home .mn-secondary{
+    width:100% !important;
+  }
+
+  .mn-home .mn-art{
+    min-height:360px !important;
+  }
+
+  .mn-home .mn-art > img{
+    width:92vw !important;
+  }
+
+  .mn-home .mn-art blockquote{
+    top:auto !important;
+    right:auto !important;
+    bottom:18px !important;
+    left:50% !important;
+    transform:translateX(-50%) !important;
+    width:220px !important;
+  }
+
+  .mn-home .mn-cards{
+    grid-template-columns:1fr !important;
+    margin-top:18px !important;
+  }
+
+  .mn-home .mn-card{
+    min-height:auto !important;
+  }
+}
+
+/* ==========================================================
+   MENJADI NOL — FINAL RESPONSIVE HOMEPAGE
+   Desktop / Laptop / iPad / Tablet / HP
+   ========================================================== */
+
+
+/* ==============================
+   DESKTOP BESAR
+   ============================== */
+
+.mn-home .mn-hero {
+  position: relative !important;
+
+  min-height: 760px !important;
+  height: 760px !important;
+
+  overflow: hidden !important;
+
+  border-radius: 0 0 44px 44px !important;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(248,247,240,.64) 0%,
+      rgba(248,247,240,.26) 30%,
+      rgba(248,247,240,.04) 58%,
+      rgba(248,247,240,0) 100%
+    ),
+    url("/menjadi-nol-nature.png")
+    center 55% / cover no-repeat !important;
+}
+
+
+.mn-home .mn-hero-grid {
+  min-height: 760px !important;
+  height: 760px !important;
+
+  display: grid !important;
+
+  grid-template-columns:
+    48%
+    52% !important;
+
+  align-items: center !important;
+}
+
+
+/* TEKS KIRI */
+
+.mn-home .mn-copy {
+  position: relative !important;
+  z-index: 5 !important;
+
+  padding:
+    70px
+    0
+    120px !important;
+}
+
+
+.mn-home .mn-copy h1 {
+  font-size:
+    clamp(
+      66px,
+      5.7vw,
+      98px
+    ) !important;
+
+  line-height: .96 !important;
+}
+
+
+/* LOTUS */
+
+.mn-home .mn-art {
+  position: relative !important;
+
+  min-height: 760px !important;
+  height: 760px !important;
+
+  display: flex !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+
+.mn-home .mn-art > img {
+  width:
+    min(
+      660px,
+      48vw
+    ) !important;
+
+  max-width: none !important;
+
+  height: auto !important;
+
+  margin-left: -20px !important;
+
+  object-fit: contain !important;
+}
+
+
+/* QUOTE */
+
+.mn-home .mn-art blockquote {
+  top: 105px !important;
+  right: 0 !important;
+
+  width: 240px !important;
+
+  font-size: 20px !important;
+}
+
+
+/* CARD NAIK KE AREA ALAM */
+
+.mn-home .mn-cards {
+  position: relative !important;
+
+  z-index: 10 !important;
+
+  grid-template-columns:
+    repeat(
+      5,
+      1fr
+    ) !important;
+
+  gap: 16px !important;
+
+  margin-top: -90px !important;
+
+  padding-bottom: 42px !important;
+}
+
+
+/* ==============================
+   LAPTOP
+   ============================== */
+
+@media (max-width: 1280px) {
+
+  .mn-home .mn-hero,
+  .mn-home .mn-hero-grid,
+  .mn-home .mn-art {
+    min-height: 700px !important;
+    height: 700px !important;
+  }
+
+
+  .mn-home .mn-art > img {
+    width:
+      min(
+        590px,
+        48vw
+      ) !important;
+  }
+
+
+  .mn-home .mn-cards {
+    margin-top:
+      -78px !important;
+  }
+
+}
+
+
+/* ==============================
+   iPAD LANDSCAPE / TABLET
+   ============================== */
+
+@media (max-width: 1024px) {
+
+  .mn-home .mn-shell {
+    width:
+      min(
+        94vw,
+        980px
+      ) !important;
+  }
+
+
+  .mn-home .mn-hero,
+  .mn-home .mn-hero-grid,
+  .mn-home .mn-art {
+    min-height:
+      680px !important;
+
+    height:
+      680px !important;
+  }
+
+
+  .mn-home .mn-hero-grid {
+    grid-template-columns:
+      50%
+      50% !important;
+  }
+
+
+  .mn-home .mn-copy h1 {
+    font-size:
+      clamp(
+        52px,
+        6.2vw,
+        72px
+      ) !important;
+  }
+
+
+  .mn-home .mn-art > img {
+    width:
+      min(
+        500px,
+        50vw
+      ) !important;
+
+    margin-left:
+      0 !important;
+  }
+
+
+  .mn-home .mn-art blockquote {
+    top:
+      80px !important;
+
+    right:
+      5px !important;
+
+    width:
+      185px !important;
+
+    font-size:
+      16px !important;
+  }
+
+
+  .mn-home .mn-cards {
+    grid-template-columns:
+      repeat(
+        3,
+        1fr
+      ) !important;
+
+    margin-top:
+      -65px !important;
+  }
+
+}
+
+
+/* ==============================
+   iPAD PORTRAIT
+   ============================== */
+
+@media (max-width: 820px) {
+
+  .mn-home .mn-hero {
+    min-height:
+      auto !important;
+
+    height:
+      auto !important;
+
+    background-position:
+      62%
+      center !important;
+  }
+
+
+  .mn-home .mn-hero-grid {
+    min-height:
+      auto !important;
+
+    height:
+      auto !important;
+
+    grid-template-columns:
+      1fr !important;
+  }
+
+
+  .mn-home .mn-copy {
+    text-align:
+      center !important;
+
+    padding:
+      54px
+      0
+      24px !important;
+  }
+
+
+  .mn-home .mn-copy p {
+    margin-inline:
+      auto !important;
+  }
+
+
+  .mn-home .mn-actions {
+    justify-content:
+      center !important;
+  }
+
+
+  .mn-home .mn-art {
+    min-height:
+      500px !important;
+
+    height:
+      auto !important;
+  }
+
+
+  .mn-home .mn-art > img {
+    width:
+      min(
+        560px,
+        82vw
+      ) !important;
+
+    margin:
+      0 !important;
+  }
+
+
+  .mn-home .mn-art blockquote {
+    top:
+      25px !important;
+
+    right:
+      10px !important;
+
+    width:
+      180px !important;
+
+    font-size:
+      16px !important;
+  }
+
+
+  .mn-home .mn-cards {
+    grid-template-columns:
+      repeat(
+        2,
+        1fr
+      ) !important;
+
+    margin-top:
+      20px !important;
+  }
+
+}
+
+
+/* ==============================
+   HP
+   ============================== */
+
+@media (max-width: 560px) {
+
+  .mn-home .mn-shell {
+    width:
+      calc(
+        100% - 28px
+      ) !important;
+  }
+
+
+  .mn-home .mn-hero {
+    background-position:
+      68%
+      center !important;
+  }
+
+
+  .mn-home .mn-copy h1 {
+    font-size:
+      47px !important;
+  }
+
+
+  .mn-home .mn-copy p {
+    font-size:
+      15px !important;
+  }
+
+
+  .mn-home .mn-actions {
+    flex-direction:
+      column !important;
+  }
+
+
+  .mn-home .mn-primary,
+  .mn-home .mn-secondary {
+    width:
+      100% !important;
+  }
+
+
+  .mn-home .mn-art {
+    min-height:
+      390px !important;
+  }
+
+
+  .mn-home .mn-art > img {
+    width:
+      96vw !important;
+  }
+
+
+  .mn-home .mn-art blockquote {
+    top:
+      auto !important;
+
+    right:
+      auto !important;
+
+    left:
+      50% !important;
+
+    bottom:
+      16px !important;
+
+    transform:
+      translateX(-50%) !important;
+
+    width:
+      220px !important;
+  }
+
+
+  .mn-home .mn-cards {
+    grid-template-columns:
+      1fr !important;
+
+    margin-top:
+      18px !important;
+  }
+
+
+  .mn-home .mn-card {
+    min-height:
+      auto !important;
+  }
+
+}
+
+
+/* =========================================================
+   MENJADI NOL — HOME FEATURE CARDS
+   Tempel paling bawah app/globals.css
+   ========================================================= */
+
+.mn-home .mn-cards {
+  gap: 18px;
+}
+
+/* BASE CARD */
+.mn-home .mn-card {
+  position: relative;
+  overflow: hidden;
+
+  min-height: 235px;
+  padding: 28px 25px 24px;
+
+  border-radius: 24px;
+  border: 1px solid rgba(55, 91, 72, 0.08);
+
+  box-shadow:
+    0 16px 40px rgba(55, 78, 65, 0.08);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+/* garis warna kecil di atas */
+.mn-home .mn-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 24px;
+  right: 24px;
+  height: 4px;
+  border-radius: 0 0 10px 10px;
+}
+
+/* 1 — RUANG BELAJAR */
+.mn-home .mn-card:nth-child(1) {
+  background:
+    linear-gradient(145deg, #ffffff 20%, #eef5ec 100%);
+}
+
+.mn-home .mn-card:nth-child(1)::before {
+  background: #8eae8d;
+}
+
+.mn-home .mn-card:nth-child(1) .mn-icon {
+  background: #dfeedd;
+  color: #54795b;
+}
+
+/* 2 — ARTIKEL */
+.mn-home .mn-card:nth-child(2) {
+  background:
+    linear-gradient(145deg, #ffffff 20%, #f5efdf 100%);
+}
+
+.mn-home .mn-card:nth-child(2)::before {
+  background: #c8ad72;
+}
+
+.mn-home .mn-card:nth-child(2) .mn-icon {
+  background: #f2e6c9;
+  color: #8b7040;
+}
+
+/* 3 — PERJALANAN */
+.mn-home .mn-card:nth-child(3) {
+  background:
+    linear-gradient(145deg, #ffffff 20%, #e8f3ec 100%);
+}
+
+.mn-home .mn-card:nth-child(3)::before {
+  background: #79a88a;
+}
+
+.mn-home .mn-card:nth-child(3) .mn-icon {
+  background: #dceee2;
+  color: #507b60;
+}
+
+/* 4 — SINOPSIS */
+.mn-home .mn-card:nth-child(4) {
+  background:
+    linear-gradient(145deg, #ffffff 20%, #eaf1f0 100%);
+}
+
+.mn-home .mn-card:nth-child(4)::before {
+  background: #789b98;
+}
+
+.mn-home .mn-card:nth-child(4) .mn-icon {
+  background: #dce9e7;
+  color: #496f6b;
+}
+
+/* 5 — KONTAK */
+.mn-home .mn-card:nth-child(5) {
+  background:
+    linear-gradient(145deg, #ffffff 20%, #faeee5 100%);
+}
+
+.mn-home .mn-card:nth-child(5)::before {
+  background: #d9a786;
+}
+
+.mn-home .mn-card:nth-child(5) .mn-icon {
+  background: #f8e2d3;
+  color: #a56e50;
+}
+
+/* ICON */
+.mn-home .mn-card .mn-icon {
+  width: 58px;
+  height: 58px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 18px;
+  margin-bottom: 17px;
+
+  font-size: 25px;
+
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.65);
+}
+
+/* TITLE */
+.mn-home .mn-card h2 {
+  margin: 0 0 10px;
+
+  font-size: 23px;
+  line-height: 1.15;
+  color: #173e31;
+}
+
+/* DESCRIPTION */
+.mn-home .mn-card p {
+  margin: 0;
+
+  min-height: 66px;
+
+  font-size: 14px;
+  line-height: 1.6;
+
+  color: #60766a;
+}
+
+/* LINK */
+.mn-home .mn-card b {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  margin-top: 14px;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  color: #678b75;
+}
+
+/* HOVER */
+.mn-home .mn-card:hover {
+  transform: translateY(-7px);
+
+  border-color: rgba(99, 137, 112, 0.18);
+
+  box-shadow:
+    0 22px 48px rgba(54, 79, 65, 0.14);
+}
+
+.mn-home .mn-card:hover b {
+  color: #466f59;
+}
+
+/* TABLET */
+@media (max-width: 1024px) {
+  .mn-home .mn-card {
+    min-height: 220px;
+    padding: 24px 21px;
+  }
+
+  .mn-home .mn-card h2 {
+    font-size: 21px;
+  }
+}
+
+/* HP */
+@media (max-width: 640px) {
+  .mn-home .mn-card {
+    min-height: auto;
+    padding: 22px;
+    border-radius: 20px;
+  }
+
+  .mn-home .mn-card .mn-icon {
+    width: 52px;
+    height: 52px;
+  }
+
+  .mn-home .mn-card p {
+    min-height: auto;
+  }
+}
+
+
+/* =====================================================
+   MENJADI NOL — HOME FEATURE CARDS
+   aman ditempel paling bawah CSS homepage
+===================================================== */
+
+.mn-cards {
+  position: relative;
+  z-index: 5;
+
+  width: min(1320px, calc(100% - 48px));
+  margin: -78px auto 70px;
+
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 18px;
+
+  align-items: stretch;
+}
+
+.mn-card {
+  position: relative;
+
+  min-width: 0;
+  min-height: 285px;
+  padding: 26px 24px 24px;
+
+  display: flex;
+  flex-direction: column;
+
+  text-decoration: none !important;
+  color: #173e31 !important;
+
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(65, 102, 83, 0.10);
+  border-radius: 26px;
+
+  box-shadow:
+    0 18px 45px rgba(48, 72, 60, 0.08),
+    0 3px 12px rgba(48, 72, 60, 0.04);
+
+  overflow: hidden;
+
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+
+.mn-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 5px;
+  background: var(--card-accent);
+  opacity: 0.78;
+}
+
+.mn-card::after {
+  content: "";
+  position: absolute;
+  width: 145px;
+  height: 145px;
+  right: -65px;
+  top: -65px;
+
+  border-radius: 50%;
+  background: var(--card-soft);
+
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.mn-card:hover {
+  transform: translateY(-7px);
+
+  border-color: color-mix(
+    in srgb,
+    var(--card-accent) 32%,
+    transparent
+  );
+
+  box-shadow:
+    0 26px 58px rgba(43, 72, 57, 0.13),
+    0 6px 16px rgba(43, 72, 57, 0.06);
+}
+
+/* ---------- ICON ---------- */
+
+.mn-card-icon {
+  position: relative;
+  z-index: 2;
+
+  width: 72px;
+  height: 72px;
+
+  display: grid;
+  place-items: center;
+
+  margin-bottom: 22px;
+
+  border-radius: 24px;
+  background: var(--card-soft);
+
+  color: var(--card-accent);
+}
+
+.mn-card-icon svg {
+  width: 40px;
+  height: 40px;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------- TEXT ---------- */
+
+.mn-card-content {
+  position: relative;
+  z-index: 2;
+}
+
+.mn-card h2 {
+  margin: 0 0 10px;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 24px;
+  line-height: 1.15;
+  font-weight: 500;
+
+  color: #143c2e;
+}
+
+.mn-card p {
+  margin: 0;
+
+  font-size: 14px;
+  line-height: 1.7;
+
+  color: #61736a;
+}
+
+/* ---------- LINK ---------- */
+
+.mn-card-link {
+  position: relative;
+  z-index: 2;
+
+  margin-top: auto;
+  padding-top: 22px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  color: var(--card-accent);
+}
+
+.mn-card-link span {
+  transition: transform 180ms ease;
+}
+
+.mn-card:hover .mn-card-link span {
+  transform: translateX(5px);
+}
+
+/* =====================================================
+   WARNA MASING-MASING CARD
+===================================================== */
+
+.mn-card-sage {
+  --card-accent: #668b73;
+  --card-soft: #e8f0e9;
+}
+
+.mn-card-cream {
+  --card-accent: #9b8660;
+  --card-soft: #f4eee2;
+}
+
+.mn-card-green {
+  --card-accent: #789c79;
+  --card-soft: #e9f1e5;
+}
+
+.mn-card-blue {
+  --card-accent: #668c8b;
+  --card-soft: #e6f0ef;
+}
+
+.mn-card-peach {
+  --card-accent: #a87e67;
+  --card-soft: #f7e9df;
+}
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+@media (max-width: 1100px) {
+  .mn-cards {
+    width: min(900px, calc(100% - 40px));
+
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    margin-top: -48px;
+    gap: 16px;
+  }
+
+  .mn-card {
+    min-height: 265px;
+  }
+}
+
+/* =====================================================
+   SMALL TABLET
+===================================================== */
+
+@media (max-width: 760px) {
+  .mn-cards {
+    width: min(620px, calc(100% - 30px));
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    margin-top: 28px;
+    margin-bottom: 50px;
+  }
+
+  .mn-card {
+    min-height: 250px;
+    padding: 22px;
+    border-radius: 22px;
+  }
+
+  .mn-card-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
+  }
+
+  .mn-card-icon svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .mn-card h2 {
+    font-size: 22px;
+  }
+}
+
+/* =====================================================
+   HP
+===================================================== */
+
+@media (max-width: 520px) {
+  .mn-cards {
+    width: calc(100% - 28px);
+
+    grid-template-columns: 1fr;
+
+    gap: 14px;
+    margin-top: 24px;
+  }
+
+  .mn-card {
+    min-height: 0;
+    padding: 22px;
+
+    display: grid;
+    grid-template-columns: 58px 1fr;
+    column-gap: 16px;
+    row-gap: 5px;
+
+    align-items: start;
+  }
+
+  .mn-card-icon {
+    width: 58px;
+    height: 58px;
+
+    margin: 0;
+
+    grid-column: 1;
+    grid-row: 1 / span 2;
+
+    border-radius: 18px;
+  }
+
+  .mn-card-icon svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  .mn-card-content {
+    grid-column: 2;
+  }
+
+  .mn-card h2 {
+    font-size: 21px;
+  }
+
+  .mn-card p {
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .mn-card-link {
+    grid-column: 2;
+
+    margin-top: 8px;
+    padding-top: 0;
+  }
+}
+
+/* =========================================================
+   HOME CARDS — CENTER ALIGNMENT
+   ========================================================= */
+
+.mn-home .mn-card {
+  text-align: center !important;
+  align-items: center !important;
+}
+
+.mn-home .mn-card-icon {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.mn-home .mn-card-content {
+  width: 100% !important;
+  text-align: center !important;
+}
+
+.mn-home .mn-card h2 {
+  text-align: center !important;
+}
+
+.mn-home .mn-card p {
+  text-align: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  max-width: 230px !important;
+}
+
+.mn-home .mn-card-link {
+  justify-content: center !important;
+  width: 100% !important;
+  text-align: center !important;
+}
+
+/* HP tetap rapi dan tidak gepeng */
+@media (max-width: 520px) {
+  .mn-home .mn-card {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+
+  .mn-home .mn-card-icon,
+  .mn-home .mn-card-content,
+  .mn-home .mn-card-link {
+    grid-column: auto !important;
+    grid-row: auto !important;
+  }
+}
+
+.mn-copy h1 em {
+  font-style: normal;
+  font-weight: 500 !important;
+}
+
+/* =========================================================
+   MENJADI NOL — SECTION PAGE BACKGROUNDS
+   Tentang | Perjalanan | Ruang Belajar |
+   Sinopsis | Artikel | Kontak
+   ========================================================= */
+
+.mn-section-background {
+  position: fixed;
+
+  left: 0;
+  right: 0;
+  top: 100px;
+  bottom: 0;
+
+  z-index: -1;
+
+  background-size: cover;
+  background-repeat: no-repeat;
+
+  pointer-events: none;
+}
+
+/* halaman utama section dibuat transparan
+   agar image background kelihatan */
+body:has(.mn-section-background) main {
+  background-color: transparent !important;
+}
+
+/* lapisan cream halus supaya tulisan tetap terbaca */
+body:has(.mn-section-background) {
+  background: #f7f3ea;
+}
+
+/* card tetap putih lembut */
+body:has(.mn-section-background) .panel,
+body:has(.mn-section-background) .card,
+body:has(.mn-section-background) .content-card {
+  backdrop-filter: blur(5px);
+}
+
+/* =========================
+   TABLET
+   ========================= */
+
+@media (max-width: 1024px) {
+  .mn-section-background {
+    top: 88px;
+
+    background-position: center center !important;
+  }
+}
+
+/* =========================
+   HP
+   ========================= */
+
+@media (max-width: 700px) {
+  .mn-section-background {
+    top: 76px;
+
+    background-position: center center !important;
+
+    background-size: cover;
+  }
+}
+
+
+/* =========================================================
+   FIX BACKGROUND SECTION PAGE
+   ========================================================= */
+
+.mn-section-background {
+  position: fixed !important;
+  inset: 100px 0 0 0 !important;
+
+  width: 100% !important;
+  min-height: calc(100vh - 100px) !important;
+
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  background-position: center center !important;
+
+  z-index: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Pastikan semua wrapper utama tidak nutup gambar */
+body:has(.mn-section-background),
+body:has(.mn-section-background) > div,
+body:has(.mn-section-background) main,
+body:has(.mn-section-background) section {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Konten tetap di atas background */
+body:has(.mn-section-background) main,
+body:has(.mn-section-background) section {
+  position: relative;
+  z-index: 1;
+}
+
+/* Card/list tetap putih supaya terbaca */
+body:has(.mn-section-background) .card,
+body:has(.mn-section-background) .panel,
+body:has(.mn-section-background) article,
+body:has(.mn-section-background) [class*="card"],
+body:has(.mn-section-background) [class*="panel"] {
+  background: rgba(255, 255, 255, 0.90) !important;
+  backdrop-filter: blur(8px);
+}
+
+/* Header + footer tetap di depan */
+.mn-header {
+  position: relative !important;
+  z-index: 50 !important;
+}
+
+.mn-footer {
+  position: relative !important;
+  z-index: 5 !important;
+}
+
+/* tablet */
+@media (max-width: 1024px) {
+  .mn-section-background {
+    inset: 88px 0 0 0 !important;
+    min-height: calc(100vh - 88px) !important;
+  }
+}
+
+/* hp */
+@media (max-width: 700px) {
+  .mn-section-background {
+    inset: 76px 0 0 0 !important;
+    min-height: calc(100vh - 76px) !important;
+  }
+}
+
+/* =========================================================
+   MENJADI NOL — LEBAR KARTU KONTEN GLOBAL
+   Berlaku untuk seluruh halaman inner
+   ========================================================= */
+
+.inner-page .shell.inner-card {
+  width: min(92%, 980px) !important;
+  max-width: 980px !important;
+  box-sizing: border-box;
+}
+
+/* Isi tetap punya ruang napas yang nyaman */
+.inner-page .inner-card {
+  padding-left: clamp(32px, 5vw, 64px) !important;
+  padding-right: clamp(32px, 5vw, 64px) !important;
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .inner-page .shell.inner-card {
+    width: min(92%, 900px) !important;
+  }
+
+  .inner-page .inner-card {
+    padding-left: 40px !important;
+    padding-right: 40px !important;
+  }
+}
+
+/* HP */
+@media (max-width: 640px) {
+  .inner-page .shell.inner-card {
+    width: calc(100% - 28px) !important;
+    max-width: none !important;
+  }
+
+  .inner-page .inner-card {
+    padding-left: 22px !important;
+    padding-right: 22px !important;
+  }
+}

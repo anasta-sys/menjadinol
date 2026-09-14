@@ -51,7 +51,7 @@ export default async function WelcomePage() {
 
         <p>
           Ambil waktu untuk berhenti, merasa, memahami,
-          dan kembali ke nol.
+          dan menjadi nol.
         </p>
 
         <a href="/" className="reader-welcome-button">

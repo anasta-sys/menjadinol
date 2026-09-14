@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(site),
 
   title: {
-    default: "Jalan Pulang — kembali ke nol",
+    default: "Jalan Pulang — menjadi nol",
     template: "%s | Jalan Pulang",
   },
 
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     url: site,
     siteName: "Jalan Pulang",
 
-    title: "Jalan Pulang — kembali ke nol",
+    title: "Jalan Pulang — menjadi nol",
 
     description:
       "Ruang untuk berjeda, menyelami rasa, memahami makna, dan kembali pada diri.",
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
         url: "/og-jalan-pulang.png",
         width: 1200,
         height: 630,
-        alt: "Jalan Pulang — kembali ke nol",
+        alt: "Jalan Pulang — menjadi nol",
       },
     ],
   },
@@ -66,7 +66,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
 
-    title: "Jalan Pulang — kembali ke nol",
+    title: "Jalan Pulang — menjadi nol",
 
     description:
       "Ruang untuk berjeda, menyelami rasa, memahami makna, dan kembali pada diri.",

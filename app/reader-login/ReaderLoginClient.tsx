@@ -124,7 +124,7 @@ export default function ReaderLoginClient() {
         error: readerError,
       } = await supabase
         .from("reader_users")
-        .select("user_id,is_active,name")
+        .select("user_id,is_active,full_name")
         .eq("user_id", data.user.id)
         .maybeSingle();
 
@@ -141,8 +141,8 @@ export default function ReaderLoginClient() {
       }
 
       const readerName =
-        typeof reader.name === "string"
-          ? reader.name.trim()
+        typeof reader.full_name === "string"
+          ? reader.full_name.trim()
           : "";
 
       setDisplayName(
@@ -1032,7 +1032,7 @@ export default function ReaderLoginClient() {
 
           cursor: pointer;
 
-          background: linear-gradient(135deg, #1f6a3b 0%, #3d9658 100%);
+          background: linear-gradient(135deg, #78936b 0%, #91a783 100%);
 
           color: #ffffff;
 

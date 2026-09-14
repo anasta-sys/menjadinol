@@ -1,7 +1,7 @@
 import AdminChangePasswordClient from "./AdminChangePasswordClient";
 
 export const metadata = {
-  title: "Ganti Password Admin · kembali ke nol",
+  title: "Ganti Password Admin · menjadi nol",
   robots: { index: false, follow: false },
 };
 

@@ -213,7 +213,7 @@ export default function ReaderRegisterClient() {
         ========================== */}
         <section
           className="reader-register-brand"
-          aria-label="Kembali ke Nol"
+          aria-label="Menjadi Nol"
         >
           <div className="reader-register-brand-content">
 
@@ -226,7 +226,7 @@ export default function ReaderRegisterClient() {
             />
 
             <h1 className="reader-register-wordmark">
-              kembali ke nol
+              menjadi nol
             </h1>
 
             <div
@@ -237,7 +237,7 @@ export default function ReaderRegisterClient() {
             <p className="reader-register-brand-copy">
               Ruang untuk berhenti, merasa,
               <br />
-              memahami, dan kembali ke nol.
+              memahami, dan menjadi nol.
             </p>
 
           </div>
@@ -273,7 +273,7 @@ export default function ReaderRegisterClient() {
 
               <p className="reader-register-subtitle">
                 Bergabung untuk mengakses ruang
-                refleksi dan materi Kembali ke Nol.
+                refleksi dan materi Menjadi Nol.
               </p>
             </header>
 

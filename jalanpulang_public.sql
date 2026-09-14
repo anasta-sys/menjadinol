@@ -575,7 +575,7 @@ a947e29c-e929-426a-abf6-1c17ab3d9199	58245db3-8a49-4008-8995-f64c507a6afc	zeilat
 --
 
 COPY public.site_pages (slug, eyebrow, title, lead, body, updated_at) FROM stdin;
-tentang	tentang jalan pulang	Setiap orang punya jalannya sendiri.	Jalan Pulang adalah ruang refleksi untuk memahami rasa, perjalanan hidup, penerimaan, makna, dan kesadaran.	“Kembali ke nol” bukan berarti kehilangan diri. Ia adalah ajakan untuk berhenti sejenak dari kebisingan agar kita dapat melihat kehidupan dengan lebih jernih.	2026-08-24 02:39:29.992608+00
+tentang	tentang jalan pulang	Setiap orang punya jalannya sendiri.	Jalan Pulang adalah ruang refleksi untuk memahami rasa, perjalanan hidup, penerimaan, makna, dan kesadaran.	“Menjadi nol” bukan berarti kehilangan diri. Ia adalah ajakan untuk berhenti sejenak dari kebisingan agar kita dapat melihat kehidupan dengan lebih jernih.	2026-08-24 02:39:29.992608+00
 layanan	layanan	Ruang untuk memulai perjalanan.	Pilih ruang yang paling sesuai dengan apa yang sedang dibutuhkan hari ini.	Pulang ke Diri — refleksi dan pengenalan diri.\r\n\r\nTumbuh Sadar — mindfulness dan kesadaran sehari-hari.\r\n\r\nTemukan Arah — makna, nilai, dan arah hidup.\r\n\r\nHidup Utuh — penerimaan dan integrasi diri.	2026-08-24 02:39:29.992608+00
 kontak	kontak	Terima kasih sudah singgah.	Jalan Pulang menjaga ruang ini tetap sederhana dan privacy-first.	Untuk keamanan, jangan menampilkan email login admin di halaman publik. Gunakan alamat email kontak yang terpisah apabila nanti ingin menambahkan kontak publik.	2026-08-24 02:39:29.992608+00
 \.

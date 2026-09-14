@@ -1,7 +1,7 @@
 import AdminActivateClient from "./AdminActivateClient";
 
 export const metadata = {
-  title: "Aktivasi Admin · kembali ke nol",
+  title: "Aktivasi Admin · menjadi nol",
   robots: { index: false, follow: false },
 };
 

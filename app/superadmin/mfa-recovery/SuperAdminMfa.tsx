@@ -692,7 +692,7 @@ export default function SuperAdminMfa() {
             factorType: "totp",
 
             friendlyName:
-              "Kembali ke Nol Superadmin",
+              "Menjadi Nol Superadmin",
           });
 
       if (
