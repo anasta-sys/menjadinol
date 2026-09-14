@@ -128,17 +128,25 @@ export default function ReaderLoginClient() {
         .eq("user_id", data.user.id)
         .maybeSingle();
 
-      if (
-          readerError ||
-          !reader ||
-          reader.status !== "active"
-        ) {
-          await supabase.auth.signOut();
+     if (readerError) {
+  console.error("READER QUERY ERROR:", readerError);
 
-          throw new Error(
-          "Akun ini belum memiliki izin membaca."
-          );
-        }
+  throw new Error(
+    `Reader query gagal: ${readerError.message}`
+  );
+}
+
+if (!reader) {
+  throw new Error(
+    "Data reader tidak ditemukan."
+  );
+}
+
+if (reader.status !== "active") {
+  throw new Error(
+    `Status reader bukan active: ${reader.status}`
+  );
+}
 
       const readerName =
         typeof reader.full_name === "string"
