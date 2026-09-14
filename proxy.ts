@@ -277,22 +277,33 @@ async function isValidStaffSession(
       );
 
     const {
-      data: claims,
-      error: claimsError,
-    } =
-      await supabase.auth.getClaims();
+  data: claims,
+  error: claimsError,
+} =
+  await supabase.auth.getClaims();
 
-    const userId =
-      claims?.claims?.sub as
-        | string
-        | undefined;
+const userId =
+  claims?.claims?.sub as
+    | string
+    | undefined;
 
-    if (
-      claimsError ||
-      !userId
-    ) {
-      return false;
-    }
+if (
+  claimsError ||
+  !claims ||
+  !claims.claims ||
+  !userId
+) {
+  return false;
+}
+
+/*
+ * Staff website memakai MFA.
+ */
+if (
+  claims.claims.aal !== "aal2"
+) {
+  return false;
+}
 
     /*
      * Staff website memakai MFA.
