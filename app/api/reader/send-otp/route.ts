@@ -66,37 +66,49 @@ export async function POST(
       process.env.READER_ACCESS_SECRET;
 
 
-    if (
-      !url ||
-      !serviceRole ||
-      !resendKey ||
-      !fromEmail ||
-      !readerSecret
-    ) {
+    const missingEnv: string[] = [];
+
+    if (!url) {
+      missingEnv.push(
+        "NEXT_PUBLIC_SUPABASE_URL"
+      );
+    }
+
+    if (!serviceRole) {
+      missingEnv.push(
+        "SUPABASE_SERVICE_ROLE_KEY"
+      );
+    }
+
+    if (!resendKey) {
+      missingEnv.push(
+        "RESEND_API_KEY"
+      );
+    }
+
+    if (!fromEmail) {
+      missingEnv.push(
+        "OTP_FROM_EMAIL"
+      );
+    }
+
+    if (!readerSecret) {
+      missingEnv.push(
+        "READER_ACCESS_SECRET"
+      );
+    }
+
+
+    if (missingEnv.length > 0) {
       console.error(
         "Missing OTP env:",
-        {
-          hasUrl:
-            Boolean(url),
-
-          hasServiceRole:
-            Boolean(serviceRole),
-
-          hasResendKey:
-            Boolean(resendKey),
-
-          hasFromEmail:
-            Boolean(fromEmail),
-
-          hasReaderSecret:
-            Boolean(readerSecret),
-        }
+        missingEnv
       );
 
       return NextResponse.json(
         {
           error:
-            "Konfigurasi server OTP belum lengkap.",
+            `Konfigurasi server OTP belum lengkap: ${missingEnv.join(", ")}`,
         },
         {
           status: 500,
@@ -164,7 +176,7 @@ export async function POST(
       await supabase
         .from("reader_users")
         .select(
-          "user_id,is_active,status"
+          "user_id,status"
         )
         .eq(
           "user_id",
@@ -182,7 +194,7 @@ export async function POST(
       return NextResponse.json(
         {
           error:
-            "Profil pembaca gagal diperiksa.",
+            `Profil pembaca gagal diperiksa: ${readerError.message}`,
         },
         {
           status: 500,
@@ -193,8 +205,7 @@ export async function POST(
 
     if (
       !reader ||
-      !reader.is_active ||
-      reader.status === "blocked"
+      reader.status !== "active"
     ) {
       return NextResponse.json(
         {
