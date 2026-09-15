@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import "./globals.css";
 import "./menjadi-nol-theme.css";
 
+import { createClient } from "@/lib/supabase/server";
 import SectionBackground from "@/app/components/SectionBackground";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -88,11 +89,31 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let readerName = "";
+
+  if (user) {
+    const { data: reader } = await supabase
+      .from("reader_users")
+      .select("name")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    readerName =
+      reader?.name?.trim() ||
+      String(user.user_metadata?.name || "").trim();
+  }
+
   return (
     <html lang="id">
       <body>
@@ -100,7 +121,7 @@ export default function RootLayout({
           <PageViewTracker />
 
           <Suspense fallback={null}>
-            <Header />
+            <Header readerName={readerName} />
           </Suspense>
 
           <SectionBackground />

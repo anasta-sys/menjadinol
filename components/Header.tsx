@@ -14,7 +14,13 @@ const links = [
   ["/kontak", "Kontak"],
 ] as const;
 
-export function Header() {
+type HeaderProps = {
+  readerName?: string;
+};
+
+export function Header({
+  readerName = "",
+}: HeaderProps) {
   const pathname = usePathname();
 
   return (
@@ -36,7 +42,11 @@ export function Header() {
         />
 
         <div className="mn-header-inner">
-          <Link href="/" className="mn-brand" aria-label="Menjadi Nol">
+          <Link
+            href="/"
+            className="mn-brand"
+            aria-label="Menjadi Nol"
+          >
             <img
               src="/jalan-pulang-symbol.png"
               alt=""
@@ -44,25 +54,38 @@ export function Header() {
             />
 
             <span className="mn-brand-copy">
-              <span className="mn-brand-title">MENJADI NOL</span>
+              <span className="mn-brand-title">
+                MENJADI NOL
+              </span>
+
               <span className="mn-brand-tagline">
                 Perjalanan pulang dalam diri
               </span>
             </span>
           </Link>
 
-          <nav className="mn-nav" aria-label="Navigasi utama">
+          <nav
+            className="mn-nav"
+            aria-label="Navigasi utama"
+          >
             {links.map(([href, label]) => {
               const active =
                 href === "/"
                   ? pathname === "/"
-                  : pathname === href || pathname.startsWith(`${href}/`);
+                  : pathname === href ||
+                    pathname.startsWith(
+                      `${href}/`
+                    );
 
               return (
                 <Link
                   key={href}
                   href={href}
-                  className={active ? "mn-nav-link active" : "mn-nav-link"}
+                  className={
+                    active
+                      ? "mn-nav-link active"
+                      : "mn-nav-link"
+                  }
                 >
                   {label}
                 </Link>
@@ -71,6 +94,15 @@ export function Header() {
           </nav>
 
           <div className="mn-account">
+            {readerName && (
+              <span
+                className="mn-reader-name"
+                title={readerName}
+              >
+                {readerName}
+              </span>
+            )}
+
             <ReaderLogoutButton />
           </div>
         </div>
@@ -83,7 +115,8 @@ export function Header() {
           width: 100%;
           overflow: hidden;
           background: rgba(255, 253, 248, 0.96);
-          border-bottom: 1px solid rgba(25, 86, 56, 0.07);
+          border-bottom: 1px solid
+            rgba(25, 86, 56, 0.07);
           backdrop-filter: blur(14px);
           -webkit-backdrop-filter: blur(14px);
         }
@@ -109,21 +142,27 @@ export function Header() {
           transform: translate(-18px, -50%);
         }
 
-      .mn-header-leaves-right {
-        right: 0;
-        top: 50%;
-        width: 125px;
-        transform: translate(18px, -50%);
+        .mn-header-leaves-right {
+          right: 0;
+          top: 50%;
+          width: 125px;
+          transform: translate(18px, -50%);
         }
 
         .mn-header-inner {
           position: relative;
           z-index: 1;
-          width: min(1360px, calc(100% - 64px));
+          width: min(
+            1360px,
+            calc(100% - 64px)
+          );
           min-height: 104px;
           margin: 0 auto;
           display: grid;
-          grid-template-columns: minmax(300px, 1fr) auto minmax(120px, 1fr);
+          grid-template-columns:
+            minmax(300px, 1fr)
+            auto
+            minmax(120px, 1fr);
           align-items: center;
           column-gap: 32px;
         }
@@ -151,7 +190,8 @@ export function Header() {
         }
 
         .mn-brand-title {
-          font-family: Georgia, "Times New Roman", serif;
+          font-family: Georgia,
+            "Times New Roman", serif;
           font-size: 27px;
           font-weight: 500;
           letter-spacing: 0.18em;
@@ -204,11 +244,32 @@ export function Header() {
           background: #165d3c;
         }
 
+        /* =========================
+           READER ACCOUNT
+           ========================= */
+
         .mn-account {
           justify-self: end;
           display: flex;
           align-items: center;
+          justify-content: flex-end;
+          gap: 12px;
+          min-width: 0;
         }
+
+        .mn-reader-name {
+          display: block;
+          max-width: 150px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+
+          font-family: "Segoe UI", Arial, sans-serif;
+          font-size: 17px;
+          font-weight: 500;
+          color: #315c46;
+          text-transform: capitalize;
+          }
 
         .mn-account .reader-logout-button {
           min-width: 116px;
@@ -220,10 +281,12 @@ export function Header() {
           color: #fff !important;
           font-size: 14px !important;
           font-weight: 600 !important;
-          box-shadow: 0 10px 24px rgba(24, 95, 61, 0.16);
+          box-shadow: 0 10px 24px
+            rgba(24, 95, 61, 0.16);
         }
 
-        .mn-account .reader-logout-button:hover {
+        .mn-account
+          .reader-logout-button:hover {
           background: #124d31 !important;
           color: #fff !important;
         }
@@ -235,8 +298,12 @@ export function Header() {
 
         @media (max-width: 1240px) {
           .mn-header-inner {
-            width: min(1180px, calc(100% - 40px));
-            grid-template-columns: auto 1fr auto;
+            width: min(
+              1180px,
+              calc(100% - 40px)
+            );
+            grid-template-columns:
+              auto 1fr auto;
             column-gap: 22px;
           }
 
@@ -259,6 +326,11 @@ export function Header() {
 
           .mn-nav-link {
             font-size: 13px;
+          }
+
+          .mn-reader-name {
+            max-width: 120px;
+            font-size: 14px;
           }
 
           .mn-header-leaves-left {
@@ -340,7 +412,17 @@ export function Header() {
             text-overflow: ellipsis;
           }
 
-          .mn-account .reader-logout-button {
+          .mn-account {
+            gap: 8px;
+          }
+
+          .mn-reader-name {
+            max-width: 75px;
+            font-size: 12px;
+          }
+
+          .mn-account
+            .reader-logout-button {
             min-width: 92px;
             min-height: 40px;
             padding: 0 16px;
@@ -353,12 +435,18 @@ export function Header() {
 
           .mn-header-leaves-left {
             width: 72px;
-            transform: translate(-30px, -15px);
+            transform: translate(
+              -30px,
+              -15px
+            );
           }
 
           .mn-header-leaves-right {
             width: 76px;
-            transform: translate(30px, -13px);
+            transform: translate(
+              30px,
+              -13px
+            );
           }
 
           .mn-header-leaves {
