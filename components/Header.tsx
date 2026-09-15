@@ -20,6 +20,21 @@ export function Header() {
   return (
     <>
       <header className="mn-header">
+        {/* Ornamen botanical */}
+        <img
+          src="/header-leaves-left.png"
+          alt=""
+          aria-hidden="true"
+          className="mn-header-leaves mn-header-leaves-left"
+        />
+
+        <img
+          src="/header-leaves-right.png"
+          alt=""
+          aria-hidden="true"
+          className="mn-header-leaves mn-header-leaves-right"
+        />
+
         <div className="mn-header-inner">
           <Link href="/" className="mn-brand" aria-label="Menjadi Nol">
             <img
@@ -66,13 +81,44 @@ export function Header() {
           position: relative;
           z-index: 100;
           width: 100%;
+          overflow: hidden;
           background: rgba(255, 253, 248, 0.96);
           border-bottom: 1px solid rgba(25, 86, 56, 0.07);
           backdrop-filter: blur(14px);
           -webkit-backdrop-filter: blur(14px);
         }
 
+        /* =========================
+           BOTANICAL HEADER
+           ========================= */
+
+        .mn-header-leaves {
+          position: absolute;
+          top: 0;
+          z-index: 0;
+          pointer-events: none;
+          user-select: none;
+          object-fit: contain;
+          opacity: 0.3;
+        }
+
+        .mn-header-leaves-left {
+          left: 0;
+          top: 50%;
+          width: 115px;
+          transform: translate(-18px, -50%);
+        }
+
+      .mn-header-leaves-right {
+        right: 0;
+        top: 50%;
+        width: 125px;
+        transform: translate(18px, -50%);
+        }
+
         .mn-header-inner {
+          position: relative;
+          z-index: 1;
           width: min(1360px, calc(100% - 64px));
           min-height: 104px;
           margin: 0 auto;
@@ -214,6 +260,14 @@ export function Header() {
           .mn-nav-link {
             font-size: 13px;
           }
+
+          .mn-header-leaves-left {
+            width: 95px;
+          }
+
+          .mn-header-leaves-right {
+            width: 105px;
+          }
         }
 
         @media (max-width: 980px) {
@@ -260,6 +314,10 @@ export function Header() {
           .mn-nav-link {
             flex: 0 0 auto;
           }
+
+          .mn-header-leaves {
+            opacity: 0.24;
+          }
         }
 
         @media (max-width: 640px) {
@@ -291,6 +349,20 @@ export function Header() {
 
           .mn-nav {
             gap: 20px;
+          }
+
+          .mn-header-leaves-left {
+            width: 72px;
+            transform: translate(-30px, -15px);
+          }
+
+          .mn-header-leaves-right {
+            width: 76px;
+            transform: translate(30px, -13px);
+          }
+
+          .mn-header-leaves {
+            opacity: 0.2;
           }
         }
       `}</style>
