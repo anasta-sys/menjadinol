@@ -1,12 +1,10 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { FormEvent, useState } from "react";
 
 type RequestedAccess = "writer" | "admin";
 
 export default function WriterRegisterClient() {
-  const supabase = useMemo(() => createClient(), []);
 
   const [fullName, setFullName] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -55,82 +53,14 @@ export default function WriterRegisterClient() {
     setLoading(true);
 
     try {
-      const emailRedirectTo =
-        `${window.location.origin}/writer-register?confirmed=1`;
-
-      /*
-       * Aman untuk dua kondisi:
-       * 1. Email sudah punya akun Supabase Auth -> verifikasi password
-       *    dengan signInWithPassword lalu gunakan user_id asli.
-       * 2. Email benar-benar baru -> buat akun melalui signUp.
-       *
-       * Ini mencegah user_id "dummy/obfuscated" dari signUp ulang
-       * pada email yang sebenarnya sudah terdaftar.
-       */
-      let userId = "";
-      let existingAccount = false;
-
-      const {
-        data: existingLogin,
-        error: existingLoginError,
-      } = await supabase.auth.signInWithPassword({
-        email: cleanEmail,
-        password,
-      });
-
-      if (!existingLoginError && existingLogin.user?.id) {
-        userId = existingLogin.user.id;
-        existingAccount = true;
-      } else {
-        const { data: signUpData, error: signUpError } =
-          await supabase.auth.signUp({
-            email: cleanEmail,
-            password,
-            options: {
-              emailRedirectTo,
-              data: {
-                full_name: cleanFullName,
-                display_name: cleanDisplayName,
-                requested_access: requestedAccess,
-              },
-            },
-          });
-
-        if (signUpError) {
-          throw new Error(signUpError.message);
-        }
-
-        /*
-         * Supabase dapat menyamarkan respons signup jika email
-         * sebenarnya sudah terdaftar. identities kosong adalah
-         * indikasi akun lama, jadi jangan kirim user_id tersebut
-         * ke API approval.
-         */
-        if (
-          signUpData.user &&
-          Array.isArray(signUpData.user.identities) &&
-          signUpData.user.identities.length === 0
-        ) {
-          throw new Error(
-            "Email ini sudah memiliki akun. Gunakan password akun yang sudah ada agar identitas dapat diverifikasi."
-          );
-        }
-
-        userId = signUpData.user?.id ?? "";
-      }
-
-      if (!userId) {
-        throw new Error("Identitas akun belum berhasil diverifikasi.");
-      }
-
       const response = await fetch("/api/writer-register", {
         method: "POST",
         headers: {
           "content-type": "application/json",
         },
         body: JSON.stringify({
-          user_id: userId,
           email: cleanEmail,
+          password,
           full_name: cleanFullName,
           display_name: cleanDisplayName,
           requested_access: requestedAccess,
@@ -148,9 +78,8 @@ export default function WriterRegisterClient() {
 
       setSuccess(true);
       setMessage(
-        existingAccount
-          ? "Permohonan berhasil masuk ke antrean Superadmin menggunakan akun yang sudah terverifikasi."
-          : "Permohonan berhasil masuk ke antrean Superadmin. Silakan konfirmasi email bila diminta."
+        result?.message ||
+          "Permohonan berhasil dikirim dan menunggu persetujuan Superadmin. Email konfirmasi akan dikirim setelah permohonan disetujui."
       );
     } catch (error) {
       setMessage(
@@ -218,7 +147,7 @@ export default function WriterRegisterClient() {
               <div className="writer-success">
                 <strong>Permohonan sudah terkirim.</strong>
                 <p>{message}</p>
-                <a href="/login">Ke halaman login →</a>
+                <a href="/writer-login">Ke halaman login →</a>
               </div>
             ) : (
               <form className="writer-form" onSubmit={handleSubmit}>
@@ -354,7 +283,7 @@ export default function WriterRegisterClient() {
                 </button>
 
                 <div className="writer-login-link">
-                  Sudah memiliki akses? <a href="/login">Masuk</a>
+                  Sudah memiliki akses? <a href="/writer-login">Masuk</a>
                 </div>
 
                 <div className="writer-security-note">

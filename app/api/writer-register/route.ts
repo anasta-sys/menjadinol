@@ -13,8 +13,10 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    const userId = cleanString(body?.user_id, 80);
     const email = cleanString(body?.email, 320).toLowerCase();
+    const password =
+      typeof body?.password === "string" ? body.password : "";
+
     const fullName = cleanString(body?.full_name, 120);
     const displayName = cleanString(body?.display_name, 80);
     const reason = cleanString(body?.reason, 1200);
@@ -25,8 +27,8 @@ export async function POST(request: Request) {
         : "writer";
 
     if (
-      !userId ||
       !email ||
+      password.length < 8 ||
       !fullName ||
       !displayName ||
       reason.length < 10
@@ -40,34 +42,147 @@ export async function POST(request: Request) {
     const admin = createAdminClient();
 
     /*
-     * Jangan percaya user_id/email dari browser begitu saja.
-     * Pastikan user tersebut benar-benar ada di Supabase Auth
-     * dan emailnya cocok.
+     * Cek apakah email sudah mempunyai akun Auth.
+     * Jika sudah ada, jangan membuat akun duplikat.
      */
-    const { data: authData, error: authError } =
-      await admin.auth.admin.getUserById(userId);
+    const {
+      data: usersData,
+      error: usersError,
+    } = await admin.auth.admin.listUsers({
+      page: 1,
+      perPage: 1000,
+    });
 
-    const authUser = authData?.user;
+    if (usersError) {
+      console.error("writer-register auth lookup:", usersError);
 
-    if (
-      authError ||
-      !authUser ||
-      authUser.email?.toLowerCase() !== email
-    ) {
       return NextResponse.json(
-        { error: "Identitas akun tidak dapat diverifikasi." },
-        { status: 403 }
+        { error: "Akun belum berhasil diperiksa." },
+        { status: 500 }
+      );
+    }
+
+    const existingAuthUser =
+      usersData.users.find(
+        (user) =>
+          user.email?.trim().toLowerCase() === email
+      ) ?? null;
+
+    let userId = existingAuthUser?.id ?? "";
+
+    /*
+     * Kalau email belum terdaftar, buat Auth user SERVER-SIDE.
+     *
+     * email_confirm: false
+     * = akun belum dianggap terkonfirmasi.
+     *
+     * createUser admin tidak menjalankan signUp browser,
+     * sehingga flow konfirmasi akan kita kirim setelah Accept.
+     */
+    if (!existingAuthUser) {
+      const {
+        data: createdData,
+        error: createError,
+      } = await admin.auth.admin.createUser({
+        email,
+        password,
+        email_confirm: false,
+        user_metadata: {
+          full_name: fullName,
+          display_name: displayName,
+          requested_access: requestedAccess,
+        },
+      });
+
+      if (createError || !createdData.user) {
+        console.error(
+          "writer-register create auth:",
+          createError
+        );
+
+        return NextResponse.json(
+          {
+            error:
+              createError?.message ||
+              "Akun belum berhasil dibuat.",
+          },
+          { status: 400 }
+        );
+      }
+
+      userId = createdData.user.id;
+    } else {
+      /*
+       * Email lama boleh mengajukan akses,
+       * tetapi password yang dimasukkan harus benar.
+       *
+       * Verifikasi dilakukan dengan client sementara
+       * tidak dilakukan di sini agar service-role session
+       * tidak berubah.
+       *
+       * Untuk akun lama yang sudah terverifikasi,
+       * approval tetap dapat menggunakan user_id yang sama.
+       */
+      if (!existingAuthUser.email_confirmed_at) {
+        const { error: updateError } =
+          await admin.auth.admin.updateUserById(
+            existingAuthUser.id,
+            {
+              password,
+              user_metadata: {
+                ...existingAuthUser.user_metadata,
+                full_name: fullName,
+                display_name: displayName,
+                requested_access: requestedAccess,
+              },
+            }
+          );
+
+        if (updateError) {
+          console.error(
+            "writer-register update pending auth:",
+            updateError
+          );
+
+          return NextResponse.json(
+            { error: "Akun pending belum berhasil diperbarui." },
+            { status: 500 }
+          );
+        }
+      }
+    }
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Identitas akun belum berhasil dibuat." },
+        { status: 500 }
       );
     }
 
     /*
-     * Akun yang sudah punya akses admin tidak boleh mengajukan ulang.
+     * Akun yang sudah mempunyai role pengelolaan
+     * tidak boleh membuat permohonan baru.
      */
-    const { data: existingAdmin } = await admin
+    const {
+      data: existingAdmin,
+      error: existingAdminError,
+    } = await admin
       .from("admin_users")
       .select("user_id,role")
       .eq("user_id", userId)
       .maybeSingle();
+
+    if (existingAdminError) {
+      console.error(
+        "writer-register admin lookup:",
+        existingAdminError
+      );
+
+      return NextResponse.json(
+        { error: "Status akses akun belum berhasil diperiksa." },
+        { status: 500 }
+      );
+    }
 
     if (existingAdmin) {
       return NextResponse.json(
@@ -75,6 +190,53 @@ export async function POST(request: Request) {
         { status: 409 }
       );
     }
+
+    /*
+     * Jangan timpa permohonan pending yang sudah ada
+     * hanya karena tombol submit ditekan lagi.
+     */
+    const {
+      data: existingApplication,
+      error: applicationLookupError,
+    } = await admin
+      .from("writer_applications")
+      .select("id,user_id,email,status")
+      .eq("email", email)
+      .maybeSingle();
+
+    if (applicationLookupError) {
+      console.error(
+        "writer-register application lookup:",
+        applicationLookupError
+      );
+
+      return NextResponse.json(
+        { error: "Permohonan belum berhasil diperiksa." },
+        { status: 500 }
+      );
+    }
+
+    if (existingApplication?.status === "pending") {
+      return NextResponse.json(
+        {
+          error:
+            "Permohonan dengan email ini masih menunggu persetujuan Superadmin.",
+        },
+        { status: 409 }
+      );
+    }
+
+    if (existingApplication?.status === "approved") {
+      return NextResponse.json(
+        {
+          error:
+            "Permohonan dengan email ini sudah disetujui.",
+        },
+        { status: 409 }
+      );
+    }
+
+    const now = new Date().toISOString();
 
     const applicationPayload = {
       user_id: userId,
@@ -86,29 +248,8 @@ export async function POST(request: Request) {
       status: "pending" as const,
       reviewed_by: null,
       reviewed_at: null,
-      updated_at: new Date().toISOString(),
+      updated_at: now,
     };
-
-    /*
-     * Cari dulu berdasarkan email terverifikasi. Ini penting untuk akun lama
-     * yang pernah menghasilkan user_id berbeda/obfuscated saat signUp ulang.
-     * Jika ada record lama dengan email yang sama, kita perbaiki record itu
-     * memakai user_id Auth yang benar, bukan membuat duplikat.
-     */
-    const { data: existingApplication, error: existingApplicationError } =
-      await admin
-        .from("writer_applications")
-        .select("id,user_id,email,status")
-        .eq("email", email)
-        .maybeSingle();
-
-    if (existingApplicationError) {
-      console.error("writer-register lookup:", existingApplicationError);
-      return NextResponse.json(
-        { error: "Permohonan belum berhasil diperiksa." },
-        { status: 500 }
-      );
-    }
 
     let saveError = null;
 
@@ -117,6 +258,7 @@ export async function POST(request: Request) {
         .from("writer_applications")
         .update(applicationPayload)
         .eq("id", existingApplication.id);
+
       saveError = error;
     } else {
       const { error } = await admin
@@ -124,16 +266,26 @@ export async function POST(request: Request) {
         .upsert(applicationPayload, {
           onConflict: "user_id",
         });
+
       saveError = error;
     }
 
     if (saveError) {
       console.error("writer-register save:", saveError);
 
+      /*
+       * Kalau Auth user baru berhasil dibuat tetapi
+       * permohonannya gagal disimpan, bersihkan user tersebut.
+       * Jangan hapus akun lama.
+       */
+      if (!existingAuthUser) {
+        await admin.auth.admin.deleteUser(userId);
+      }
+
       return NextResponse.json(
         {
           error:
-            "Permohonan belum berhasil disimpan. Silakan coba lagi setelah refresh.",
+            "Permohonan belum berhasil disimpan. Silakan coba lagi.",
         },
         { status: 500 }
       );
@@ -142,7 +294,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       message:
-        "Permohonan tersimpan dan menunggu persetujuan Superadmin.",
+        "Permohonan berhasil dikirim dan menunggu persetujuan Superadmin. Email konfirmasi akan dikirim setelah permohonan disetujui.",
     });
   } catch (error) {
     console.error("writer-register route:", error);

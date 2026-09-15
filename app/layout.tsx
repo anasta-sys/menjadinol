@@ -100,19 +100,48 @@ export default async function RootLayout({
     data: { user },
   } = await supabase.auth.getUser();
 
-  let readerName = "";
+  let accountName = "";
+let accountRole = "";
 
-  if (user) {
+if (user) {
+  const { data: adminUser } = await supabase
+    .from("admin_users")
+    .select("display_name,role")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (
+    adminUser &&
+    ["writer", "admin", "superadmin"].includes(adminUser.role)
+  ) {
+    accountName =
+      adminUser.display_name?.trim() ||
+      String(
+        user.user_metadata?.display_name ||
+          user.user_metadata?.name ||
+          ""
+      ).trim();
+
+    accountRole =
+      adminUser.role === "writer"
+        ? "Penulis"
+        : adminUser.role === "admin"
+          ? "Admin"
+          : "Superadmin";
+  } else {
     const { data: reader } = await supabase
       .from("reader_users")
       .select("name")
       .eq("user_id", user.id)
       .maybeSingle();
 
-    readerName =
+    accountName =
       reader?.name?.trim() ||
       String(user.user_metadata?.name || "").trim();
+
+    accountRole = "Pembaca";
   }
+}
 
   return (
     <html lang="id">
@@ -121,7 +150,10 @@ export default async function RootLayout({
           <PageViewTracker />
 
           <Suspense fallback={null}>
-            <Header readerName={readerName} />
+            <Header
+              accountName={accountName}
+              accountRole={accountRole}
+          />
           </Suspense>
 
           <SectionBackground />

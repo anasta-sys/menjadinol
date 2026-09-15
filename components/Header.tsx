@@ -15,11 +15,13 @@ const links = [
 ] as const;
 
 type HeaderProps = {
-  readerName?: string;
+  accountName?: string;
+  accountRole?: string;
 };
 
 export function Header({
-  readerName = "",
+  accountName = "",
+  accountRole = "",
 }: HeaderProps) {
   const pathname = usePathname();
 
@@ -94,14 +96,24 @@ export function Header({
           </nav>
 
           <div className="mn-account">
-            {readerName && (
-              <span
-                className="mn-reader-name"
-                title={readerName}
-              >
-                {readerName}
-              </span>
-            )}
+            {accountName && (
+  <span
+    className="mn-reader-name"
+    title={
+      accountRole
+        ? `${accountName} · ${accountRole}`
+        : accountName
+    }
+  >
+    {accountName}
+    {accountRole && (
+      <>
+        {" · "}
+        {accountRole}
+      </>
+    )}
+  </span>
+)}
 
             <ReaderLogoutButton />
           </div>

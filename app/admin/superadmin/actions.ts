@@ -183,6 +183,126 @@ export async function deleteEntry(entryId: string) {
   return { success: true };
 }
 
+async function sendApprovedWriterEmail(
+  admin: any,
+  application: {
+    user_id: string;
+    email: string;
+    display_name?: string | null;
+  }
+) {
+  const { data: authData, error: authError } =
+    await admin.auth.admin.getUserById(application.user_id);
+
+  const authUser = authData?.user;
+
+  if (authError || !authUser) {
+    throw new Error("Akun pendaftar tidak ditemukan.");
+  }
+
+  if (
+    !authUser.email ||
+    authUser.email.trim().toLowerCase() !==
+      application.email.trim().toLowerCase()
+  ) {
+    throw new Error(
+      "Email akun Auth tidak sesuai dengan permohonan."
+    );
+  }
+
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "") ||
+    "https://menjadinol.com";
+
+  /*
+   * Kalau email Auth BELUM confirmed:
+   * kirim confirmation signup Supabase.
+   */
+  if (!authUser.email_confirmed_at) {
+    const { error: resendError } = await admin.auth.resend({
+      type: "signup",
+      email: application.email,
+      options: {
+        emailRedirectTo: `${siteUrl}/writer-login?confirmed=1`,
+      },
+    });
+
+    if (resendError) {
+      throw new Error(
+        `Email konfirmasi gagal dikirim: ${resendError.message}`
+      );
+    }
+
+    return {
+      confirmationEmailSent: true,
+      approvalEmailSent: false,
+      emailAlreadyConfirmed: false,
+    };
+  }
+
+  /*
+   * Kalau email Auth SUDAH confirmed dari percobaan/akun sebelumnya,
+   * Supabase tidak dapat mengirim "confirm signup" lagi.
+   * Tetap kirim email persetujuan melalui Resend agar Accept
+   * selalu menghasilkan email ke pendaftar.
+   */
+  const resendApiKey = process.env.RESEND_API_KEY;
+  const fromEmail =
+    process.env.OTP_FROM_EMAIL || "noreply@menjadinol.com";
+
+  if (!resendApiKey) {
+    throw new Error(
+      "Email akun sudah terkonfirmasi, tetapi RESEND_API_KEY belum tersedia untuk mengirim email persetujuan."
+    );
+  }
+
+  const displayName =
+    application.display_name?.trim() || "Penulis";
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${resendApiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: `Menjadi Nol <${fromEmail}>`,
+      to: [application.email],
+      subject: "Permohonan Penulis/Admin disetujui — Menjadi Nol",
+      html: `
+        <div style="font-family:Arial,sans-serif;line-height:1.7;color:#304137">
+          <h2 style="color:#185f3d">Permohonan Anda disetujui</h2>
+          <p>Halo ${displayName},</p>
+          <p>Permohonan akses Anda di Menjadi Nol telah disetujui oleh Superadmin.</p>
+          <p>Email akun Anda sudah pernah dikonfirmasi, sehingga Anda tidak perlu melakukan konfirmasi email ulang.</p>
+          <p>
+            <a href="${siteUrl}/writer-login"
+               style="display:inline-block;padding:12px 22px;background:#185f3d;color:#fff;text-decoration:none;border-radius:999px;font-weight:600">
+              Masuk sebagai Penulis/Admin
+            </a>
+          </p>
+          <p>Salam,<br><strong>Menjadi Nol</strong></p>
+        </div>
+      `,
+    }),
+  });
+
+  if (!response.ok) {
+    const detail = await response.text().catch(() => "");
+    throw new Error(
+      `Email persetujuan gagal dikirim${
+        detail ? `: ${detail.slice(0, 300)}` : "."
+      }`
+    );
+  }
+
+  return {
+    confirmationEmailSent: false,
+    approvalEmailSent: true,
+    emailAlreadyConfirmed: true,
+  };
+}
+
 export async function approveWriterApplication(
   applicationId: string
 ) {
@@ -211,7 +331,8 @@ export async function approveWriterApplication(
   }
 
   /*
-   * Pastikan akun Auth benar-benar ada dan email sudah dikonfirmasi.
+   * Akun Auth cukup dipastikan ada.
+   * Email TIDAK wajib confirmed sebelum Accept.
    */
   const { data: authData, error: authError } =
     await admin.auth.admin.getUserById(application.user_id);
@@ -222,19 +343,16 @@ export async function approveWriterApplication(
     throw new Error("Akun pendaftar tidak ditemukan.");
   }
 
-  if (!authUser.email_confirmed_at) {
+  if (
+    !authUser.email ||
+    authUser.email.trim().toLowerCase() !==
+      application.email.trim().toLowerCase()
+  ) {
     throw new Error(
-      "Email pendaftar belum dikonfirmasi. Minta pendaftar menyelesaikan verifikasi email terlebih dahulu."
+      "Email akun Auth tidak sesuai dengan permohonan."
     );
   }
 
-  /*
-   * Role nyata mengikuti permohonan:
-   * writer -> Penulis
-   * admin  -> Admin
-   *
-   * Superadmin TIDAK pernah dapat dibuat dari form publik.
-   */
   const approvedRole =
     application.requested_access === "admin"
       ? "admin"
@@ -275,10 +393,6 @@ export async function approveWriterApplication(
     .eq("status", "pending");
 
   if (applicationUpdateError) {
-    /*
-     * Kalau update status gagal setelah admin_users berhasil,
-     * rollback akses agar state tetap konsisten.
-     */
     await admin
       .from("admin_users")
       .delete()
@@ -289,6 +403,16 @@ export async function approveWriterApplication(
     );
   }
 
+  /*
+   * BARU setelah status approved berhasil:
+   * - unconfirmed -> email konfirmasi Supabase
+   * - already confirmed -> email persetujuan Resend
+   */
+  const emailResult = await sendApprovedWriterEmail(
+    admin,
+    application
+  );
+
   revalidatePath("/superadmin");
   revalidatePath("/admin/superadmin");
   revalidatePath("/admin");
@@ -296,6 +420,7 @@ export async function approveWriterApplication(
   return {
     success: true,
     role: approvedRole,
+    ...emailResult,
   };
 }
 
