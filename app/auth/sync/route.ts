@@ -24,13 +24,44 @@ function noStore(
   });
 }
 
+function getJwtPayload(
+  token: string
+): Record<string, unknown> | null {
+  try {
+    const parts = token.split(".");
+
+    if (parts.length !== 3) {
+      return null;
+    }
+
+    const normalized =
+      parts[1]
+        .replace(/-/g, "+")
+        .replace(/_/g, "/");
+
+    const padded =
+      normalized +
+      "=".repeat(
+        (4 - (normalized.length % 4)) % 4
+      );
+
+    const decoded =
+      Buffer.from(
+        padded,
+        "base64"
+      ).toString("utf8");
+
+    return JSON.parse(decoded);
+  } catch {
+    return null;
+  }
+}
+
 export async function POST(
   request: NextRequest
 ) {
   /*
-   * ==========================================
    * SAME ORIGIN
-   * ==========================================
    */
   const origin =
     request.headers.get("origin");
@@ -64,9 +95,7 @@ export async function POST(
   }
 
   /*
-   * ==========================================
    * BODY
-   * ==========================================
    */
   let body: unknown;
 
@@ -118,12 +147,7 @@ export async function POST(
     await createClient();
 
   /*
-   * ==========================================
-   * VALIDASI ACCESS TOKEN
-   * ==========================================
-   *
-   * getUser(token) memvalidasi token langsung
-   * ke Supabase Auth server.
+   * VALIDASI TOKEN KE SUPABASE
    */
   const {
     data: userData,
@@ -152,9 +176,30 @@ export async function POST(
   }
 
   /*
-   * ==========================================
+   * CEK AAL LANGSUNG DARI TOKEN
+   *
+   * Token sudah divalidasi melalui getUser()
+   * di atas, jadi payload aman dipakai untuk
+   * menentukan AAL session yang sedang dikirim.
+   */
+  const jwtPayload =
+    getJwtPayload(accessToken);
+
+  if (
+    !jwtPayload ||
+    jwtPayload.aal !== "aal2"
+  ) {
+    return noStore(
+      {
+        error:
+          "Session belum terverifikasi sebagai AAL2.",
+      },
+      403
+    );
+  }
+
+  /*
    * SIMPAN SESSION KE COOKIE SSR
-   * ==========================================
    */
   const {
     data: sessionData,
@@ -188,16 +233,13 @@ export async function POST(
   }
 
   /*
-   * ==========================================
-   * PASTIKAN USER SESSION SAMA
-   * ==========================================
+   * PASTIKAN IDENTITAS TETAP SAMA
    */
   if (
     sessionData.user?.id !==
     userData.user.id
   ) {
-    await supabase.auth
-      .signOut();
+    await supabase.auth.signOut();
 
     return noStore(
       {
@@ -205,38 +247,6 @@ export async function POST(
           "Identitas session tidak sesuai.",
       },
       401
-    );
-  }
-
-  /*
-   * ==========================================
-   * CEK MFA / AAL2
-   * ==========================================
-   */
-  const {
-    data: aal,
-    error: aalError,
-  } =
-    await supabase.auth.mfa
-      .getAuthenticatorAssuranceLevel();
-
-  if (
-    aalError ||
-    aal?.currentLevel !==
-      "aal2"
-  ) {
-    console.error(
-      "Auth sync AAL gagal:",
-      aalError,
-      aal
-    );
-
-    return noStore(
-      {
-        error:
-          "Session belum terverifikasi sebagai AAL2.",
-      },
-      403
     );
   }
 

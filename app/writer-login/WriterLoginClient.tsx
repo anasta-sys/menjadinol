@@ -460,11 +460,32 @@ export default function WriterLoginClient() {
               </div>
 
               <button
-                className="login-submit"
-                type="submit"
-              >
-                masuk dengan aman
-              </button>
+  className="login-submit"
+  type="submit"
+>
+  masuk dengan aman
+</button>
+
+<div
+  style={{
+    marginTop: "16px",
+    textAlign: "center",
+    fontSize: "13px",
+    color: "#667067",
+  }}
+>
+  Belum punya akun Penulis?{" "}
+  <a
+    href="/writer-register"
+    style={{
+      color: "#5f745f",
+      fontWeight: 700,
+      textDecoration: "none",
+    }}
+  >
+    Daftar di sini
+  </a>
+</div>
             </form>
           </>
         )}
