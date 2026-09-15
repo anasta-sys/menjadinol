@@ -102,8 +102,14 @@ export function Footer() {
           className="mn-footer-social"
           aria-label="Social media"
         >
-          {/* INSTAGRAM */}
-          <a href="#" aria-label="Instagram" title="Instagram">
+         {/* INSTAGRAM */}
+        <a
+          href="https://www.instagram.com/menjadi.nol/"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Instagram Menjadi Nol"
+          title="@menjadi.nol"
+        >
             <svg
               className="mn-social-solid"
               viewBox="0 0 24 24"
