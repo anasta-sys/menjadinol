@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient as createServiceClient } from "@supabase/supabase-js";
 import { sanitizeRichText, richTextHasContent } from "@/lib/rich-text";
 import { MATERIAL_BUCKET, materialStoragePath, validateMaterialFile } from "@/lib/material-attachments";
+import { sendContentNotificationEmail } from "@/lib/content-notification-email";
 
 type Section =
   | "tentang"
@@ -139,15 +140,44 @@ async function requireAdminAal2() {
     }
   );
 
+  /*
+   * Data ini hanya dipakai untuk email notifikasi konten.
+   * Tidak mengubah session, role, MFA, atau permission yang sudah berjalan.
+   */
+  const { data: profile, error: profileError } = await adminDb
+    .from("admin_users")
+    .select("email,display_name")
+    .eq("user_id", session.userId)
+    .maybeSingle();
+
+  if (profileError) {
+    console.error(
+      "Gagal mengambil profil untuk notifikasi email:",
+      profileError.message
+    );
+  }
+
   return {
     supabase: adminDb,
     userId: session.userId,
     role: session.role,
+
+    email:
+      (profile?.email as string | null) ??
+      null,
+
+    displayName:
+      (profile?.display_name as string | null) ??
+      null,
+
     isWriter: session.role === "writer",
+
     isAdmin:
       session.role === "admin" ||
       session.role === "superadmin",
-    isSuperAdmin: session.role === "superadmin",
+
+    isSuperAdmin:
+      session.role === "superadmin",
   };
 }
 
@@ -294,7 +324,13 @@ export async function deleteContentFolder(fd: FormData) {
 }
 
 export async function createFolderEntry(fd: FormData) {
-  const { supabase, userId, role } = await requireAdminAal2();
+  const {
+    supabase,
+    userId,
+    role,
+    email,
+    displayName,
+  } = await requireAdminAal2();
 
   const folderId = clean(fd.get("folder_id"), 80);
   if (!folderId) throw new Error("Folder tidak valid.");
@@ -368,9 +404,30 @@ const status =
           : null,
     });
 
-  if (error) {
+    if (error) {
     if (attachment) await removeMaterial(supabase, attachment.path);
     throw new Error(error.message);
+  }
+
+  /*
+   * Notifikasi dikirim hanya setelah konten berhasil masuk database.
+   * Kegagalan email tidak membatalkan penyimpanan konten.
+   */
+  if (email) {
+    try {
+      await sendContentNotificationEmail({
+        to: email,
+        name: displayName,
+        title,
+        section,
+        status: status as "draft" | "review" | "published",
+      });
+    } catch (emailError) {
+      console.error(
+        "Email notifikasi konten baru gagal:",
+        emailError
+      );
+    }
   }
 
   revalidatePath(publicPath(section));
@@ -378,7 +435,13 @@ const status =
 }
 
 export async function updateFolderEntry(fd: FormData) {
-  const { supabase, userId, role } = await requireAdminAal2();
+  const {
+    supabase,
+    userId,
+    role,
+    email,
+    displayName,
+  } = await requireAdminAal2();
 
   const id = clean(fd.get("id"), 80);
   if (!id) throw new Error("ID tulisan tidak valid.");
@@ -485,8 +548,30 @@ export async function updateFolderEntry(fd: FormData) {
     throw new Error(error.message);
   }
 
-  if ((newAttachment || removeAttachment) && entryMeta.attachmentPath) {
+   if ((newAttachment || removeAttachment) && entryMeta.attachmentPath) {
     await removeMaterial(supabase, entryMeta.attachmentPath);
+  }
+
+  /*
+   * Notifikasi dikirim hanya setelah perubahan konten
+   * berhasil disimpan ke database.
+   * Jika email gagal, perubahan konten tetap tersimpan.
+   */
+  if (email) {
+    try {
+      await sendContentNotificationEmail({
+        to: email,
+        name: displayName,
+        title,
+        section,
+        status: status as "draft" | "review" | "published",
+      });
+    } catch (emailError) {
+      console.error(
+        "Email notifikasi perubahan konten gagal:",
+        emailError
+      );
+    }
   }
 
   revalidatePath(publicPath(section));
