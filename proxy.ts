@@ -89,9 +89,18 @@ function isStaffRoute(pathname: string) {
   );
 }
 
+/* =========================================================
+ * READER LOGIN REDIRECT
+ *
+ * URL selalu bersih:
+ * /reader-login
+ *
+ * Tidak lagi membuat:
+ * /reader-login?next=%2Ftentang
+ * /reader-login?reason=session-replaced
+ * ========================================================= */
 function redirectToReaderLogin(
-  request: NextRequest,
-  reason?: string
+  request: NextRequest
 ) {
   const loginUrl =
     request.nextUrl.clone();
@@ -99,30 +108,19 @@ function redirectToReaderLogin(
   loginUrl.pathname =
     "/reader-login";
 
+  /*
+   * Hapus seluruh query parameter.
+   */
   loginUrl.search = "";
-
-  if (
-    request.nextUrl.pathname !== "/" &&
-    !request.nextUrl.pathname.startsWith("/api/")
-  ) {
-    loginUrl.searchParams.set(
-      "next",
-      request.nextUrl.pathname
-    );
-  }
-
-  if (reason) {
-    loginUrl.searchParams.set(
-      "reason",
-      reason
-    );
-  }
 
   const response =
     NextResponse.redirect(
       loginUrl
     );
 
+  /*
+   * Hapus reader access cookie lama.
+   */
   response.cookies.delete(
     READER_ACCESS_COOKIE
   );
@@ -130,6 +128,9 @@ function redirectToReaderLogin(
   return response;
 }
 
+/* =========================================================
+ * SINGLE DEVICE READER SESSION
+ * ========================================================= */
 async function isCurrentReaderSession(
   userId: string,
   sessionId: string
@@ -207,6 +208,9 @@ async function isCurrentReaderSession(
       return false;
     }
 
+    /*
+     * Session reader sudah kedaluwarsa.
+     */
     if (
       new Date(
         row.expires_at
@@ -234,6 +238,15 @@ async function isCurrentReaderSession(
   }
 }
 
+/* =========================================================
+ * STAFF SESSION
+ *
+ * Writer / Admin / Superadmin
+ * harus:
+ * - Supabase session valid
+ * - AAL2 / MFA
+ * - terdaftar di admin_users
+ * ========================================================= */
 async function isValidStaffSession(
   request: NextRequest
 ) {
@@ -277,36 +290,27 @@ async function isValidStaffSession(
       );
 
     const {
-  data: claims,
-  error: claimsError,
-} =
-  await supabase.auth.getClaims();
+      data: claims,
+      error: claimsError,
+    } =
+      await supabase.auth.getClaims();
 
-const userId =
-  claims?.claims?.sub as
-    | string
-    | undefined;
+    const userId =
+      claims?.claims?.sub as
+        | string
+        | undefined;
 
-if (
-  claimsError ||
-  !claims ||
-  !claims.claims ||
-  !userId
-) {
-  return false;
-}
-
-/*
- * Staff website memakai MFA.
- */
-if (
-  claims.claims.aal !== "aal2"
-) {
-  return false;
-}
+    if (
+      claimsError ||
+      !claims ||
+      !claims.claims ||
+      !userId
+    ) {
+      return false;
+    }
 
     /*
-     * Staff website memakai MFA.
+     * Staff website wajib MFA / AAL2.
      */
     if (
       claims.claims.aal !== "aal2"
@@ -316,8 +320,9 @@ if (
 
     /*
      * Cek membership admin_users.
-     * Writer/admin/superadmin milik
-     * sistemmu menggunakan tabel ini.
+     *
+     * Writer / admin / superadmin
+     * menggunakan tabel ini.
      */
     const endpoint =
       new URL(
@@ -382,6 +387,9 @@ if (
   }
 }
 
+/* =========================================================
+ * MAIN PROXY
+ * ========================================================= */
 export async function proxy(
   request: NextRequest
 ) {
@@ -393,25 +401,33 @@ export async function proxy(
    */
   const {
     response: supabaseResponse,
-  } = await updateSession(request);
+  } =
+    await updateSession(request);
 
   /*
-   * Route staff tetap memakai
-   * mekanisme login/MFA masing-masing.
+   * STAFF ROUTES
+   *
+   * Login / dashboard writer,
+   * admin, dan superadmin tetap
+   * memakai mekanisme auth/MFA
+   * masing-masing.
    */
   if (isStaffRoute(pathname)) {
     return supabaseResponse;
   }
 
   /*
-   * Route publik.
+   * PUBLIC ROUTES
    */
   if (isPublicRoute(pathname)) {
     return supabaseResponse;
   }
 
   /*
-   * Staff yang valid boleh membuka
+   * STAFF VALID
+   *
+   * Writer/admin/superadmin yang
+   * sudah AAL2 boleh membuka
    * halaman website biasa.
    */
   const validStaffSession =
@@ -423,11 +439,12 @@ export async function proxy(
     return supabaseResponse;
   }
 
-  /*
+  /* =======================================================
    * READER
    *
-   * Wajib punya token reader hasil OTP.
-   */
+   * Reader wajib memiliki cookie
+   * hasil OTP.
+   * ======================================================= */
   const readerAccess =
     request.cookies.get(
       READER_ACCESS_COOKIE
@@ -438,21 +455,25 @@ export async function proxy(
       readerAccess
     );
 
+  /*
+   * Belum login / cookie invalid.
+   */
   if (!verifiedReader) {
     return redirectToReaderLogin(
       request
     );
   }
 
-  /*
+  /* =======================================================
    * SINGLE DEVICE CHECK
    *
-   * Session di cookie harus sama
-   * dengan session aktif di DB.
+   * Session ID pada cookie harus
+   * sama dengan session aktif DB.
    *
-   * Login device kedua menimpa
-   * session_hash device pertama.
-   */
+   * Login di device kedua akan
+   * mengganti session_hash sehingga
+   * device pertama otomatis invalid.
+   * ======================================================= */
   const currentSession =
     await isCurrentReaderSession(
       verifiedReader.userId,
@@ -460,24 +481,14 @@ export async function proxy(
     );
 
   if (!currentSession) {
-  const loginUrl =
-    request.nextUrl.clone();
+    return redirectToReaderLogin(
+      request
+    );
+  }
 
-  loginUrl.pathname =
-    "/reader-login";
-
-  loginUrl.search = "";
-
-  const response =
-    NextResponse.redirect(loginUrl);
-
-  response.cookies.delete(
-    READER_ACCESS_COOKIE
-  );
-
-  return response;
-}
-
+  /*
+   * Reader valid + session device valid.
+   */
   return supabaseResponse;
 }
 
