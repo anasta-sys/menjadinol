@@ -130,34 +130,95 @@ export default async function AdminExtras({
   return (
     <>
       {adminRole === "superadmin" && (
-        <div
-          className="proper-dashboard-card"
-          style={{
-            marginBottom: "24px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "16px",
-            flexWrap: "wrap",
-          }}
-        >
-          <div>
-            <p className="eyebrow">superadmin</p>
-            <h2 style={{ margin: 0 }}>Pengaturan Superadmin</h2>
-            <p style={{ marginTop: "6px", opacity: 0.7 }}>
-              Akses khusus untuk pengelolaan admin dan pengaturan sensitif.
-            </p>
-          </div>
+  <div
+    className="proper-dashboard-card"
+    style={{
+      marginBottom: "18px",
+      padding: "18px 22px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: "18px",
+      flexWrap: "wrap",
+    }}
+  >
+    <div style={{ flex: "1 1 420px" }}>
+      <p
+        className="eyebrow"
+        style={{
+          margin: "0 0 5px",
+        }}
+      >
+        SUPERADMIN
+      </p>
 
-          <Link
-            href="/admin/superadmin"
-            className="login-submit admin-save"
-            style={{ textDecoration: "none" }}
-          >
-            buka superadmin
-          </Link>
-        </div>
-      )}
+      <h2
+        style={{
+          margin: 0,
+          fontSize: "22px",
+        }}
+      >
+        Pengaturan Superadmin
+      </h2>
+
+      <p
+        style={{
+          margin: "5px 0 0",
+          opacity: 0.7,
+          fontSize: "13px",
+          lineHeight: 1.5,
+        }}
+      >
+        Kelola admin, penulis, pembaca, dan pengaturan akses khusus.
+      </p>
+    </div>
+
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "8px",
+        flexWrap: "wrap",
+      }}
+    >
+      <Link
+        href="/admin/superadmin"
+        className="login-submit admin-save"
+        style={{
+          textDecoration: "none",
+          padding: "9px 16px",
+          minHeight: "auto",
+          whiteSpace: "nowrap",
+          background: "#0f6845",
+          color: "#ffffff",
+          border: "1px solid #0f6845",
+          borderRadius: "999px",
+          fontWeight: 700,
+      }}
+      >
+        Superadmin
+      </Link>
+
+      <Link
+        href="/admin/superadmin/role-manager"
+        className="login-submit admin-save"
+       style={{
+          textDecoration: "none",
+          padding: "9px 16px",
+          minHeight: "auto",
+          whiteSpace: "nowrap",
+          background: "#0f6845",
+          color: "#ffffff",
+          border: "1px solid #0f6845",
+          borderRadius: "999px",
+          fontWeight: 700,
+      }}
+      >
+        Role Manager
+      </Link>
+    </div>
+  </div>
+)}
 
       <DashboardOverview analyticsPeriod={analyticsPeriod} adminRole={adminRole} />
 
