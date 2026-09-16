@@ -1,10 +1,12 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 type RequestedAccess = "writer" | "admin";
 
 export default function WriterRegisterClient() {
+  const supabase = useMemo(() => createClient(), []);
 
   const [fullName, setFullName] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -53,14 +55,82 @@ export default function WriterRegisterClient() {
     setLoading(true);
 
     try {
+      const emailRedirectTo =
+        `${window.location.origin}/writer-login?confirmed=1`;
+
+      /*
+       * Aman untuk dua kondisi:
+       * 1. Email sudah punya akun Supabase Auth -> verifikasi password
+       *    dengan signInWithPassword lalu gunakan user_id asli.
+       * 2. Email benar-benar baru -> buat akun melalui signUp.
+       *
+       * Ini mencegah user_id "dummy/obfuscated" dari signUp ulang
+       * pada email yang sebenarnya sudah terdaftar.
+       */
+      let userId = "";
+      let existingAccount = false;
+
+      const {
+        data: existingLogin,
+        error: existingLoginError,
+      } = await supabase.auth.signInWithPassword({
+        email: cleanEmail,
+        password,
+      });
+
+      if (!existingLoginError && existingLogin.user?.id) {
+        userId = existingLogin.user.id;
+        existingAccount = true;
+      } else {
+        const { data: signUpData, error: signUpError } =
+          await supabase.auth.signUp({
+            email: cleanEmail,
+            password,
+            options: {
+              emailRedirectTo,
+              data: {
+                full_name: cleanFullName,
+                display_name: cleanDisplayName,
+                requested_access: requestedAccess,
+              },
+            },
+          });
+
+        if (signUpError) {
+          throw new Error(signUpError.message);
+        }
+
+        /*
+         * Supabase dapat menyamarkan respons signup jika email
+         * sebenarnya sudah terdaftar. identities kosong adalah
+         * indikasi akun lama, jadi jangan kirim user_id tersebut
+         * ke API approval.
+         */
+        if (
+          signUpData.user &&
+          Array.isArray(signUpData.user.identities) &&
+          signUpData.user.identities.length === 0
+        ) {
+          throw new Error(
+            "Email ini sudah memiliki akun. Gunakan password akun yang sudah ada agar identitas dapat diverifikasi."
+          );
+        }
+
+        userId = signUpData.user?.id ?? "";
+      }
+
+      if (!userId) {
+        throw new Error("Identitas akun belum berhasil diverifikasi.");
+      }
+
       const response = await fetch("/api/writer-register", {
         method: "POST",
         headers: {
           "content-type": "application/json",
         },
         body: JSON.stringify({
+          user_id: userId,
           email: cleanEmail,
-          password,
           full_name: cleanFullName,
           display_name: cleanDisplayName,
           requested_access: requestedAccess,
@@ -78,8 +148,9 @@ export default function WriterRegisterClient() {
 
       setSuccess(true);
       setMessage(
-        result?.message ||
-          "Permohonan berhasil dikirim dan menunggu persetujuan Superadmin. Email konfirmasi akan dikirim setelah permohonan disetujui."
+        existingAccount
+          ? "Permohonan berhasil masuk ke antrean Superadmin menggunakan akun yang sudah terverifikasi."
+          : "Permohonan berhasil masuk ke antrean Superadmin. Silakan konfirmasi email bila diminta."
       );
     } catch (error) {
       setMessage(
@@ -108,16 +179,16 @@ export default function WriterRegisterClient() {
           </div>
 
           <div className="login-wordmark">
-            Jalan Pulang
-          </div>
-
-          <div className="login-tagline">
             menjadi nol
           </div>
 
+          <div className="login-tagline">
+            Perjalanan pulang dalam diri
+          </div>
+
           <p>
-            Ruang admin pribadi untuk merawat
-            catatan perjalanan dengan aman.
+            Ruang untuk berbagi tulisan,
+            refleksi, dan perjalanan dalam diri.
           </p>
 
           <div className="login-security-list">
@@ -325,6 +396,19 @@ export default function WriterRegisterClient() {
          */
         .writer-brand-panel {
           min-height: 100%;
+
+          background-image:
+            linear-gradient(
+              180deg,
+              rgba(255, 253, 247, 0.20) 0%,
+              rgba(255, 250, 239, 0.16) 48%,
+              rgba(232, 242, 226, 0.28) 100%
+            ),
+            url("/menjadi-nol-nature.png");
+
+          background-size: cover;
+          background-position: center center;
+          background-repeat: no-repeat;
         }
 
         .writer-mobile-brand {
@@ -375,7 +459,7 @@ export default function WriterRegisterClient() {
           font-size: clamp(31px, 4vw, 44px);
           line-height: 1.08;
           font-weight: 500;
-          color: #2d4434;
+          color: #C6923A;
         }
 
         .writer-description {
