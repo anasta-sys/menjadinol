@@ -176,9 +176,9 @@ export function Footer() {
         .mn-footer {
           position: relative;
           width: 100%;
-          min-height: 220px;
+          min-height: 120px;
           margin-top: 0;
-          padding: 55px 48px 34px;
+          padding: 24px 48px 18px;
           box-sizing: border-box;
           overflow: hidden;
 
@@ -477,9 +477,9 @@ export function Footer() {
         @media (max-width: 1024px) {
           .mn-footer {
             padding:
+              24px
               48px
-              34px
-              32px;
+              18px;
           }
 
           .mn-footer-inner {
