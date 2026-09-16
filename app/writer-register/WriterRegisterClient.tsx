@@ -15,6 +15,8 @@ export default function WriterRegisterClient() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [reason, setReason] = useState("");
 
   const [loading, setLoading] = useState(false);
@@ -289,34 +291,64 @@ export default function WriterRegisterClient() {
                 <div className="writer-two-columns">
                   <label>
                     Password
-                    <input
-                      type="password"
-                      value={password}
-                      onChange={(event) =>
-                        setPassword(event.target.value)
-                      }
-                      placeholder="Minimal 8 karakter"
-                      autoComplete="new-password"
-                      minLength={8}
-                      required
-                      disabled={loading}
-                    />
+                    <span className="writer-password-field">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={(event) =>
+                          setPassword(event.target.value)
+                        }
+                        placeholder="Minimal 8 karakter"
+                        autoComplete="new-password"
+                        minLength={8}
+                        required
+                        disabled={loading}
+                      />
+                      <button
+                        type="button"
+                        className="writer-password-toggle"
+                        onClick={() => setShowPassword((value) => !value)}
+                        aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
+                        aria-pressed={showPassword}
+                        disabled={loading}
+                      >
+                        {showPassword ? "◉" : "◉"}
+                      </button>
+                    </span>
                   </label>
 
                   <label>
                     Konfirmasi password
-                    <input
-                      type="password"
-                      value={confirmPassword}
-                      onChange={(event) =>
-                        setConfirmPassword(event.target.value)
-                      }
-                      placeholder="Ulangi password"
-                      autoComplete="new-password"
-                      minLength={8}
-                      required
-                      disabled={loading}
-                    />
+                    <span className="writer-password-field">
+                      <input
+                        type={showConfirmPassword ? "text" : "password"}
+                        value={confirmPassword}
+                        onChange={(event) =>
+                          setConfirmPassword(event.target.value)
+                        }
+                        placeholder="Ulangi password"
+                        autoComplete="new-password"
+                        minLength={8}
+                        required
+                        disabled={loading}
+                      />
+                      <button
+                        type="button"
+                        className="writer-password-toggle"
+                        onClick={() =>
+                          setShowConfirmPassword((value) => !value)
+                        }
+                        aria-label={
+                          showConfirmPassword
+                            ? "Sembunyikan konfirmasi password"
+                            : "Tampilkan konfirmasi password"
+                        }
+                        aria-pressed={showConfirmPassword}
+                        disabled={loading}
+                      >
+                        {showConfirmPassword ? "◉" : "◉"}
+                      </button>
+                    </span>
                   </label>
                 </div>
 
@@ -513,6 +545,48 @@ export default function WriterRegisterClient() {
           padding: 12px 13px;
           resize: vertical;
           line-height: 1.55;
+        }
+
+        .writer-password-field {
+          position: relative;
+          display: block;
+        }
+
+        .writer-password-field input {
+          padding-right: 48px;
+        }
+
+        .writer-password-toggle {
+          position: absolute;
+          top: 50%;
+          right: 10px;
+          width: 34px;
+          height: 34px;
+          padding: 0;
+          transform: translateY(-50%);
+          display: grid;
+          place-items: center;
+          border: 0;
+          border-radius: 50%;
+          background: transparent;
+          color: #526b58;
+          cursor: pointer;
+          font-size: 17px;
+          line-height: 1;
+        }
+
+        .writer-password-toggle:hover {
+          background: rgba(82, 107, 88, .08);
+        }
+
+        .writer-password-toggle:focus-visible {
+          outline: 2px solid rgba(82, 107, 88, .45);
+          outline-offset: 1px;
+        }
+
+        .writer-password-toggle:disabled {
+          cursor: wait;
+          opacity: .55;
         }
 
         input:focus,
