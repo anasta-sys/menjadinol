@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     if (!name || !email || !subject || !message)
       return NextResponse.json({ error: "Data belum lengkap." }, { status: 400 });
 
-    if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email))
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
       return NextResponse.json({ error: "Email tidak valid." }, { status: 400 });
 
     if (!ALLOWED_SUBJECTS.has(subject))
