@@ -21,6 +21,17 @@ function textLength(html: string) {
   return (element.textContent || "").length;
 }
 
+const FONT_SIZES = [11, 12, 13, 14, 16, 18, 20, 22, 24, 28, 32];
+
+const FONT_FAMILIES = [
+  { label: "Default", value: "" },
+  { label: "Arial", value: "Arial" },
+  { label: "Georgia", value: "Georgia" },
+  { label: "Times New Roman", value: "Times New Roman" },
+  { label: "Verdana", value: "Verdana" },
+  { label: "Trebuchet MS", value: "Trebuchet MS" },
+];
+
 export default function RichTextEditor({
   name,
   label = "Isi tulisan",
@@ -30,6 +41,7 @@ export default function RichTextEditor({
   disabled = false,
 }: Props) {
   const editorRef = useRef<HTMLDivElement | null>(null);
+  const savedRangeRef = useRef<Range | null>(null);
 
   const [html, setHtml] = useState(defaultValue || "");
   const [count, setCount] = useState(() =>
@@ -59,6 +71,36 @@ export default function RichTextEditor({
     selection?.addRange(range);
   }
 
+  function saveSelection() {
+    const editor = editorRef.current;
+    const selection = window.getSelection();
+    if (!editor || !selection || selection.rangeCount === 0) return;
+
+    const range = selection.getRangeAt(0);
+    const container =
+      range.commonAncestorContainer.nodeType === Node.TEXT_NODE
+        ? range.commonAncestorContainer.parentElement
+        : (range.commonAncestorContainer as HTMLElement);
+
+    if (container && editor.contains(container)) {
+      savedRangeRef.current = range.cloneRange();
+    }
+  }
+
+  function restoreSelection() {
+    const editor = editorRef.current;
+    const range = savedRangeRef.current;
+    if (!editor) return;
+
+    editor.focus();
+
+    if (!range) return;
+
+    const selection = window.getSelection();
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+  }
+
   function sync() {
     if (disabled) return;
 
@@ -76,18 +118,81 @@ export default function RichTextEditor({
 
     setHtml(nextHtml);
     setCount(nextCount);
+    saveSelection();
   }
 
   function command(commandName: string, value?: string) {
     if (disabled) return;
 
-    editorRef.current?.focus();
+    restoreSelection();
     document.execCommand(commandName, false, value);
     sync();
   }
 
-  function heading(tag: "h2" | "h3") {
+  function heading(tag: "p" | "h2" | "h3") {
     command("formatBlock", tag);
+  }
+
+  function applyFontFamily(fontFamily: string) {
+    if (disabled || !fontFamily) return;
+
+    restoreSelection();
+    document.execCommand("styleWithCSS", false, "true");
+    document.execCommand("fontName", false, fontFamily);
+    sync();
+  }
+
+  function applyFontSize(size: number) {
+    if (disabled) return;
+
+    restoreSelection();
+
+    // Gunakan satu marker sementara, lalu ubah hasilnya menjadi px yang pasti.
+    // Saat ukuran diganti lagi, browser mengganti format pada selection,
+    // bukan membuat heading baru.
+    document.execCommand("styleWithCSS", false, "false");
+    document.execCommand("fontSize", false, "7");
+
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    editor.querySelectorAll('font[size="7"]').forEach((font) => {
+      const span = document.createElement("span");
+      span.style.fontSize = `${size}px`;
+
+      while (font.firstChild) {
+        span.appendChild(font.firstChild);
+      }
+
+      font.replaceWith(span);
+    });
+
+    normalizeInlineStyles(editor);
+    sync();
+  }
+
+  function normalizeInlineStyles(editor: HTMLElement) {
+    // Rapikan span bertingkat dengan style yang sama agar editing berulang
+    // tidak terus menumpuk wrapper ukuran/font.
+    let changed = true;
+
+    while (changed) {
+      changed = false;
+
+      editor.querySelectorAll("span").forEach((span) => {
+        const parent = span.parentElement;
+        if (
+          parent?.tagName === "SPAN" &&
+          parent.getAttribute("style") === span.getAttribute("style")
+        ) {
+          while (span.firstChild) {
+            parent.insertBefore(span.firstChild, span);
+          }
+          span.remove();
+          changed = true;
+        }
+      });
+    }
   }
 
   function addLink() {
@@ -107,10 +212,18 @@ export default function RichTextEditor({
   function addDivider() {
     if (disabled) return;
 
-    editorRef.current?.focus();
+    restoreSelection();
     document.execCommand("insertHorizontalRule");
     sync();
   }
+
+  const toolbarRowStyle = {
+    display: "flex",
+    alignItems: "center",
+    flexWrap: "wrap" as const,
+    gap: "6px",
+    width: "100%",
+  };
 
   return (
     <label className="jp-rich-label">
@@ -133,170 +246,267 @@ export default function RichTextEditor({
         <div
           className="jp-rich-toolbar"
           aria-label="Toolbar format tulisan"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "stretch",
+            gap: "8px",
+          }}
+          onMouseDown={saveSelection}
         >
-          <button
-            type="button"
-            disabled={disabled}
-            title="Subjudul"
-            onMouseDown={(event) => event.preventDefault()}
-            onClick={() => heading("h2")}
-          >
-            H2
-          </button>
+          {/* BARIS 1 — jenis huruf, ukuran, heading, dan format teks */}
+          <div style={toolbarRowStyle}>
+            <select
+              disabled={disabled}
+              defaultValue=""
+              title="Jenis huruf"
+              aria-label="Jenis huruf"
+              onMouseDown={saveSelection}
+              onChange={(event) => {
+                applyFontFamily(event.target.value);
+                event.currentTarget.value = "";
+              }}
+            >
+              {FONT_FAMILIES.map((font) => (
+                <option key={font.label} value={font.value}>
+                  {font.label}
+                </option>
+              ))}
+            </select>
 
-          <button
-            type="button"
-            disabled={disabled}
-            title="Subjudul kecil"
-            onMouseDown={(event) => event.preventDefault()}
-            onClick={() => heading("h3")}
-          >
-            H3
-          </button>
+            <select
+              disabled={disabled}
+              defaultValue=""
+              title="Ukuran huruf"
+              aria-label="Ukuran huruf"
+              onMouseDown={saveSelection}
+              onChange={(event) => {
+                const size = Number(event.target.value);
+                if (size) applyFontSize(size);
+                event.currentTarget.value = "";
+              }}
+            >
+              <option value="">Ukuran</option>
+              {FONT_SIZES.map((size) => (
+                <option key={size} value={size}>
+                  {size} px
+                </option>
+              ))}
+            </select>
 
-          <span className="jp-rich-divider" />
+            <select
+              disabled={disabled}
+              defaultValue=""
+              title="Format paragraf"
+              aria-label="Format paragraf"
+              onMouseDown={saveSelection}
+              onChange={(event) => {
+                const value = event.target.value as "p" | "h2" | "h3" | "";
+                if (value) heading(value);
+                event.currentTarget.value = "";
+              }}
+            >
+              <option value="">Format</option>
+              <option value="p">Normal</option>
+              <option value="h2">Heading 2</option>
+              <option value="h3">Heading 3</option>
+            </select>
 
-          <button
-            type="button"
-            disabled={disabled}
-            title="Tebal"
-            onMouseDown={(event) => event.preventDefault()}
-            onClick={() => command("bold")}
-          >
-            <strong>B</strong>
-          </button>
+            <span className="jp-rich-divider" />
 
-          <button
-            type="button"
-            disabled={disabled}
-            title="Miring"
-            onMouseDown={(event) => event.preventDefault()}
-            onClick={() => command("italic")}
-          >
-            <em>I</em>
-          </button>
+            <button
+              type="button"
+              disabled={disabled}
+              title="Tebal"
+              onMouseDown={(event) => {
+                event.preventDefault();
+                saveSelection();
+              }}
+              onClick={() => command("bold")}
+            >
+              <strong>B</strong>
+            </button>
 
-          <button
-            type="button"
-            disabled={disabled}
-            title="Quote"
-            onMouseDown={(event) => event.preventDefault()}
-            onClick={() =>
-              command("formatBlock", "blockquote")
-            }
-          >
-            ❝
-          </button>
+            <button
+              type="button"
+              disabled={disabled}
+              title="Miring"
+              onMouseDown={(event) => {
+                event.preventDefault();
+                saveSelection();
+              }}
+              onClick={() => command("italic")}
+            >
+              <em>I</em>
+            </button>
 
-          <span className="jp-rich-divider" />
+            <button
+              type="button"
+              disabled={disabled}
+              title="Garis bawah"
+              onMouseDown={(event) => {
+                event.preventDefault();
+                saveSelection();
+              }}
+              onClick={() => command("underline")}
+            >
+              <u>U</u>
+            </button>
 
-          <button
-            type="button"
-            disabled={disabled}
-            title="Bullet list"
-            onMouseDown={(event) => event.preventDefault()}
-            onClick={() => command("insertUnorderedList")}
-          >
-            • List
-          </button>
+            <button
+              type="button"
+              disabled={disabled}
+              title="Quote"
+              onMouseDown={(event) => {
+                event.preventDefault();
+                saveSelection();
+              }}
+              onClick={() => command("formatBlock", "blockquote")}
+            >
+              ❝
+            </button>
+          </div>
 
-          <button
-            type="button"
-            disabled={disabled}
-            title="Numbered list"
-            onMouseDown={(event) => event.preventDefault()}
-            onClick={() => command("insertOrderedList")}
-          >
-            1. List
-          </button>
+          {/* BARIS 2 — list, link, pemisah, alignment, undo/redo */}
+          <div style={toolbarRowStyle}>
+            <button
+              type="button"
+              disabled={disabled}
+              title="Bullet list"
+              onMouseDown={(event) => {
+                event.preventDefault();
+                saveSelection();
+              }}
+              onClick={() => command("insertUnorderedList")}
+            >
+              • List
+            </button>
 
-          <button
-            type="button"
-            disabled={disabled}
-            title="Link"
-            onMouseDown={(event) => event.preventDefault()}
-            onClick={addLink}
-          >
-            Link
-          </button>
+            <button
+              type="button"
+              disabled={disabled}
+              title="Numbered list"
+              onMouseDown={(event) => {
+                event.preventDefault();
+                saveSelection();
+              }}
+              onClick={() => command("insertOrderedList")}
+            >
+              1. List
+            </button>
 
-          <button
-            type="button"
-            disabled={disabled}
-            title="Pemisah"
-            onMouseDown={(event) => event.preventDefault()}
-            onClick={addDivider}
-          >
-            ―
-          </button>
+            <button
+              type="button"
+              disabled={disabled}
+              title="Link"
+              onMouseDown={(event) => {
+                event.preventDefault();
+                saveSelection();
+              }}
+              onClick={addLink}
+            >
+              Link
+            </button>
 
-          <span className="jp-rich-divider" />
+            <button
+              type="button"
+              disabled={disabled}
+              title="Pemisah"
+              onMouseDown={(event) => {
+                event.preventDefault();
+                saveSelection();
+              }}
+              onClick={addDivider}
+            >
+              ―
+            </button>
 
-          <button
-            type="button"
-            className="jp-align-left"
-            disabled={disabled}
-            title="Rata kiri"
-            onMouseDown={(event) => event.preventDefault()}
-            onClick={() => command("justifyLeft")}
-          >
-            <span>☰</span>
-          </button>
+            <span className="jp-rich-divider" />
 
-          <button
-            type="button"
-            className="jp-align-center"
-            disabled={disabled}
-            title="Rata tengah"
-            onMouseDown={(event) => event.preventDefault()}
-            onClick={() => command("justifyCenter")}
-          >
-            <span>☰</span>
-          </button>
+            <button
+              type="button"
+              className="jp-align-left"
+              disabled={disabled}
+              title="Rata kiri"
+              onMouseDown={(event) => {
+                event.preventDefault();
+                saveSelection();
+              }}
+              onClick={() => command("justifyLeft")}
+            >
+              <span>☰</span>
+            </button>
 
-          <button
-            type="button"
-            className="jp-align-right"
-            disabled={disabled}
-            title="Rata kanan"
-            onMouseDown={(event) => event.preventDefault()}
-            onClick={() => command("justifyRight")}
-          >
-            <span>☰</span>
-          </button>
+            <button
+              type="button"
+              className="jp-align-center"
+              disabled={disabled}
+              title="Rata tengah"
+              onMouseDown={(event) => {
+                event.preventDefault();
+                saveSelection();
+              }}
+              onClick={() => command("justifyCenter")}
+            >
+              <span>☰</span>
+            </button>
 
-          <button
-            type="button"
-            className="jp-align-justify"
-            disabled={disabled}
-            title="Rata kanan kiri"
-            onMouseDown={(event) => event.preventDefault()}
-            onClick={() => command("justifyFull")}
-          >
-            <span>☰</span>
-          </button>
+            <button
+              type="button"
+              className="jp-align-right"
+              disabled={disabled}
+              title="Rata kanan"
+              onMouseDown={(event) => {
+                event.preventDefault();
+                saveSelection();
+              }}
+              onClick={() => command("justifyRight")}
+            >
+              <span>☰</span>
+            </button>
 
-          <span className="jp-rich-divider" />
+            <button
+              type="button"
+              className="jp-align-justify"
+              disabled={disabled}
+              title="Rata kanan kiri"
+              onMouseDown={(event) => {
+                event.preventDefault();
+                saveSelection();
+              }}
+              onClick={() => command("justifyFull")}
+            >
+              <span>☰</span>
+            </button>
 
-          <button
-            type="button"
-            disabled={disabled}
-            title="Undo"
-            onMouseDown={(event) => event.preventDefault()}
-            onClick={() => command("undo")}
-          >
-            ↶
-          </button>
+            <span className="jp-rich-divider" />
 
-          <button
-            type="button"
-            disabled={disabled}
-            title="Redo"
-            onMouseDown={(event) => event.preventDefault()}
-            onClick={() => command("redo")}
-          >
-            ↷
-          </button>
+            <button
+              type="button"
+              disabled={disabled}
+              title="Undo"
+              onMouseDown={(event) => {
+                event.preventDefault();
+                saveSelection();
+              }}
+              onClick={() => command("undo")}
+            >
+              ↶
+            </button>
+
+            <button
+              type="button"
+              disabled={disabled}
+              title="Redo"
+              onMouseDown={(event) => {
+                event.preventDefault();
+                saveSelection();
+              }}
+              onClick={() => command("redo")}
+            >
+              ↷
+            </button>
+          </div>
         </div>
 
         <div
@@ -312,6 +522,8 @@ export default function RichTextEditor({
           style={{ minHeight }}
           onInput={sync}
           onBlur={sync}
+          onMouseUp={saveSelection}
+          onKeyUp={saveSelection}
           dangerouslySetInnerHTML={{
             __html: defaultValue || "",
           }}
@@ -325,9 +537,9 @@ export default function RichTextEditor({
       />
 
       <small className="admin-field-help">
-        Format tersedia: subjudul, bold, italic, quote,
-        daftar, link, pemisah, rata kiri/tengah/kanan,
-        dan rata kanan-kiri.
+        Format tersedia: jenis dan ukuran huruf (mulai 11 px),
+        heading opsional, bold, italic, underline, quote, daftar,
+        link, pemisah, rata kiri/tengah/kanan, dan rata kanan-kiri.
       </small>
     </label>
   );
