@@ -135,7 +135,13 @@ export function Footer() {
           </a>
 
           {/* YOUTUBE */}
-          <a href="#" aria-label="YouTube" title="YouTube">
+          <a
+            href="https://www.youtube.com/@menjadinol"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="YouTube Menjadi Nol"
+            title="YouTube Menjadi Nol"
+          >
             <svg
               className="mn-social-solid"
               viewBox="0 0 24 24"
@@ -153,7 +159,11 @@ export function Footer() {
           </a>
 
           {/* EMAIL */}
-          <a href="mailto:" aria-label="Email" title="Email">
+          <a
+            href="mailto:admin@menjadinol.com"
+            aria-label="Email Menjadi Nol"
+            title="admin@menjadinol.com"
+          >
             <svg
               className="mn-social-solid"
               viewBox="0 0 24 24"

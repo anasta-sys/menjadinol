@@ -525,11 +525,30 @@ export default function SuperAdminDashboard({
         <span style={{ opacity: .35 }}>·</span>
         <a href="#pendaftar" style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px" }}>02 Pendaftar</a>
         <span style={{ opacity: .35 }}>·</span>
-        <a href="#kelola-admin" style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px" }}>03 Kelola Admin</a>
-        <span style={{ opacity: .35 }}>·</span>
-        <a href="#konten" style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px" }}>04 Konten</a>
-        <span style={{ opacity: .35 }}>·</span>
-        <a href="#permohonan" style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px" }}>05 Riwayat Permohonan</a>
+        <a href="#kelola-admin" style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px" }}>
+  03 Kelola Admin
+</a>
+
+<span style={{ opacity: .35 }}>·</span>
+
+<Link
+  href="/admin/superadmin/role-manager"
+  style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px" }}
+>
+  04 Role Manager
+</Link>
+
+<span style={{ opacity: .35 }}>·</span>
+
+<a href="#konten" style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px" }}>
+  05 Konten
+</a>
+
+<span style={{ opacity: .35 }}>·</span>
+
+<a href="#permohonan" style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px" }}>
+  06 Riwayat Permohonan
+</a>
       </nav>
 
       <div
