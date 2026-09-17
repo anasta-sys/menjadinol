@@ -406,9 +406,20 @@ export default function WriterRegisterClient() {
           padding: 38px 22px;
           display: grid;
           place-items: center;
+          position: relative;
+          isolation: isolate;
           background:
-            radial-gradient(circle at 14% 18%, rgba(126, 148, 111, .12), transparent 32%),
-            linear-gradient(180deg, #f8f6ef 0%, #efede3 100%);
+            linear-gradient(
+              180deg,
+              rgba(250, 248, 240, .50) 0%,
+              rgba(246, 244, 234, .42) 48%,
+              rgba(239, 243, 232, .48) 100%
+            ),
+            url("/menjadi-nol-nature.png");
+          background-size: cover;
+          background-position: center center;
+          background-repeat: no-repeat;
+          background-attachment: fixed;
           color: #304137;
         }
 
@@ -668,6 +679,8 @@ export default function WriterRegisterClient() {
           .writer-register-page {
             padding: 18px 12px;
             place-items: start center;
+            background-attachment: scroll;
+            background-position: center top;
           }
 
           .writer-register-shell {
