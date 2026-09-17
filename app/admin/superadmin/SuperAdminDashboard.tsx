@@ -413,11 +413,11 @@ export default function SuperAdminDashboard({
         <strong style={{ fontSize: "12px", marginRight: "4px" }}>
           INDEX SUPERADMIN
         </strong>
-        <a href="#ringkasan" style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px" }}>01 Ringkasan</a>
+        <a href="#ringkasan" style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px", fontWeight: 700 }}><strong style={{ fontWeight: 800 }}>01 Ringkasan</strong></a>
         <span style={{ opacity: .35 }}>·</span>
-        <a href="#pendaftar" style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px" }}>02 Pendaftar</a>
+        <a href="#pendaftar" style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px", fontWeight: 700 }}><strong style={{ fontWeight: 800 }}>02 Pendaftar</strong></a>
         <span style={{ opacity: .35 }}>·</span>
-        <a href="#kelola-admin" style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px" }}>
+        <a href="#kelola-admin" style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px", fontWeight: 700 }}>
   03 Kelola Admin
 </a>
 
@@ -425,32 +425,43 @@ export default function SuperAdminDashboard({
 
 <Link
   href="/admin/superadmin/role-manager"
-  style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px" }}
+  style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px", fontWeight: 700 }}
 >
-  04 Role Manager
+  <strong style={{ fontWeight: 800 }}>04 Role Manager</strong>
 </Link>
+
+<span style={{ opacity: .35 }}>·</span>
 
 <Link
   href="/admin/superadmin/user-manager"
-  style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px" }}
+  style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px", fontWeight: 700 }}
 >
-  05 User Manager
+  <strong style={{ fontWeight: 800 }}>05 User Manager</strong>
 </Link>
 
 <span style={{ opacity: .35 }}>·</span>
 
 <Link
   href="/admin/superadmin/content-manager"
-  style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px" }}
+  style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px", fontWeight: 700 }}
 >
-  06 Content Manager
+  <strong style={{ fontWeight: 800 }}>06 Content Manager</strong>
 </Link>
 
 <span style={{ opacity: .35 }}>·</span>
 
-<a href="#permohonan" style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px" }}>
+<a href="#permohonan" style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px", fontWeight: 700 }}>
   07 Riwayat Permohonan
 </a>
+
+<span style={{ opacity: .35 }}>·</span>
+
+<Link
+  href="/admin/superadmin/messages"
+  style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px", fontWeight: 700 }}
+>
+  <strong style={{ fontWeight: 800 }}>08 Pesan Masuk</strong>
+</Link>
       </nav>
 
       <div
