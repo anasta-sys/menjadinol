@@ -85,7 +85,7 @@ export function Footer() {
           </p>
 
           <div className="mn-footer-meta">
-            <span>Spiritual Journey by Anasta</span>
+            <span>Spiritual Journey by admin@menjadinol.com</span>
             <span className="dot">•</span>
             <span>Privacy-first</span>
             <span className="dot">•</span>
