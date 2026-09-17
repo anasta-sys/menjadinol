@@ -4,9 +4,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 import {
-  publishEntry,
-  unpublishEntry,
-  deleteEntry,
   approveWriterApplication,
   rejectWriterApplication,
   revokeWriterApplication,
@@ -95,55 +92,18 @@ export default function SuperAdminDashboard({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  const [status, setStatus] = useState("all");
-  const [author, setAuthor] = useState("all");
-  const [query, setQuery] = useState("");
-  const [previewEntry, setPreviewEntry] =
-    useState<SuperAdminEntry | null>(null);
   const [actionMessage, setActionMessage] = useState("");
   const [showAddAdmin, setShowAddAdmin] = useState(false);
   const [newAdminName, setNewAdminName] = useState("");
   const [newAdminEmail, setNewAdminEmail] = useState("");
   const [newAdminPassword, setNewAdminPassword] = useState("");
   const [newAdminPasswordConfirm, setNewAdminPasswordConfirm] = useState("");
-  const folderMap = useMemo(
-    () => new Map(folders.map((folder) => [folder.id, folder])),
-    [folders]
-  );
 
   const adminMap = useMemo(
     () => new Map(admins.map((admin) => [admin.user_id, admin])),
     [admins]
   );
 
-  const filtered = useMemo(() => {
-    const needle = query.trim().toLowerCase();
-
-    return entries.filter((entry) => {
-      if (status !== "all" && entry.status !== status) return false;
-      if (author !== "all" && entry.author_id !== author) return false;
-
-      if (needle) {
-        const owner = entry.author_id
-          ? adminMap.get(entry.author_id)
-          : undefined;
-
-        const haystack = [
-          entry.title,
-          entry.slug,
-          owner?.display_name,
-          owner?.email,
-        ]
-          .filter(Boolean)
-          .join(" ")
-          .toLowerCase();
-
-        if (!haystack.includes(needle)) return false;
-      }
-
-      return true;
-    });
-  }, [entries, status, author, query, adminMap]);
 
   const published = entries.filter(
     (entry) => entry.status === "published"
@@ -167,74 +127,6 @@ export default function SuperAdminDashboard({
 
   const writerCount = trackedAuthorIds.size;
 
-  function runPublish(entry: SuperAdminEntry) {
-    const label =
-      entry.status === "published"
-        ? "Tarik tulisan ini menjadi Draft?"
-        : "Publish tulisan ini sekarang?";
-
-    if (!window.confirm(label)) return;
-
-    setActionMessage("");
-
-    startTransition(async () => {
-      try {
-        if (entry.status === "published") {
-          await unpublishEntry(entry.id);
-          setActionMessage(`“${entry.title}” ditarik menjadi Draft.`);
-        } else {
-          await publishEntry(entry.id);
-          setActionMessage(`“${entry.title}” berhasil dipublish.`);
-        }
-
-        router.refresh();
-      } catch (error) {
-        setActionMessage(
-          error instanceof Error
-            ? error.message
-            : "Tindakan publikasi gagal."
-        );
-      }
-    });
-  }
-
-  function runDelete(entry: SuperAdminEntry) {
-    const owner = entry.author_id
-      ? adminMap.get(entry.author_id)
-      : undefined;
-
-    const authorName =
-      owner?.display_name ||
-      owner?.email ||
-      (entry.author_id ? "Admin" : "Konten lama");
-
-    if (
-      !window.confirm(
-        `Hapus permanen tulisan “${entry.title}” milik ${authorName}?\\n\\nTulisan dan lampiran terkait akan dihapus. Tindakan ini tidak dapat dibatalkan.`
-      )
-    ) {
-      return;
-    }
-
-    setActionMessage("");
-
-    startTransition(async () => {
-      try {
-        await deleteEntry(entry.id);
-        setPreviewEntry((current) =>
-          current?.id === entry.id ? null : current
-        );
-        setActionMessage(`“${entry.title}” berhasil dihapus.`);
-        router.refresh();
-      } catch (error) {
-        setActionMessage(
-          error instanceof Error
-            ? error.message
-            : "Gagal menghapus tulisan."
-        );
-      }
-    });
-  }
 
   function runApproveApplication(
     application: WriterApplication
@@ -487,7 +379,7 @@ export default function SuperAdminDashboard({
           </h1>
 
           <p style={{ margin: 0, opacity: 0.65 }}>
-            Pantau tulisan, status publikasi, dan penulis dari satu tempat.
+            Kelola akses, pendaftar, pengguna, peran, dan konten dari satu pusat.
           </p>
         </div>
 
@@ -538,16 +430,26 @@ export default function SuperAdminDashboard({
   04 Role Manager
 </Link>
 
+<Link
+  href="/admin/superadmin/user-manager"
+  style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px" }}
+>
+  05 User Manager
+</Link>
+
 <span style={{ opacity: .35 }}>·</span>
 
-<a href="#konten" style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px" }}>
-  05 Konten
-</a>
+<Link
+  href="/admin/superadmin/content-manager"
+  style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px" }}
+>
+  06 Content Manager
+</Link>
 
 <span style={{ opacity: .35 }}>·</span>
 
 <a href="#permohonan" style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px" }}>
-  06 Riwayat Permohonan
+  07 Riwayat Permohonan
 </a>
       </nav>
 
@@ -1054,321 +956,6 @@ export default function SuperAdminDashboard({
         )}
       </section>
 
-      <section id="konten" style={{ ...card, padding: "20px" }}>
-        <div
-          style={{
-            display: "flex",
-            gap: "10px",
-            flexWrap: "wrap",
-            marginBottom: "18px",
-          }}
-        >
-          <input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Cari judul atau penulis..."
-            style={{
-              flex: "1 1 260px",
-              minHeight: "42px",
-              padding: "9px 12px",
-              borderRadius: "12px",
-              border: "1px solid rgba(70,91,76,.18)",
-              background: "white",
-            }}
-          />
-
-          <select
-            value={status}
-            onChange={(event) => setStatus(event.target.value)}
-            style={{
-              minHeight: "42px",
-              padding: "9px 12px",
-              borderRadius: "12px",
-              border: "1px solid rgba(70,91,76,.18)",
-              background: "white",
-            }}
-          >
-            <option value="all">Semua status</option>
-            <option value="published">Published</option>
-            <option value="review">Review</option>
-            <option value="draft">Draft</option>
-          </select>
-
-          <select
-            value={author}
-            onChange={(event) => setAuthor(event.target.value)}
-            style={{
-              minHeight: "42px",
-              padding: "9px 12px",
-              borderRadius: "12px",
-              border: "1px solid rgba(70,91,76,.18)",
-              background: "white",
-            }}
-          >
-            <option value="all">Semua penulis</option>
-
-            {admins.map((item) => (
-              <option key={item.user_id} value={item.user_id}>
-                {item.display_name ||
-                  item.email ||
-                  (item.user_id === currentUserId ? "Saya" : "Admin")}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {actionMessage && (
-          <div
-            role="status"
-            style={{
-              marginBottom: "14px",
-              padding: "11px 13px",
-              borderRadius: "12px",
-              border: "1px solid rgba(70,91,76,.12)",
-              background: "rgba(241,246,238,.92)",
-              color: "#465b4c",
-              fontSize: "12px",
-              lineHeight: 1.55,
-            }}
-          >
-            {actionMessage}
-          </div>
-        )}
-
-        <div style={{ overflowX: "auto" }}>
-          <table
-            style={{
-              width: "100%",
-              borderCollapse: "collapse",
-              minWidth: "1120px",
-            }}
-          >
-            <thead>
-              <tr style={{ textAlign: "left" }}>
-                {[
-                  "No.",
-                  "Tulisan",
-                  "Penulis",
-                  "Bagian",
-                  "Folder",
-                  "Status",
-                  "Dipublish",
-                  "Aksi",
-                ].map((head) => (
-                  <th
-                    key={head}
-                    style={{
-                      padding: "11px 10px",
-                      borderBottom: "1px solid rgba(70,91,76,.14)",
-                      fontSize: "12px",
-                      opacity: 0.58,
-                    }}
-                  >
-                    {head}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-
-            <tbody>
-              {filtered.map((entry, index) => {
-                const folder = entry.folder_id
-                  ? folderMap.get(entry.folder_id)
-                  : undefined;
-
-                const owner = entry.author_id
-                  ? adminMap.get(entry.author_id)
-                  : undefined;
-
-                return (
-                  <tr key={entry.id}>
-                    <td
-                      style={{
-                        width: "54px",
-                        padding: "13px 10px",
-                        borderBottom: "1px solid rgba(70,91,76,.08)",
-                        fontVariantNumeric: "tabular-nums",
-                        opacity: .62,
-                      }}
-                    >
-                      {String(index + 1).padStart(2, "0")}
-                    </td>
-
-                    <td
-                      style={{
-                        padding: "13px 10px",
-                        borderBottom: "1px solid rgba(70,91,76,.08)",
-                      }}
-                    >
-                      <strong>{entry.title}</strong>
-
-                      <small
-                        style={{
-                          display: "block",
-                          opacity: 0.52,
-                          marginTop: "3px",
-                        }}
-                      >
-                        /{entry.slug}
-                      </small>
-                    </td>
-
-                    <td
-                      style={{
-                        padding: "13px 10px",
-                        borderBottom: "1px solid rgba(70,91,76,.08)",
-                      }}
-                    >
-                      {owner?.display_name ||
-                        owner?.email ||
-                        (entry.author_id
-                          ? "Admin"
-                          : "Konten lama")}
-                    </td>
-
-                    <td
-                      style={{
-                        padding: "13px 10px",
-                        borderBottom: "1px solid rgba(70,91,76,.08)",
-                      }}
-                    >
-                      {sectionLabel(folder?.section)}
-                    </td>
-
-                    <td
-                      style={{
-                        padding: "13px 10px",
-                        borderBottom: "1px solid rgba(70,91,76,.08)",
-                      }}
-                    >
-                      {folder?.title ?? "—"}
-                    </td>
-
-                    <td
-                      style={{
-                        padding: "13px 10px",
-                        borderBottom: "1px solid rgba(70,91,76,.08)",
-                      }}
-                    >
-                      <strong>{statusLabel(entry.status)}</strong>
-                    </td>
-
-                    <td
-                      style={{
-                        padding: "13px 10px",
-                        borderBottom: "1px solid rgba(70,91,76,.08)",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {formatDate(
-                        entry.published_at ?? entry.created_at
-                      )}
-                    </td>
-
-                    <td
-                      style={{
-                        padding: "13px 10px",
-                        borderBottom: "1px solid rgba(70,91,76,.08)",
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          flexWrap: "wrap",
-                          gap: "7px",
-                          minWidth: "245px",
-                        }}
-                      >
-                        <button
-                          type="button"
-                          onClick={() => setPreviewEntry(entry)}
-                          disabled={isPending}
-                          style={{
-                            minHeight: "34px",
-                            padding: "7px 12px",
-                            borderRadius: "999px",
-                            border: "1px solid rgba(70,91,76,.18)",
-                            background: "#fff",
-                            color: "#36503d",
-                            cursor: isPending ? "wait" : "pointer",
-                            fontWeight: 650,
-                            fontSize: "12px",
-                            opacity: isPending ? 0.58 : 1,
-                          }}
-                        >
-                          Preview
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => runPublish(entry)}
-                          disabled={isPending}
-                          style={{
-                            minHeight: "34px",
-                            padding: "7px 12px",
-                            borderRadius: "999px",
-                            border: 0,
-                            background:
-                              entry.status === "published"
-                                ? "#efe8d8"
-                                : "#78936b",
-                            color:
-                              entry.status === "published"
-                                ? "#654f32"
-                                : "#fff",
-                            cursor: isPending ? "wait" : "pointer",
-                            fontWeight: 700,
-                            fontSize: "12px",
-                            opacity: isPending ? 0.58 : 1,
-                          }}
-                        >
-                          {entry.status === "published"
-                            ? "Tarik"
-                            : "Publish"}
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => runDelete(entry)}
-                          disabled={isPending}
-                          style={{
-                            minHeight: "34px",
-                            padding: "7px 12px",
-                            borderRadius: "999px",
-                            border: "1px solid rgba(150,70,70,.18)",
-                            background: "#fff7f5",
-                            color: "#98574f",
-                            cursor: isPending ? "wait" : "pointer",
-                            fontWeight: 700,
-                            fontSize: "12px",
-                            opacity: isPending ? 0.58 : 1,
-                          }}
-                        >
-                          Hapus
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-
-        {filtered.length === 0 && (
-          <p
-            style={{
-              textAlign: "center",
-              padding: "28px 10px 10px",
-              opacity: 0.58,
-            }}
-          >
-            Tidak ada tulisan sesuai filter.
-          </p>
-        )}
-      </section>
-
-
       <section
         style={{
           ...card,
@@ -1673,177 +1260,6 @@ export default function SuperAdminDashboard({
         </p>
       )}
 
-      {previewEntry && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label={`Preview ${previewEntry.title}`}
-          onClick={() => setPreviewEntry(null)}
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 9999,
-            display: "grid",
-            placeItems: "center",
-            padding: "22px",
-            background: "rgba(30,39,33,.38)",
-            backdropFilter: "blur(7px)",
-          }}
-        >
-          <article
-            onClick={(event) => event.stopPropagation()}
-            style={{
-              width: "min(820px,100%)",
-              maxHeight: "86vh",
-              overflowY: "auto",
-              borderRadius: "24px",
-              border: "1px solid rgba(70,91,76,.14)",
-              background: "#fffdf9",
-              boxShadow: "0 30px 90px rgba(31,41,34,.22)",
-              padding: "30px",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                gap: "18px",
-                alignItems: "flex-start",
-                marginBottom: "24px",
-              }}
-            >
-              <div>
-                <p
-                  style={{
-                    margin: "0 0 8px",
-                    fontSize: "11px",
-                    letterSpacing: ".14em",
-                    textTransform: "uppercase",
-                    opacity: 0.55,
-                  }}
-                >
-                  Preview · {statusLabel(previewEntry.status)}
-                </p>
-
-                <h2
-                  style={{
-                    margin: 0,
-                    color: "#29412f",
-                    fontFamily: 'Georgia, "Times New Roman", serif',
-                    fontSize: "clamp(28px,4vw,42px)",
-                    lineHeight: 1.1,
-                  }}
-                >
-                  {previewEntry.title}
-                </h2>
-
-                {previewEntry.excerpt ? (
-                  <p
-                    style={{
-                      margin: "13px 0 0",
-                      color: "#737a72",
-                      lineHeight: 1.7,
-                    }}
-                  >
-                    {previewEntry.excerpt}
-                  </p>
-                ) : null}
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setPreviewEntry(null)}
-                aria-label="Tutup preview"
-                style={{
-                  width: "38px",
-                  height: "38px",
-                  flex: "0 0 38px",
-                  borderRadius: "50%",
-                  border: "1px solid rgba(70,91,76,.16)",
-                  background: "#fff",
-                  cursor: "pointer",
-                  color: "#465b4c",
-                  fontSize: "20px",
-                }}
-              >
-                ×
-              </button>
-
-              <div
-                style={{
-                  display: "flex",
-                  gap: "7px",
-                  flexWrap: "wrap",
-                  justifyContent: "flex-end",
-                }}
-              >
-                <button
-                  type="button"
-                  disabled={isPending}
-                  onClick={() => runPublish(previewEntry)}
-                  style={{
-                    minHeight: "36px",
-                    padding: "7px 13px",
-                    border: 0,
-                    borderRadius: "999px",
-                    background:
-                      previewEntry.status === "published"
-                        ? "#efe8d8"
-                        : "#78936b",
-                    color:
-                      previewEntry.status === "published"
-                        ? "#654f32"
-                        : "#fff",
-                    cursor: isPending ? "wait" : "pointer",
-                    fontWeight: 700,
-                  }}
-                >
-                  {previewEntry.status === "published"
-                    ? "Tarik ke Draft"
-                    : "Publish"}
-                </button>
-
-                <button
-                  type="button"
-                  disabled={isPending}
-                  onClick={() => runDelete(previewEntry)}
-                  style={{
-                    minHeight: "36px",
-                    padding: "7px 13px",
-                    border: "1px solid rgba(150,70,70,.18)",
-                    borderRadius: "999px",
-                    background: "#fff7f5",
-                    color: "#98574f",
-                    cursor: isPending ? "wait" : "pointer",
-                    fontWeight: 700,
-                  }}
-                >
-                  Hapus
-                </button>
-              </div>
-            </div>
-
-            <div
-              style={{
-                borderTop: "1px solid rgba(70,91,76,.10)",
-                paddingTop: "22px",
-                color: "#36443a",
-                fontSize: "15px",
-                lineHeight: 1.85,
-              }}
-              dangerouslySetInnerHTML={{
-                __html: safePreviewHtml(previewEntry.body),
-              }}
-            />
-
-            {!previewEntry.body?.trim() && (
-              <p style={{ opacity: 0.58 }}>
-                Tulisan ini belum memiliki isi teks untuk dipreview.
-              </p>
-            )}
-          </article>
-        </div>
-      )}
     </main>
   );
 }
