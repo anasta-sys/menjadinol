@@ -161,6 +161,7 @@ export function Footer() {
           {/* EMAIL */}
           <a
             href="mailto:admin@menjadinol.com"
+            target="_blank"
             aria-label="Email Menjadi Nol"
             title="admin@menjadinol.com"
           >
