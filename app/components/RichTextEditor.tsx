@@ -43,7 +43,8 @@ export default function RichTextEditor({
   const editorRef = useRef<HTMLDivElement | null>(null);
   const savedRangeRef = useRef<Range | null>(null);
 
-  const [html, setHtml] = useState(defaultValue || "");
+  const htmlRef = useRef(defaultValue || "");
+  const hiddenInputRef = useRef<HTMLInputElement | null>(null);
   const [count, setCount] = useState(() =>
     defaultValue.replace(/<[^>]*>/g, "").length
   );
@@ -54,7 +55,10 @@ export default function RichTextEditor({
 
     if (editor.innerHTML !== (defaultValue || "")) {
       editor.innerHTML = defaultValue || "";
-      setHtml(defaultValue || "");
+      htmlRef.current = defaultValue || "";
+      if (hiddenInputRef.current) {
+        hiddenInputRef.current.value = defaultValue || "";
+      }
       setCount(textLength(defaultValue || ""));
     }
   }, [defaultValue]);
@@ -111,12 +115,15 @@ export default function RichTextEditor({
     const nextCount = (editor.textContent || "").length;
 
     if (nextCount > maxLength) {
-      editor.innerHTML = html;
+      editor.innerHTML = htmlRef.current;
       placeCaretAtEnd(editor);
       return;
     }
 
-    setHtml(nextHtml);
+    htmlRef.current = nextHtml;
+    if (hiddenInputRef.current) {
+      hiddenInputRef.current.value = nextHtml;
+    }
     setCount(nextCount);
     saveSelection();
   }
@@ -226,7 +233,7 @@ export default function RichTextEditor({
   };
 
   return (
-    <label className="jp-rich-label">
+    <div className="jp-rich-label">
       <span className="admin-field-label-row">
         <span>{label}</span>
 
@@ -524,16 +531,26 @@ export default function RichTextEditor({
           onBlur={sync}
           onMouseUp={saveSelection}
           onKeyUp={saveSelection}
-          dangerouslySetInnerHTML={{
-            __html: defaultValue || "",
+          onCopy={(event) => {
+            // Copy diizinkan khusus di area editor.
+            event.stopPropagation();
+          }}
+          onCut={(event) => {
+            // Cut diizinkan khusus di area editor.
+            event.stopPropagation();
+          }}
+          onPaste={(event) => {
+            // Paste diizinkan khusus di area editor.
+            event.stopPropagation();
           }}
         />
       </div>
 
       <input
+        ref={hiddenInputRef}
         type="hidden"
         name={name}
-        value={html}
+        defaultValue={defaultValue || ""}
       />
 
       <small className="admin-field-help">
@@ -541,6 +558,6 @@ export default function RichTextEditor({
         heading opsional, bold, italic, underline, quote, daftar,
         link, pemisah, rata kiri/tengah/kanan, dan rata kanan-kiri.
       </small>
-    </label>
+    </div>
   );
 }
