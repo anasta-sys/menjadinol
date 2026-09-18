@@ -38,6 +38,14 @@ function safeStyle(attrs:string) {
   if(color && ALLOWED_TEXT_COLORS.has(color)) out.push(`color:${color}`);
   const family=raw.match(/font-family\s*:\s*([^;]+)/i)?.[1]?.trim().replace(/^["']|["']$/g,"");
   if(family && ALLOWED_FONTS.has(family)) out.push(`font-family:${family}`);
+
+  // Penting: execCommand("bold") dapat menghasilkan span font-weight:normal
+  // ketika teks normal berada di dalam wrapper <b>/<strong> lama.
+  // Preview browser mempertahankan style ini. Server juga harus
+  // mempertahankannya agar hasil publish sama dengan preview.
+  const weight=raw.match(/font-weight\s*:\s*(normal|400)\b/i)?.[1]?.toLowerCase();
+  if(weight) out.push("font-weight:normal");
+
   return out.length ? ` style="${out.join(";")}"` : "";
 }
 

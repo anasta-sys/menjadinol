@@ -70,6 +70,7 @@ export default function RichTextEditor({
 
   const htmlRef = useRef(defaultValue || "");
   const hiddenInputRef = useRef<HTMLInputElement | null>(null);
+  const [htmlValue, setHtmlValue] = useState(defaultValue || "");
   const [count, setCount] = useState(() =>
     defaultValue.replace(/<[^>]*>/g, "").length
   );
@@ -81,6 +82,7 @@ export default function RichTextEditor({
     if (editor.innerHTML !== (defaultValue || "")) {
       editor.innerHTML = defaultValue || "";
       htmlRef.current = defaultValue || "";
+      setHtmlValue(defaultValue || "");
       if (hiddenInputRef.current) {
         hiddenInputRef.current.value = defaultValue || "";
       }
@@ -144,6 +146,7 @@ export default function RichTextEditor({
     }
 
     htmlRef.current = nextHtml;
+    setHtmlValue(nextHtml);
     if (hiddenInputRef.current) {
       hiddenInputRef.current.value = nextHtml;
     }
@@ -160,7 +163,19 @@ export default function RichTextEditor({
   }
 
   function heading(tag: "p" | "h2" | "h3") {
-    command("formatBlock", tag);
+    if (disabled) return;
+
+    restoreSelection();
+    document.execCommand("formatBlock", false, tag);
+
+    // Saat memilih "Normal", pastikan paragraf kembali normal.
+    // Ini mencegah state Bold browser terbawa ke paragraf hasil revisi.
+    if (tag === "p") {
+      document.execCommand("removeFormat", false);
+      document.execCommand("formatBlock", false, "p");
+    }
+
+    sync();
   }
 
   function applyFontFamily(fontFamily: string) {
@@ -603,6 +618,23 @@ export default function RichTextEditor({
               <u>U</u>
             </button>
 
+            <button
+              type="button"
+              disabled={disabled}
+              title="Hapus format pada teks yang dipilih"
+              onMouseDown={(event) => {
+                event.preventDefault();
+                saveSelection();
+              }}
+              onClick={() => {
+                restoreSelection();
+                document.execCommand("removeFormat", false);
+                sync();
+              }}
+            >
+              Tx
+            </button>
+
             <select
               disabled={disabled}
               defaultValue=""
@@ -887,7 +919,8 @@ export default function RichTextEditor({
         ref={hiddenInputRef}
         type="hidden"
         name={name}
-        defaultValue={defaultValue || ""}
+        value={htmlValue}
+        readOnly
       />
 
       <small className="admin-field-help">
