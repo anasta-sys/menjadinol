@@ -32,6 +32,17 @@ const FONT_FAMILIES = [
   { label: "Trebuchet MS", value: "Trebuchet MS" },
 ];
 
+const TEXT_COLORS = [
+  { label: "Hitam", value: "#111111" },
+  { label: "Abu-abu", value: "#666666" },
+  { label: "Hijau", value: "#17613f" },
+  { label: "Hijau tua", value: "#0f4d34" },
+  { label: "Emas", value: "#a67c00" },
+  { label: "Cokelat", value: "#7a5230" },
+  { label: "Merah", value: "#b42318" },
+  { label: "Biru", value: "#175cd3" },
+];
+
 export default function RichTextEditor({
   name,
   label = "Isi tulisan",
@@ -202,6 +213,37 @@ export default function RichTextEditor({
     }
   }
 
+  function applyTextColor(color: string) {
+    if (disabled || !color) return;
+
+    restoreSelection();
+    document.execCommand("styleWithCSS", false, "true");
+    document.execCommand("foreColor", false, color);
+    sync();
+  }
+
+  function handleEditorKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
+    if (disabled) return;
+
+    const modifier = event.ctrlKey || event.metaKey;
+    if (!modifier || event.key.toLowerCase() !== "a") return;
+
+    event.preventDefault();
+
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    editor.focus();
+
+    const range = document.createRange();
+    range.selectNodeContents(editor);
+
+    const selection = window.getSelection();
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+    savedRangeRef.current = range.cloneRange();
+  }
+
   function addLink() {
     if (disabled) return;
 
@@ -297,6 +339,25 @@ export default function RichTextEditor({
               {FONT_SIZES.map((size) => (
                 <option key={size} value={size}>
                   {size} px
+                </option>
+              ))}
+            </select>
+
+            <select
+              disabled={disabled}
+              defaultValue=""
+              title="Warna huruf"
+              aria-label="Warna huruf"
+              onMouseDown={saveSelection}
+              onChange={(event) => {
+                if (event.target.value) applyTextColor(event.target.value);
+                event.currentTarget.value = "";
+              }}
+            >
+              <option value="">Warna</option>
+              {TEXT_COLORS.map((color) => (
+                <option key={color.value} value={color.value}>
+                  {color.label}
                 </option>
               ))}
             </select>
@@ -531,17 +592,18 @@ export default function RichTextEditor({
           onBlur={sync}
           onMouseUp={saveSelection}
           onKeyUp={saveSelection}
+          onKeyDown={handleEditorKeyDown}
           onCopy={(event) => {
             // Copy diizinkan khusus di area editor.
             event.stopPropagation();
           }}
           onCut={(event) => {
-            // Cut diizinkan khusus di area editor.
             event.stopPropagation();
+            window.setTimeout(sync, 0);
           }}
           onPaste={(event) => {
-            // Paste diizinkan khusus di area editor.
             event.stopPropagation();
+            window.setTimeout(sync, 0);
           }}
         />
       </div>
@@ -554,7 +616,7 @@ export default function RichTextEditor({
       />
 
       <small className="admin-field-help">
-        Format tersedia: jenis dan ukuran huruf (mulai 11 px),
+        Format tersedia: jenis dan ukuran huruf (mulai 11 px), warna huruf,
         heading opsional, bold, italic, underline, quote, daftar,
         link, pemisah, rata kiri/tengah/kanan, dan rata kanan-kiri.
       </small>
