@@ -7237,3 +7237,233 @@ body.reader-copy-protected .reader-protected-shell .jp-rich-content *::selection
   }
 }
 
+/* ==========================================================
+   MENJADI NOL — GLOBAL READING LAYOUT
+   Semua isi tulisan publik: bidang tetap lega, area baca nyaman.
+   Quote sengaja tidak diubah.
+   ========================================================== */
+
+@media (min-width: 900px) {
+  /* Area baca tulisan di dalam folder */
+  .folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body {
+    width: min(920px, 100%) !important;
+    max-width: 920px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    font-size: 17px !important;
+    line-height: 1.8 !important;
+  }
+
+  /* Isi artikel publik yang memakai article-body */
+  .article-read .article-body {
+    width: min(920px, 100%) !important;
+    max-width: 920px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    font-size: 17px !important;
+    line-height: 1.8 !important;
+  }
+
+  /* Rich text publik lain yang berada di kartu konten */
+  .inner-page .jp-rich-render:not(.folder-entry-body),
+  .inner-page .jp-rich-content:not(.folder-entry-body) {
+    width: min(920px, 100%);
+    max-width: 920px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Paragraf normal: ritme baca lebih rapi.
+   Tidak menarget blockquote sehingga quote yang sudah bagus tetap utuh. */
+.folder-public-page .folder-entry-body > p,
+.article-read .article-body > p,
+.inner-page .jp-rich-render > p,
+.inner-page .jp-rich-content > p {
+  margin-top: 0;
+  margin-bottom: 1.15em;
+}
+
+/* Heading di dalam isi tulisan diberi ruang yang lebih natural. */
+.folder-public-page .folder-entry-body > h1,
+.folder-public-page .folder-entry-body > h2,
+.folder-public-page .folder-entry-body > h3,
+.article-read .article-body > h1,
+.article-read .article-body > h2,
+.article-read .article-body > h3 {
+  line-height: 1.3;
+  margin-top: 1.55em;
+  margin-bottom: .65em;
+}
+
+/* Mobile tetap memenuhi ruang yang tersedia dan nyaman dibaca. */
+@media (max-width: 899px) {
+  .folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body,
+  .article-read .article-body {
+    width: 100% !important;
+    max-width: none !important;
+    font-size: 16px !important;
+    line-height: 1.75 !important;
+  }
+}
+
+/* ==========================================================
+   MENJADI NOL — WIDE WRITING OVERRIDE
+   Isi tulisan memakai hampir seluruh kartu 1200px.
+   Quote tidak diubah.
+   ========================================================== */
+@media (min-width: 900px) {
+  .folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body,
+  .article-read .article-body,
+  .inner-page .jp-rich-render:not(.folder-entry-body),
+  .inner-page .jp-rich-content:not(.folder-entry-body) {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body,
+  .article-read .article-body {
+    font-size: 17px !important;
+    line-height: 1.8 !important;
+  }
+}
+
+/* ==========================================================
+   MENJADI NOL — PUBLIC RICH TEXT = EDITOR LOOK
+   Hasil save/publish mengikuti flow dan tipografi editor.
+   Quote sengaja tidak diubah.
+   ========================================================== */
+@media (min-width: 900px) {
+  .folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+
+    /* Editor tidak memakai Georgia/article typography sebagai default. */
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif !important;
+    font-size: 16px !important;
+    line-height: 1.65 !important;
+
+    /* Samakan flow dengan contentEditable: jangan pertahankan whitespace source HTML. */
+    white-space: normal !important;
+  }
+
+  .folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body p,
+  .folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body div {
+    max-width: none !important;
+    white-space: normal !important;
+  }
+
+  .folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body p {
+    margin: 0 0 1em !important;
+  }
+
+  /* Inline format dari editor tetap punya prioritas. */
+  .folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body span[style] {
+    max-width: none !important;
+  }
+}
+
+/* Jangan timpa quote yang sudah diset dan sudah tampil benar. */
+.folder-public-page .folder-entry-body blockquote,
+.folder-public-page .folder-entry-body blockquote * {
+  white-space: normal !important;
+}
+
+/* ==========================================================
+   MENJADI NOL — RUANG BELAJAR TRUE 1200PX
+   Paksa wrapper + header + grid Ruang Belajar memakai 1200px.
+   ========================================================== */
+@media (min-width: 1100px) {
+  .learning-page .shell,
+  .learning-page > .shell,
+  .collection-page .shell,
+  .collection-page > .shell {
+    width: min(1200px, calc(100% - 40px)) !important;
+    max-width: 1200px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .learning-page .learning-header,
+  .collection-page .collection-header {
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  .learning-page .learning-grid,
+  .collection-page .collection-content {
+    width: 100% !important;
+    max-width: none !important;
+  }
+}
+
+/* Rich text tables, images, and PDF */
+.jp-rich-content .jp-table-wrap,
+.jp-rich-render .jp-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  margin: 18px 0;
+}
+
+.jp-rich-content table,
+.jp-rich-render table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(255,255,255,.82);
+}
+
+.jp-rich-content th,
+.jp-rich-content td,
+.jp-rich-render th,
+.jp-rich-render td {
+  border: 1px solid rgba(24,59,41,.18);
+  padding: 10px 12px;
+  text-align: left;
+  vertical-align: top;
+  min-width: 110px;
+}
+
+.jp-rich-content th,
+.jp-rich-render th {
+  font-weight: 700;
+  background: rgba(232,236,223,.7);
+}
+
+.jp-rich-media {
+  margin: 22px auto;
+  max-width: 100%;
+  text-align: center;
+}
+
+.jp-rich-media img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+  border-radius: 16px;
+}
+
+.jp-rich-media figcaption {
+  margin-top: 8px;
+  font-size: 13px;
+  opacity: .72;
+}
+
+.jp-rich-file {
+  margin: 16px 0;
+}
+
+.jp-rich-file a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 1px solid rgba(24,59,41,.16);
+  border-radius: 12px;
+  text-decoration: none;
+}
+

@@ -64,6 +64,9 @@ export default function RichTextEditor({
 }: Props) {
   const editorRef = useRef<HTMLDivElement | null>(null);
   const savedRangeRef = useRef<Range | null>(null);
+  const imageInputRef = useRef<HTMLInputElement | null>(null);
+  const pdfInputRef = useRef<HTMLInputElement | null>(null);
+  const [uploadingMedia, setUploadingMedia] = useState(false);
 
   const htmlRef = useRef(defaultValue || "");
   const hiddenInputRef = useRef<HTMLInputElement | null>(null);
@@ -303,6 +306,148 @@ export default function RichTextEditor({
     sync();
   }
 
+  function insertHtml(html: string) {
+    if (disabled) return;
+
+    restoreSelection();
+    document.execCommand("insertHTML", false, html);
+    sync();
+  }
+
+  function addTable() {
+    if (disabled) return;
+
+    const rowInput = window.prompt("Jumlah baris tabel (1-20):", "3");
+    if (rowInput === null) return;
+
+    const colInput = window.prompt("Jumlah kolom tabel (1-10):", "3");
+    if (colInput === null) return;
+
+    const rows = Number(rowInput);
+    const cols = Number(colInput);
+
+    if (
+      !Number.isInteger(rows) ||
+      !Number.isInteger(cols) ||
+      rows < 1 ||
+      rows > 20 ||
+      cols < 1 ||
+      cols > 10
+    ) {
+      window.alert("Jumlah tabel tidak valid.");
+      return;
+    }
+
+    const header = Array.from(
+      { length: cols },
+      (_, index) => `<th>Kolom ${index + 1}</th>`
+    ).join("");
+
+    const body = Array.from(
+      { length: Math.max(0, rows - 1) },
+      () =>
+        `<tr>${Array.from(
+          { length: cols },
+          () => "<td>&nbsp;</td>"
+        ).join("")}</tr>`
+    ).join("");
+
+    insertHtml(
+      `<div class="jp-table-wrap"><table><thead><tr>${header}</tr></thead><tbody>${body}</tbody></table></div><p><br></p>`
+    );
+  }
+
+  async function uploadMedia(
+    file: File,
+    kind: "image" | "pdf"
+  ) {
+    if (disabled || uploadingMedia) return;
+
+    const imageTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "image/gif",
+    ];
+
+    const valid =
+      kind === "image"
+        ? imageTypes.includes(file.type)
+        : file.type === "application/pdf";
+
+    if (!valid) {
+      window.alert(
+        kind === "image"
+          ? "Gunakan JPG, PNG, WebP, atau GIF."
+          : "Gunakan file PDF."
+      );
+      return;
+    }
+
+    const maxSize =
+      kind === "image"
+        ? 8 * 1024 * 1024
+        : 20 * 1024 * 1024;
+
+    if (file.size > maxSize) {
+      window.alert(
+        kind === "image"
+          ? "Gambar maksimal 8 MB."
+          : "PDF maksimal 20 MB."
+      );
+      return;
+    }
+
+    saveSelection();
+    setUploadingMedia(true);
+
+    try {
+      const data = new FormData();
+      data.append("file", file);
+      data.append("kind", kind);
+
+      const response = await fetch(
+        "/api/admin/content-media",
+        {
+          method: "POST",
+          body: data,
+        }
+      );
+
+      const result = await response
+        .json()
+        .catch(() => ({}));
+
+      if (!response.ok || !result?.url) {
+        throw new Error(
+          result?.error || "Upload gagal."
+        );
+      }
+
+      const safeName = file.name
+        .replace(/[<>"']/g, "")
+        .slice(0, 160);
+
+      if (kind === "image") {
+        insertHtml(
+          `<figure class="jp-rich-media"><img src="${result.url}" alt="${safeName}" loading="lazy"><figcaption>${safeName}</figcaption></figure><p><br></p>`
+        );
+      } else {
+        insertHtml(
+          `<p class="jp-rich-file"><a href="${result.url}" target="_blank" rel="noopener noreferrer">📄 ${safeName}</a></p><p><br></p>`
+        );
+      }
+    } catch (error) {
+      window.alert(
+        error instanceof Error
+          ? error.message
+          : "Upload gagal."
+      );
+    } finally {
+      setUploadingMedia(false);
+    }
+  }
+
   const toolbarRowStyle = {
     display: "flex",
     alignItems: "center",
@@ -532,6 +677,53 @@ export default function RichTextEditor({
               ―
             </button>
 
+            <button
+              type="button"
+              disabled={disabled || uploadingMedia}
+              title="Sisipkan tabel"
+              onMouseDown={(event) => {
+                event.preventDefault();
+                saveSelection();
+              }}
+              onClick={addTable}
+            >
+              ▦ Tabel
+            </button>
+
+            <button
+              type="button"
+              disabled={disabled || uploadingMedia}
+              title="Upload gambar"
+              onMouseDown={(event) => {
+                event.preventDefault();
+                saveSelection();
+              }}
+              onClick={() =>
+                imageInputRef.current?.click()
+              }
+            >
+              🖼 Gambar
+            </button>
+
+            <button
+              type="button"
+              disabled={disabled || uploadingMedia}
+              title="Upload PDF"
+              onMouseDown={(event) => {
+                event.preventDefault();
+                saveSelection();
+              }}
+              onClick={() =>
+                pdfInputRef.current?.click()
+              }
+            >
+              📄 PDF
+            </button>
+
+            {uploadingMedia && (
+              <span>Uploading...</span>
+            )}
+
             <span className="jp-rich-divider" />
 
             <button
@@ -664,6 +856,34 @@ export default function RichTextEditor({
       </div>
 
       <input
+        ref={imageInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp,image/gif"
+        hidden
+        onChange={(event) => {
+          const file = event.target.files?.[0];
+          if (file) {
+            void uploadMedia(file, "image");
+          }
+          event.currentTarget.value = "";
+        }}
+      />
+
+      <input
+        ref={pdfInputRef}
+        type="file"
+        accept="application/pdf,.pdf"
+        hidden
+        onChange={(event) => {
+          const file = event.target.files?.[0];
+          if (file) {
+            void uploadMedia(file, "pdf");
+          }
+          event.currentTarget.value = "";
+        }}
+      />
+
+      <input
         ref={hiddenInputRef}
         type="hidden"
         name={name}
@@ -673,7 +893,7 @@ export default function RichTextEditor({
       <small className="admin-field-help">
         Format tersedia: jenis dan ukuran huruf (mulai 11 px), warna huruf,
         heading opsional, bold, italic, underline, quote, daftar,
-        link, pemisah, rata kiri/tengah/kanan, dan rata kanan-kiri.
+        link, pemisah, tabel, gambar, PDF, rata kiri/tengah/kanan, dan rata kanan-kiri.
       </small>
     </div>
   );

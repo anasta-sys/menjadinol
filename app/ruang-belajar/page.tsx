@@ -39,7 +39,7 @@ export default async function RuangBelajarPage() {
       >
         <div
           style={{
-            width: "min(100%, 1040px)",
+            width: "min(100%, 1200px)",
             margin: "0 auto",
             background: "rgba(255, 255, 255, 0.94)",
             border: "1px solid rgba(34, 74, 55, 0.10)",
