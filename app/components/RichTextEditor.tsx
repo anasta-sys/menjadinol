@@ -43,6 +43,17 @@ const TEXT_COLORS = [
   { label: "Biru", value: "#175cd3" },
 ];
 
+const QUOTE_COLORS = [
+  { label: "Emas", value: "gold" },
+  { label: "Hijau", value: "green" },
+  { label: "Hijau tua", value: "dark-green" },
+  { label: "Abu-abu", value: "gray" },
+  { label: "Cokelat", value: "brown" },
+  { label: "Merah", value: "red" },
+  { label: "Biru", value: "blue" },
+];
+
+
 export default function RichTextEditor({
   name,
   label = "Isi tulisan",
@@ -92,12 +103,10 @@ export default function RichTextEditor({
     if (!editor || !selection || selection.rangeCount === 0) return;
 
     const range = selection.getRangeAt(0);
-    const container =
-      range.commonAncestorContainer.nodeType === Node.TEXT_NODE
-        ? range.commonAncestorContainer.parentElement
-        : (range.commonAncestorContainer as HTMLElement);
+    const startNode = range.startContainer;
+    const endNode = range.endContainer;
 
-    if (container && editor.contains(container)) {
+    if (editor.contains(startNode) && editor.contains(endNode)) {
       savedRangeRef.current = range.cloneRange();
     }
   }
@@ -219,6 +228,34 @@ export default function RichTextEditor({
     restoreSelection();
     document.execCommand("styleWithCSS", false, "true");
     document.execCommand("foreColor", false, color);
+    sync();
+  }
+
+  function applyQuote(quoteColor: string) {
+    if (disabled || !quoteColor) return;
+
+    restoreSelection();
+    document.execCommand("formatBlock", false, "blockquote");
+
+    const editor = editorRef.current;
+    const selection = window.getSelection();
+    if (!editor || !selection || selection.rangeCount === 0) {
+      sync();
+      return;
+    }
+
+    let node: Node | null = selection.getRangeAt(0).startContainer;
+    if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+
+    let element = node as HTMLElement | null;
+    while (element && element !== editor && element.tagName !== "BLOCKQUOTE") {
+      element = element.parentElement;
+    }
+
+    if (element?.tagName === "BLOCKQUOTE") {
+      element.setAttribute("data-quote-color", quoteColor);
+    }
+
     sync();
   }
 
@@ -421,18 +458,24 @@ export default function RichTextEditor({
               <u>U</u>
             </button>
 
-            <button
-              type="button"
+            <select
               disabled={disabled}
-              title="Quote"
-              onMouseDown={(event) => {
-                event.preventDefault();
-                saveSelection();
+              defaultValue=""
+              title="Quote dan warna garis"
+              aria-label="Quote dan warna garis"
+              onMouseDown={saveSelection}
+              onChange={(event) => {
+                if (event.target.value) applyQuote(event.target.value);
+                event.currentTarget.value = "";
               }}
-              onClick={() => command("formatBlock", "blockquote")}
             >
-              ❝
-            </button>
+              <option value="">❝ Quote</option>
+              {QUOTE_COLORS.map((color) => (
+                <option key={color.value} value={color.value}>
+                  {color.label}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* BARIS 2 — list, link, pemisah, alignment, undo/redo */}
@@ -590,7 +633,19 @@ export default function RichTextEditor({
           style={{ minHeight }}
           onInput={sync}
           onBlur={sync}
-          onMouseUp={saveSelection}
+          onMouseDown={(event) => {
+            // Jangan cegah default: browser harus bebas memulai blok/seleksi teks.
+            event.stopPropagation();
+          }}
+          onMouseMove={(event) => {
+            // Jangan biarkan handler parent mengambil alih drag selection.
+            if (event.buttons === 1) event.stopPropagation();
+          }}
+          onMouseUp={(event) => {
+            event.stopPropagation();
+            saveSelection();
+          }}
+          onSelect={saveSelection}
           onKeyUp={saveSelection}
           onKeyDown={handleEditorKeyDown}
           onCopy={(event) => {

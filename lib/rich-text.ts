@@ -10,6 +10,7 @@ const ALLOWED_TAGS =
     "div",
     "br",
     "span",
+    "blockquote",
   ]);
 
 const ALLOWED_ALIGN =
@@ -18,6 +19,17 @@ const ALLOWED_ALIGN =
     "center",
     "right",
     "justify",
+  ]);
+
+const ALLOWED_QUOTE_COLORS =
+  new Set([
+    "gold",
+    "green",
+    "dark-green",
+    "gray",
+    "brown",
+    "red",
+    "blue",
   ]);
 
 export function sanitizeRichText(
@@ -96,7 +108,24 @@ export function sanitizeRichText(
           ? ` style="text-align:${align}"`
           : "";
 
-      return `<${tag}${safeAlign}>`;
+      let safeQuoteColor = "";
+
+      if(tag === "blockquote") {
+        const quoteColorMatch =
+          attrs.match(
+            /\bdata-quote-color\s*=\s*["']?(gold|green|dark-green|gray|brown|red|blue)["']?/i
+          );
+
+        const quoteColor =
+          (quoteColorMatch?.[1] ?? "").toLowerCase();
+
+        if(ALLOWED_QUOTE_COLORS.has(quoteColor)) {
+          safeQuoteColor =
+            ` data-quote-color="${quoteColor}"`;
+        }
+      }
+
+      return `<${tag}${safeAlign}${safeQuoteColor}>`;
     }
   );
 

@@ -616,9 +616,9 @@ export default function FolderManager({
               )}
 
               <div
-                className="jp-rich-render admin-preview-body"
-                dangerouslySetInnerHTML={{ __html: entryPreview.body }}
-              />
+  className="jp-rich-render jp-rich-content article-body admin-preview-body"
+  dangerouslySetInnerHTML={{ __html: entryPreview.body }}
+/>
 
               {entryPreview.attachmentName && (
                 <div className="admin-preview-attachment">

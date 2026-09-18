@@ -410,7 +410,7 @@ function EntryContent({
 
       {entry.body && (
         <div
-          className="folder-entry-body jp-rich-render"
+          className="folder-entry-body jp-rich-render jp-rich-content article-body"
           dangerouslySetInnerHTML={{
             __html: entry.body,
           }}
