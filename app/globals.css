@@ -6930,3 +6930,310 @@ body:has(.mn-section-background) [class*="panel"] {
     padding-right: 22px !important;
   }
 }
+
+/* ==========================================================
+   MENJADI NOL — QUOTE / BLOCKQUOTE
+   Berlaku di RichTextEditor dan hasil artikel.
+   ========================================================== */
+
+.jp-rich-content blockquote,
+.article-body blockquote {
+  position: relative;
+  margin: 24px 0;
+  padding: 20px 24px 20px 28px;
+  border-left: 4px solid var(--gold, #b88632);
+  border-radius: 0 16px 16px 0;
+  background:
+    linear-gradient(135deg, rgba(232,236,223,.72), rgba(255,253,248,.92));
+  color: var(--ink, #183b29);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.08em;
+  font-style: italic;
+  line-height: 1.8;
+}
+
+.jp-rich-content blockquote::before,
+.article-body blockquote::before {
+  content: "“";
+  position: absolute;
+  top: 4px;
+  left: 9px;
+  color: var(--gold, #b88632);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 34px;
+  line-height: 1;
+  opacity: .65;
+}
+
+.jp-rich-content blockquote p,
+.article-body blockquote p {
+  margin: 0;
+}
+
+.jp-rich-content blockquote p + p,
+.article-body blockquote p + p {
+  margin-top: 10px;
+}
+
+@media(max-width:560px) {
+  .jp-rich-content blockquote,
+  .article-body blockquote {
+    margin: 20px 0;
+    padding: 17px 18px 17px 24px;
+    font-size: 1.02em;
+  }
+}
+
+/* FIX QUOTE UNTUK PAGE INTRO — Tentang, Perjalanan, dll */
+.inner-lead blockquote {
+  position: relative;
+  margin: 24px 0;
+  padding: 20px 24px 20px 28px;
+  border-left: 4px solid var(--gold, #b88632);
+  border-radius: 0 16px 16px 0;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(232,236,223,.72),
+      rgba(255,253,248,.92)
+    );
+  color: var(--ink, #183b29);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.08em;
+  font-style: italic;
+  line-height: 1.8;
+}
+
+.inner-lead blockquote::before {
+  content: "“";
+  position: absolute;
+  top: 4px;
+  left: 9px;
+  color: var(--gold, #b88632);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 34px;
+  line-height: 1;
+  opacity: .65;
+}
+
+.inner-lead blockquote p {
+  margin: 0;
+}
+
+.inner-lead blockquote p + p {
+  margin-top: 10px;
+}
+
+@media(max-width:560px) {
+  .inner-lead blockquote {
+    margin: 20px 0;
+    padding: 17px 18px 17px 24px;
+    font-size: 1.02em;
+  }
+}
+
+/* ==========================================================
+   MENJADI NOL — FINAL RICH TEXT SELECTION + QUOTE COLORS
+   ========================================================== */
+
+/* Proteksi copy halaman pembaca tetap aktif,
+   tetapi area RichTextEditor milik admin boleh diseleksi. */
+.reader-protected-shell .jp-rich-content,
+.reader-protected-shell .jp-rich-content *,
+body.reader-copy-protected .reader-protected-shell .jp-rich-content,
+body.reader-copy-protected .reader-protected-shell .jp-rich-content * {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+  -webkit-touch-callout: default !important;
+}
+
+.reader-protected-shell .jp-rich-content::selection,
+.reader-protected-shell .jp-rich-content *::selection,
+body.reader-copy-protected .reader-protected-shell .jp-rich-content::selection,
+body.reader-copy-protected .reader-protected-shell .jp-rich-content *::selection {
+  background: Highlight !important;
+  color: HighlightText !important;
+}
+
+/* Default quote = emas. */
+.jp-rich-content blockquote,
+.jp-rich-render blockquote,
+.article-body blockquote,
+.inner-lead blockquote {
+  --quote-line: #b88632;
+  border-left-color: var(--quote-line) !important;
+}
+
+/* Tanda kutip mengikuti warna garis. */
+.jp-rich-content blockquote::before,
+.jp-rich-render blockquote::before,
+.article-body blockquote::before,
+.inner-lead blockquote::before {
+  color: var(--quote-line) !important;
+}
+
+.jp-rich-content blockquote[data-quote-color="gold"],
+.jp-rich-render blockquote[data-quote-color="gold"],
+.article-body blockquote[data-quote-color="gold"],
+.inner-lead blockquote[data-quote-color="gold"] { --quote-line: #b88632; }
+
+.jp-rich-content blockquote[data-quote-color="green"],
+.jp-rich-render blockquote[data-quote-color="green"],
+.article-body blockquote[data-quote-color="green"],
+.inner-lead blockquote[data-quote-color="green"] { --quote-line: #6f865f; }
+
+.jp-rich-content blockquote[data-quote-color="dark-green"],
+.jp-rich-render blockquote[data-quote-color="dark-green"],
+.article-body blockquote[data-quote-color="dark-green"],
+.inner-lead blockquote[data-quote-color="dark-green"] { --quote-line: #183b29; }
+
+.jp-rich-content blockquote[data-quote-color="gray"],
+.jp-rich-render blockquote[data-quote-color="gray"],
+.article-body blockquote[data-quote-color="gray"],
+.inner-lead blockquote[data-quote-color="gray"] { --quote-line: #7a817b; }
+
+.jp-rich-content blockquote[data-quote-color="brown"],
+.jp-rich-render blockquote[data-quote-color="brown"],
+.article-body blockquote[data-quote-color="brown"],
+.inner-lead blockquote[data-quote-color="brown"] { --quote-line: #7a5230; }
+
+.jp-rich-content blockquote[data-quote-color="red"],
+.jp-rich-render blockquote[data-quote-color="red"],
+.article-body blockquote[data-quote-color="red"],
+.inner-lead blockquote[data-quote-color="red"] { --quote-line: #b42318; }
+
+.jp-rich-content blockquote[data-quote-color="blue"],
+.jp-rich-render blockquote[data-quote-color="blue"],
+.article-body blockquote[data-quote-color="blue"],
+.inner-lead blockquote[data-quote-color="blue"] { --quote-line: #175cd3; }
+
+/* ==========================================================
+   MENJADI NOL — FOLDER PUBLIC: WIDER CONTENT + COMPACT QUOTE
+   Khusus halaman isi folder. Tidak mengubah quote page intro.
+   ========================================================== */
+
+@media (min-width: 1100px) {
+  .folder-public-page .shell.inner-card {
+    width: min(1200px, calc(100% - 32px)) !important;
+    max-width: none !important;
+    padding-left: 34px !important;
+    padding-right: 34px !important;
+  }
+
+  .folder-public-page .folder-entry-card-full {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+  }
+}
+
+/* Body folder tetap lebar, tetapi tidak mewarisi ukuran artikel yang terlalu besar. */
+.folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body {
+  width: 100% !important;
+  max-width: none !important;
+  font-size: 16px !important;
+  line-height: 1.75 !important;
+}
+
+/* Quote khusus di dalam folder dibuat lebih ringkas.
+   white-space:normal mencegah whitespace HTML ikut membuat kotak terlalu tinggi. */
+.folder-public-page .folder-entry-body blockquote {
+  width: 100% !important;
+  max-width: none !important;
+  box-sizing: border-box !important;
+  margin: 18px 0 !important;
+  padding: 14px 20px 14px 26px !important;
+  min-height: 0 !important;
+  white-space: normal !important;
+  font-size: 1em !important;
+  line-height: 1.65 !important;
+}
+
+.folder-public-page .folder-entry-body blockquote p {
+  margin: 0 !important;
+  white-space: normal !important;
+}
+
+.folder-public-page .folder-entry-body blockquote p + p {
+  margin-top: 8px !important;
+}
+
+.folder-public-page .folder-entry-body blockquote::before {
+  top: 3px !important;
+  left: 8px !important;
+  font-size: 29px !important;
+}
+
+@media (max-width: 760px) {
+  .folder-public-page .shell.inner-card {
+    width: calc(100% - 20px) !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  .folder-public-page .folder-entry-card-full {
+    padding: 20px 18px !important;
+  }
+
+  .folder-public-page .folder-entry-body blockquote {
+    margin: 16px 0 !important;
+    padding: 13px 16px 13px 23px !important;
+  }
+}
+
+/* ==========================================================
+   MENJADI NOL — ALL PUBLIC CONTENT PAGES: 1200PX
+   Berlaku untuk halaman konten utama lintas section.
+   Home, login, dan admin tidak ikut.
+   Folder public sudah memiliki aturan 1200px tersendiri.
+   ========================================================== */
+@media (min-width: 1100px) {
+  .inner-page .shell.inner-card,
+  .learning-page > .shell,
+  .collection-page > .shell,
+  .article-index > .shell,
+  .article-read > .shell {
+    width: min(1200px, calc(100% - 40px)) !important;
+    max-width: 1200px !important;
+  }
+}
+
+/* ==========================================================
+   MENJADI NOL — FINAL 1200PX UNTUK SEMUA HALAMAN KONTEN
+   Menghapus pembatas internal yang membuat Ruang Belajar
+   dan Artikel masih terlihat sempit.
+   ========================================================== */
+@media (min-width: 1100px) {
+  /* kartu/kerangka halaman konten */
+  .inner-page .shell.inner-card,
+  .learning-page .shell,
+  .collection-page .shell,
+  .article-index .shell,
+  .article-read .shell {
+    width: min(1200px, calc(100% - 40px)) !important;
+    max-width: 1200px !important;
+  }
+
+  /* Ruang Belajar sebelumnya dibatasi 780px */
+  .learning-header,
+  .collection-header {
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  .learning-lead,
+  .collection-header > p:last-child {
+    width: 100% !important;
+    max-width: 1000px !important;
+  }
+
+  /* area grid/list artikel dan ruang belajar memakai lebar penuh */
+  .learning-grid,
+  .collection-content,
+  .article-grid {
+    width: 100% !important;
+    max-width: none !important;
+  }
+}
+
