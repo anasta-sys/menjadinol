@@ -7467,3 +7467,46 @@ body.reader-copy-protected .reader-protected-shell .jp-rich-content *::selection
   text-decoration: none;
 }
 
+/* ==========================================================
+   MENJADI NOL — COMPACT PUBLIC ARTICLE SPACING
+   Rapikan jarak antar paragraf tanpa mengubah quote/editor.
+   Diletakkan paling akhir agar override aturan lama.
+   ========================================================== */
+.folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body {
+  white-space: normal !important;
+}
+
+.folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body > p {
+  margin-top: 0 !important;
+  margin-bottom: 12px !important;
+}
+
+.folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body > p:empty {
+  display: none !important;
+  margin: 0 !important;
+}
+
+.folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body > p:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* Quote dipertahankan; hanya jarak luarnya dirapikan. */
+.folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body > blockquote {
+  margin-top: 14px !important;
+  margin-bottom: 14px !important;
+}
+
+.folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body > blockquote + p {
+  margin-top: 0 !important;
+}
+
+@media (max-width: 899px) {
+  .folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body > p {
+    margin-bottom: 10px !important;
+  }
+
+  .folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body > blockquote {
+    margin-top: 12px !important;
+    margin-bottom: 12px !important;
+  }
+}
