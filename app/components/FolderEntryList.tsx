@@ -664,6 +664,47 @@ function EntryContent({
           }
         }
 
+
+        /* FINAL: lampiran tetap dapat digeser kanan-kiri pada layar kecil.
+           Canvas sengaja lebih lebar dari viewport agar benar-benar ada overflow. */
+        @media (max-width: 1366px) {
+          .material-image-wrap,
+          .material-pdf-canvas-wrap {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: auto !important;
+            overflow-y: hidden !important;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-x pan-y;
+            overscroll-behavior-x: contain;
+          }
+
+          .material-image-canvas {
+            width: auto !important;
+            min-width: min(980px, 140vw) !important;
+            max-width: none !important;
+          }
+
+          .material-pdf-pages {
+            width: max-content !important;
+            min-width: min(980px, 140vw) !important;
+          }
+
+          .material-pdf-pages :global(.material-pdf-page) {
+            width: auto !important;
+            min-width: min(980px, 140vw) !important;
+            max-width: none !important;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .material-image-canvas,
+          .material-pdf-pages,
+          .material-pdf-pages :global(.material-pdf-page) {
+            min-width: 820px !important;
+          }
+        }
+
       `}</style>
     </article>
   );
