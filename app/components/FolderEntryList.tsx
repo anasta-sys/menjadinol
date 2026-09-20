@@ -549,7 +549,7 @@ function EntryContent({
           width: 100%;
           max-width: 100%;
           box-sizing: border-box;
-          overflow: hidden;
+          overflow: visible;
         }
 
         .material-attachment-head {
@@ -579,12 +579,18 @@ function EntryContent({
         .material-image-wrap,
         .material-pdf-canvas-wrap,
         .material-video-wrap {
-          overflow: hidden;
+          max-width: 100%;
+          overflow-x: auto;
+          overflow-y: hidden;
+          -webkit-overflow-scrolling: touch;
+          touch-action: pan-x pan-y;
         }
 
         .material-image-canvas {
           display: block;
-          width: 100%;
+          width: auto;
+          min-width: 100%;
+          max-width: none;
           height: auto;
           max-height: 760px;
           object-fit: contain;
@@ -598,12 +604,15 @@ function EntryContent({
         .material-pdf-pages {
           display: grid;
           gap: 16px;
-          width: 100%;
+          width: max-content;
+          min-width: 100%;
         }
 
         .material-pdf-pages :global(.material-pdf-page) {
           display: block;
-          width: 100%;
+          width: auto;
+          min-width: 100%;
+          max-width: none;
           height: auto;
           border-radius: 12px;
           background: white;
