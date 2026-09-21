@@ -6,7 +6,7 @@ type Section =
   | "artikel"
   | "layanan"
   | "ruang-belajar"
-  | "sinopsis"
+  | "ruang-jeda"
   | "kontak";
 
 export default async function SectionCreatePanel({

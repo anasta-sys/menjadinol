@@ -6,7 +6,7 @@ type PageKey =
   | "tentang"
   | "perjalanan"
   | "ruang-belajar"
-  | "sinopsis"
+  | "ruang-jeda"
   | "artikel"
   | "kontak";
 

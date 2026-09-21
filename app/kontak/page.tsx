@@ -16,9 +16,10 @@ export default async function Page() {
 
   const { data: folders } = await supabase
     .from("content_folders")
-    .select("id,section,title,slug,description")
+    .select("id,section,title,slug,description,parent_id")
     .eq("section", "kontak")
     .eq("is_published", true)
+    .is("parent_id", null)
     .order("sort_order", { ascending: true })
     .order("title", { ascending: true });
 

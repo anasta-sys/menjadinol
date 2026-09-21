@@ -16,7 +16,7 @@ type Folder = {
 
 function confirmDelete(event: React.FormEvent<HTMLFormElement>) {
   const ok = window.confirm(
-    "Yakin folder ini dihapus?\n\nSemua tulisan di dalam folder ini juga akan ikut terhapus."
+    "Yakin fitur ini dihapus?\n\nSemua tulisan di dalam fitur ini juga akan ikut terhapus."
   );
 
   if (!ok) {
@@ -50,7 +50,7 @@ export default function SectionFolderAdminActions({
         setMessage(
           error instanceof Error
             ? error.message
-            : "Perubahan folder gagal disimpan."
+            : "Perubahan fitur gagal disimpan."
         );
       }
     });
@@ -102,7 +102,7 @@ export default function SectionFolderAdminActions({
 
           <div className="admin-two-col">
             <label>
-              Nama folder
+              Nama fitur
               <input
                 name="title"
                 maxLength={120}

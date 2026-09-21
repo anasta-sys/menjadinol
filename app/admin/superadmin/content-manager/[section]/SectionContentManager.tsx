@@ -50,7 +50,7 @@ function SectionLeaf({ slug, size = 76 }: { slug: string; size?: number }) {
     );
   }
 
-  if (slug === "sinopsis") {
+  if (slug === "ruang-jeda") {
     return (
       <svg {...common}>
         <path d="M24 103C22 70 37 36 83 17c15 31 3 68-36 84Z" fill="#438141" />
@@ -303,7 +303,7 @@ export default function SectionContentManager({
             }}
           >
             <span aria-hidden="true" style={{ marginRight: 6, fontSize: 15, lineHeight: 1 }}>←</span>
-            Semua Folder
+            Semua Fitur
           </Link>
 
           <Link
@@ -341,7 +341,7 @@ export default function SectionContentManager({
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
           <input value={query} onChange={(e)=>{ setQuery(e.target.value); setPage(1); }} placeholder="Cari judul / slug / penulis..." style={{ minHeight: 38, minWidth: 250, padding: "0 11px", borderRadius: 10, border: "1px solid #dfe3dc" }}/>
           <select value={folderId} onChange={(e)=>{ setFolderId(e.target.value); setPage(1); }} style={{ minHeight: 38, padding: "0 10px", borderRadius: 10, border: "1px solid #dfe3dc", background: "#fff" }}>
-            <option value="all">Semua Folder</option>
+            <option value="all">Semua Fitur</option>
             {folders.map((f)=><option key={f.id} value={f.id}>{f.title}</option>)}
           </select>
           <select value={status} onChange={(e)=>{ setStatus(e.target.value); setPage(1); }} style={{ minHeight: 38, padding: "0 10px", borderRadius: 10, border: "1px solid #dfe3dc", background: "#fff" }}>
@@ -358,7 +358,7 @@ export default function SectionContentManager({
           <table style={{ width: "100%", minWidth: 1050, borderCollapse: "collapse" }}>
             <thead><tr style={{ textAlign: "left", borderBottom: "1px solid #e6e8e3" }}>
               <th style={{ padding: 10 }}>No</th><th style={{ padding: 10 }}>Judul</th>
-              <th style={{ padding: 10 }}>Folder</th><th style={{ padding: 10 }}>Penulis</th>
+              <th style={{ padding: 10 }}>Fitur</th><th style={{ padding: 10 }}>Penulis</th>
               <th style={{ padding: 10 }}>Status</th><th style={{ padding: 10 }}>Dibuat</th>
               <th style={{ padding: 10, textAlign: "right" }}>Aksi</th>
             </tr></thead>

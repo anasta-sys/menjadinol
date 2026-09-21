@@ -9,8 +9,8 @@ const links = [
   ["/tentang", "Tentang"],
   ["/perjalanan", "Perjalanan"],
   ["/ruang-belajar", "Ruang Belajar"],
-  ["/sinopsis", "Sinopsis"],
-  ["/artikel", "Artikel"],
+  ["/ruang-jeda", "Ruang Jeda"],
+  ["/cerita-makna", "Cerita & Makna"],
   ["/kontak", "Kontak"],
 ] as const;
 

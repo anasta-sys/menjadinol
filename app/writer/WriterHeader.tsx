@@ -4,7 +4,7 @@ export type WriterSection =
   | "tentang"
   | "layanan"
   | "ruang-belajar"
-  | "sinopsis"
+  | "ruang-jeda"
   | "artikel"
   | "kontak";
 
@@ -12,8 +12,8 @@ const links: { href: WriterSection; label: string }[] = [
   { href: "tentang", label: "Tentang" },
   { href: "layanan", label: "Perjalanan" },
   { href: "ruang-belajar", label: "Ruang Belajar" },
-  { href: "sinopsis", label: "Sinopsis" },
-  { href: "artikel", label: "Artikel" },
+  { href: "ruang-jeda", label: "Ruang Jeda" },
+  { href: "artikel", label: "Cerita & Makna" },
   { href: "kontak", label: "Kontak" },
 ];
 

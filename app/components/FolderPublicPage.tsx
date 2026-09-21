@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -12,7 +12,7 @@ type Section =
   | "artikel"
   | "layanan"
   | "ruang-belajar"
-  | "sinopsis"
+  | "ruang-jeda"
   | "kontak";
 
 type EntryStatus = "draft" | "published";
@@ -40,15 +40,35 @@ type Entry = {
 };
 
 function publicPath(section: Section) {
-  return section === "layanan" ? "/perjalanan" : `/${section}`;
+  if (section === "layanan") return "/perjalanan";
+  if (section === "artikel") return "/cerita-makna";
+  return `/${section}`;
+}
+
+function folderPath(section: Section) {
+  if (section === "layanan") return "/perjalanan/folder";
+  if (section === "ruang-belajar") return "/ruang-belajar/tema";
+  if (section === "artikel") return "/cerita-makna/folder";
+  return `/${section}/folder`;
 }
 
 function sectionLabel(section: Section) {
-  if (section === "layanan") {
-    return "perjalanan";
+  switch (section) {
+    case "artikel":
+      return "Cerita & Makna";
+    case "layanan":
+      return "Perjalanan";
+    case "ruang-belajar":
+      return "Ruang Belajar";
+    case "ruang-jeda":
+      return "Ruang Jeda";
+    case "tentang":
+      return "Tentang";
+    case "kontak":
+      return "Kontak";
+    default:
+      return section;
   }
-
-  return section.replace("-", " ");
 }
 
 export default async function FolderPublicPage({
@@ -62,7 +82,7 @@ export default async function FolderPublicPage({
 
   const { data: folder, error: folderError } = await supabase
     .from("content_folders")
-    .select("id,title,slug,description")
+    .select("id,section,title,slug,description,parent_id")
     .eq("section", section)
     .eq("slug", slug)
     .eq("is_published", true)
@@ -71,6 +91,24 @@ export default async function FolderPublicPage({
   if (folderError || !folder) {
     notFound();
   }
+
+  const { data: childFolders, error: childFoldersError } = await supabase
+    .from("content_folders")
+    .select("id,section,title,slug,description,parent_id")
+    .eq("section", section)
+    .eq("parent_id", folder.id)
+    .eq("is_published", true)
+    .order("sort_order", { ascending: true })
+    .order("title", { ascending: true });
+
+  if (childFoldersError) {
+    console.error(
+      "Gagal mengambil subfitur:",
+      childFoldersError.message
+    );
+  }
+
+  const hasChildren = (childFolders ?? []).length > 0;
 
   let isAdmin = false;
 
@@ -109,7 +147,7 @@ export default async function FolderPublicPage({
 
   if (entriesError) {
     console.error(
-      "Gagal mengambil tulisan folder:",
+      "Gagal mengambil tulisan fitur:",
       entriesError.message
     );
   }
@@ -246,26 +284,70 @@ export default async function FolderPublicPage({
           </p>
         )}
 
+        {hasChildren && (
+          <section
+            className="section-folder-grid"
+            aria-label={`Subfitur ${folder.title}`}
+            style={{ marginTop: "30px" }}
+          >
+            {(childFolders ?? []).map((child) => (
+              <article
+                key={child.id}
+                className="section-folder-shell"
+              >
+                <Link
+                  className="section-folder-card"
+                  href={`${folderPath(section)}/${child.slug}`}
+                >
+                  <div
+                    className="section-cute-icon"
+                    aria-hidden="true"
+                  >
+                    <span className="section-cute-spark">&#10022;</span>
+                    <span className="section-cute-emoji">&#9671;</span>
+                  </div>
+
+                  <div className="section-folder-copy">
+                    <h2>{child.title}</h2>
+
+                    {child.description && (
+                      <p>{child.description}</p>
+                    )}
+                  </div>
+
+                  <span
+                    className="folder-arrow"
+                    aria-hidden="true"
+                  >
+                    &rarr;
+                  </span>
+                </Link>
+              </article>
+            ))}
+          </section>
+        )}
+
         <div
-          className="folder-entry-list"
-          style={{
-            width: "100%",
-            maxWidth: "100%",
-            minWidth: 0,
-            overflow: "hidden",
-            boxSizing: "border-box",
-          }}
-        >
-          <FolderEntryList
-            entries={entriesWithSignedUrls as Entry[]}
-            isAdmin={isAdmin}
-          />
-        </div>
+            className="folder-entry-list"
+            style={{
+              width: "100%",
+              maxWidth: "100%",
+              minWidth: 0,
+              overflow: "hidden",
+              boxSizing: "border-box",
+            }}
+          >
+            <FolderEntryList
+              entries={entriesWithSignedUrls as Entry[]}
+              isAdmin={isAdmin}
+            />
+          </div>
 
         {isAdmin && (
           <FolderAdminControls
             folder={{
               id: folder.id,
+              section,
               title: folder.title,
               slug: folder.slug,
               description: folder.description ?? "",
@@ -277,9 +359,12 @@ export default async function FolderPublicPage({
           className="back-link"
           href={publicPath(section)}
         >
-          ← kembali
+          &larr; kembali
         </Link>
       </div>
     </main>
   );
 }
+
+
+

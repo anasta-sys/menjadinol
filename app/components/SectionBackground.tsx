@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { usePathname } from "next/navigation";
 
@@ -19,13 +19,13 @@ const backgrounds = [
     position: "center center",
   },
   {
-    path: "/sinopsis",
-    image: "/page-backgrounds/sinopsis.png",
+    path: "/ruang-jeda",
+    image: "/page-backgrounds/ruang-jeda.png",
     position: "center center",
   },
   {
-    path: "/artikel",
-    image: "/page-backgrounds/artikel.png",
+    path: "/cerita-makna",
+    image: "/page-backgrounds/cerita-makna.png",
     position: "center center",
   },
   {

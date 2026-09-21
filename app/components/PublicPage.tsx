@@ -10,7 +10,7 @@ export type PublicPageKey =
   | "tentang"
   | "perjalanan"
   | "ruang-belajar"
-  | "sinopsis"
+  | "ruang-jeda"
   | "artikel"
   | "kontak";
 

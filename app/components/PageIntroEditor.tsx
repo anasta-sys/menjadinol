@@ -20,7 +20,7 @@ export default function PageIntroEditor({
     | "tentang"
     | "perjalanan"
     | "ruang-belajar"
-    | "sinopsis"
+    | "ruang-jeda"
     | "artikel"
     | "kontak";
   eyebrow: string;

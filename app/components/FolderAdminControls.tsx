@@ -1,16 +1,18 @@
-"use client";
+﻿"use client";
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import ContentTableBuilder from "@/app/components/ContentTableBuilder";
 import RichTextEditor from "@/app/components/RichTextEditor";
 import {
+  createContentFolder,
   createFolderEntry,
   updateContentFolder,
 } from "@/app/admin/folder-actions";
 
 type Folder = {
   id: string;
+  section: string;
   title: string;
   slug: string;
   description: string;
@@ -23,6 +25,7 @@ export default function FolderAdminControls({
 }) {
   const router = useRouter();
   const [showAdd,setShowAdd] = useState(false);
+  const [showFeatureAdd,setShowFeatureAdd] = useState(false);
   const [showFolderEdit,setShowFolderEdit] = useState(false);
   const [saving,startSaving] = useTransition();
   const [message,setMessage] = useState("");
@@ -39,7 +42,25 @@ export default function FolderAdminControls({
         setMessage(
           error instanceof Error
             ? error.message
-            : "Perubahan folder gagal disimpan."
+            : "Perubahan fitur gagal disimpan."
+        );
+      }
+    });
+  }
+
+  function saveNewFeature(formData: FormData) {
+    setMessage("");
+
+    startSaving(async () => {
+      try {
+        await createContentFolder(formData);
+        setShowFeatureAdd(false);
+        router.refresh();
+      } catch (error) {
+        setMessage(
+          error instanceof Error
+            ? error.message
+            : "Fitur gagal disimpan."
         );
       }
     });
@@ -72,11 +93,11 @@ export default function FolderAdminControls({
           </p>
 
           <h2>
-            Kelola isi folder
+            Kelola isi fitur
           </h2>
 
           <p>
-            Tambah tulisan baru atau ubah informasi folder.
+            Tambah tulisan, tambah fitur di dalam fitur ini, atau ubah informasi fitur.
             Edit dan hapus tulisan tersedia langsung pada setiap tulisan.
           </p>
         </div>
@@ -95,13 +116,23 @@ export default function FolderAdminControls({
           <button
             className="admin-mini"
             type="button"
+            onClick={() => setShowFeatureAdd((v) => !v)}
+          >
+            {showFeatureAdd
+              ? "tutup"
+              : "+ tambah fitur"}
+          </button>
+
+          <button
+            className="admin-mini"
+            type="button"
             onClick={() =>
               setShowFolderEdit((v) => !v)
             }
           >
             {showFolderEdit
               ? "batal"
-              : "rename / edit folder"}
+              : "rename / edit fitur"}
           </button>
         </div>
       </div>
@@ -113,6 +144,67 @@ export default function FolderAdminControls({
         >
           {message}
         </div>
+      )}
+
+      {showFeatureAdd && (
+        <form
+          action={saveNewFeature}
+          className="proper-admin-form folder-live-form"
+        >
+          <input
+            type="hidden"
+            name="section"
+            value={folder.section}
+          />
+
+          <input
+            type="hidden"
+            name="parent_id"
+            value={folder.id}
+          />
+
+          <div className="admin-two-col">
+            <label>
+              Nama fitur
+              <input
+                name="title"
+                maxLength={120}
+                required
+                disabled={saving}
+              />
+            </label>
+
+            <label>
+              Slug opsional
+              <input
+                name="slug"
+                maxLength={120}
+                pattern="[a-z0-9-]*"
+                disabled={saving}
+              />
+            </label>
+          </div>
+
+          <label>
+            Deskripsi
+            <textarea
+              name="description"
+              className="summary-field"
+              maxLength={500}
+              disabled={saving}
+            />
+          </label>
+
+          <button
+            className="login-submit admin-save"
+            type="submit"
+            disabled={saving}
+          >
+            {saving
+              ? "menyimpan..."
+              : "simpan fitur"}
+          </button>
+        </form>
       )}
 
       {showFolderEdit && (
@@ -128,7 +220,7 @@ export default function FolderAdminControls({
 
           <div className="admin-two-col">
             <label>
-              Nama folder
+              Nama fitur
               <input
                 name="title"
                 maxLength={120}
@@ -169,7 +261,7 @@ export default function FolderAdminControls({
           >
             {saving
               ? "menyimpan..."
-              : "simpan perubahan folder"}
+              : "simpan perubahan fitur"}
           </button>
         </form>
       )}
@@ -270,3 +362,4 @@ export default function FolderAdminControls({
     </section>
   );
 }
+

@@ -9,9 +9,9 @@ const MATERIAL_BUCKET = "learning-materials";
 function publicPath(section?: string | null) {
   if (section === "layanan") return "/perjalanan";
   if (section === "ruang-belajar") return "/ruang-belajar";
-  if (section === "artikel") return "/artikel";
+  if (section === "artikel") return "/cerita-makna";
   if (section === "tentang") return "/tentang";
-  if (section === "sinopsis") return "/sinopsis";
+  if (section === "ruang-jeda") return "/ruang-jeda";
   if (section === "kontak") return "/kontak";
   return "/";
 }
@@ -64,7 +64,7 @@ async function getEntryMeta(
     .maybeSingle();
 
   if (folderError || !folder) {
-    throw new Error("Folder tulisan tidak ditemukan.");
+    throw new Error("Fitur tulisan tidak ditemukan.");
   }
 
   return {

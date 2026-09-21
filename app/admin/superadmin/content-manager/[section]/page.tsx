@@ -13,8 +13,8 @@ const SECTIONS = {
   tentang: { dbSection: "tentang", label: "Tentang" },
   perjalanan: { dbSection: "layanan", label: "Perjalanan" },
   "ruang-belajar": { dbSection: "ruang-belajar", label: "Ruang Belajar" },
-  sinopsis: { dbSection: "sinopsis", label: "Sinopsis" },
-  artikel: { dbSection: "artikel", label: "Artikel" },
+  "ruang-jeda": { dbSection: "ruang-jeda", label: "Ruang Jeda" },
+  artikel: { dbSection: "artikel", label: "Cerita & Makna" },
   kontak: { dbSection: "kontak", label: "Kontak" },
 } as const;
 

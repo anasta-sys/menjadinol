@@ -16,7 +16,7 @@ type WriterSection =
   | "tentang"
   | "layanan"
   | "ruang-belajar"
-  | "sinopsis"
+  | "ruang-jeda"
   | "artikel"
   | "kontak";
 
@@ -24,7 +24,7 @@ const allowedSections = new Set<WriterSection>([
   "tentang",
   "layanan",
   "ruang-belajar",
-  "sinopsis",
+  "ruang-jeda",
   "artikel",
   "kontak",
 ]);

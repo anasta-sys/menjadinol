@@ -120,8 +120,8 @@ const sectionLabel: Record<string, string> = {
   tentang: "Tentang",
   layanan: "Perjalanan",
   "ruang-belajar": "Ruang Belajar",
-  sinopsis: "Sinopsis",
-  artikel: "Artikel",
+  "ruang-jeda": "Ruang Jeda",
+  artikel: "Cerita & Makna",
   kontak: "Kontak",
 };
 
@@ -420,7 +420,7 @@ export default async function DashboardOverview({
             <span>▤</span>
             Ruang Belajar
           </Link>
-          <Link href="/artikel">
+          <Link href="/cerita-makna">
             <span>✎</span>
             Artikel
           </Link>
@@ -1033,7 +1033,7 @@ export default async function DashboardOverview({
               <span className={styles.actionPurple}>
                 ▤
               </span>
-              <strong>Tambah Artikel</strong>
+              <strong>Tambah Cerita & Makna</strong>
               <small>Buat artikel baru</small>
             </a>
 

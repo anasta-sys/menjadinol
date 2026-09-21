@@ -29,7 +29,7 @@ type ContentSection =
   | "tentang"
   | "layanan"
   | "ruang-belajar"
-  | "sinopsis"
+  | "ruang-jeda"
   | "artikel"
   | "kontak";
 
@@ -38,7 +38,7 @@ const allowedSections =
     "tentang",
     "layanan",
     "ruang-belajar",
-    "sinopsis",
+    "ruang-jeda",
     "artikel",
     "kontak",
   ]);

@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 import { requireAdminSession } from "@/lib/admin-auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -12,7 +12,7 @@ type Section =
   | "artikel"
   | "layanan"
   | "ruang-belajar"
-  | "sinopsis"
+  | "ruang-jeda"
   | "kontak";
 
 const allowedSections = new Set<Section>([
@@ -20,7 +20,7 @@ const allowedSections = new Set<Section>([
   "artikel",
   "layanan",
   "ruang-belajar",
-  "sinopsis",
+  "ruang-jeda",
   "kontak",
 ]);
 
@@ -192,7 +192,7 @@ async function getFolderSection(
     .maybeSingle();
 
   if (error || !data || !allowedSections.has(data.section as Section)) {
-    throw new Error("Folder tidak ditemukan.");
+    throw new Error("Fitur tidak ditemukan.");
   }
 
   return data.section as Section;
@@ -231,7 +231,7 @@ export async function createContentFolder(fd: FormData) {
   const { supabase, isWriter } = await requireAdminAal2();
 
   if (isWriter) {
-    throw new Error("Penulis tidak dapat membuat folder.");
+    throw new Error("Penulis tidak dapat membuat fitur.");
   }
 
   const section = clean(fd.get("section"), 30) as Section;
@@ -240,14 +240,32 @@ export async function createContentFolder(fd: FormData) {
   const title = clean(fd.get("title"), 120);
   const slug = slugify(clean(fd.get("slug"), 120) || title);
   const description = clean(fd.get("description"), 500);
+  const parentId = clean(fd.get("parent_id"), 80) || null;
 
-  if (!title || !slug) throw new Error("Nama folder wajib diisi.");
+  if (!title || !slug) throw new Error("Nama fitur wajib diisi.");
+
+  if (parentId) {
+    const { data: parent, error: parentError } = await supabase
+      .from("content_folders")
+      .select("id,section")
+      .eq("id", parentId)
+      .maybeSingle();
+
+    if (parentError || !parent) {
+      throw new Error("Fitur induk tidak ditemukan.");
+    }
+
+    if (parent.section !== section) {
+      throw new Error("Subfitur harus berada pada bagian yang sama dengan fitur induk.");
+    }
+  }
 
   const { error } = await supabase.from("content_folders").insert({
     section,
     title,
     slug,
     description,
+    parent_id: parentId,
     is_published: true,
   });
 
@@ -261,18 +279,35 @@ export async function updateContentFolder(fd: FormData) {
   const { supabase, isWriter } = await requireAdminAal2();
 
   if (isWriter) {
-    throw new Error("Penulis tidak dapat mengubah folder.");
+    throw new Error("Penulis tidak dapat mengubah fitur.");
   }
 
   const id = clean(fd.get("id"), 80);
-  if (!id) throw new Error("ID folder tidak valid.");
+  if (!id) throw new Error("ID fitur tidak valid.");
 
   const section = await getFolderSection(supabase, id);
   const title = clean(fd.get("title"), 120);
   const slug = slugify(clean(fd.get("slug"), 120) || title);
   const description = clean(fd.get("description"), 500);
+  const parentId = clean(fd.get("parent_id"), 80) || null;
 
-  if (!title || !slug) throw new Error("Nama folder wajib diisi.");
+  if (!title || !slug) throw new Error("Nama fitur wajib diisi.");
+
+  if (parentId) {
+    const { data: parent, error: parentError } = await supabase
+      .from("content_folders")
+      .select("id,section")
+      .eq("id", parentId)
+      .maybeSingle();
+
+    if (parentError || !parent) {
+      throw new Error("Fitur induk tidak ditemukan.");
+    }
+
+    if (parent.section !== section) {
+      throw new Error("Subfitur harus berada pada bagian yang sama dengan fitur induk.");
+    }
+  }
 
   const { error } = await supabase
     .from("content_folders")
@@ -289,11 +324,11 @@ export async function deleteContentFolder(fd: FormData) {
   const { supabase, isSuperAdmin } = await requireAdminAal2();
 
   if (!isSuperAdmin) {
-    throw new Error("Hanya Superadmin yang dapat menghapus folder.");
+    throw new Error("Hanya Superadmin yang dapat menghapus fitur.");
   }
 
   const id = clean(fd.get("id"), 80);
-  if (!id) throw new Error("Data folder tidak valid.");
+  if (!id) throw new Error("Data fitur tidak valid.");
 
   const section = await getFolderSection(supabase, id);
 
@@ -316,7 +351,7 @@ export async function deleteContentFolder(fd: FormData) {
     const { error: storageError } = await supabase.storage
       .from(MATERIAL_BUCKET)
       .remove(paths);
-    if (storageError) console.error("Gagal membersihkan materi folder:", storageError.message);
+    if (storageError) console.error("Gagal membersihkan materi fitur:", storageError.message);
   }
 
   revalidatePath(publicPath(section));
@@ -333,7 +368,7 @@ export async function createFolderEntry(fd: FormData) {
   } = await requireAdminAal2();
 
   const folderId = clean(fd.get("folder_id"), 80);
-  if (!folderId) throw new Error("Folder tidak valid.");
+  if (!folderId) throw new Error("Fitur tidak valid.");
 
   const section = await getFolderSection(supabase, folderId);
 
@@ -609,11 +644,11 @@ export async function deleteContentFolderAndRedirect(fd: FormData) {
   const { supabase, isSuperAdmin } = await requireAdminAal2();
 
   if (!isSuperAdmin) {
-    throw new Error("Hanya Superadmin yang dapat menghapus folder.");
+    throw new Error("Hanya Superadmin yang dapat menghapus fitur.");
   }
 
   const id = clean(fd.get("id"), 80);
-  if (!id) throw new Error("Data folder tidak valid.");
+  if (!id) throw new Error("Data fitur tidak valid.");
 
   const section = await getFolderSection(supabase, id);
 
@@ -636,7 +671,7 @@ export async function deleteContentFolderAndRedirect(fd: FormData) {
     const { error: storageError } = await supabase.storage
       .from(MATERIAL_BUCKET)
       .remove(paths);
-    if (storageError) console.error("Gagal membersihkan materi folder:", storageError.message);
+    if (storageError) console.error("Gagal membersihkan materi fitur:", storageError.message);
   }
 
   revalidatePath(publicPath(section));
@@ -644,3 +679,4 @@ export async function deleteContentFolderAndRedirect(fd: FormData) {
 
   redirect(publicPath(section));
 }
+

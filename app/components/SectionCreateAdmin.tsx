@@ -9,7 +9,7 @@ type Section =
   | "artikel"
   | "layanan"
   | "ruang-belajar"
-  | "sinopsis"
+  | "ruang-jeda"
   | "kontak";
 
 export default function SectionCreateAdmin({
@@ -36,7 +36,7 @@ export default function SectionCreateAdmin({
         setMessage(
           error instanceof Error
             ? error.message
-            : "Folder gagal disimpan."
+            : "Fitur gagal disimpan."
         );
       }
     });
@@ -47,7 +47,7 @@ export default function SectionCreateAdmin({
       <div className="learning-admin-head">
         <div>
           <span className="folder-label">admin</span>
-          <h2>Kelola folder {label}</h2>
+          <h2>Kelola fitur {label}</h2>
         </div>
 
         <button
@@ -58,7 +58,7 @@ export default function SectionCreateAdmin({
             setOpen((value) => !value);
           }}
         >
-          {open ? "tutup" : "+ buat folder baru"}
+          {open ? "tutup" : "+ buat fitur baru"}
         </button>
       </div>
 
@@ -74,11 +74,11 @@ export default function SectionCreateAdmin({
           />
 
           <label>
-            Nama folder
+            Nama fitur
             <input
               name="title"
               maxLength={120}
-              placeholder="Nama folder"
+              placeholder="Nama fitur"
               required
               disabled={saving}
             />
@@ -90,7 +90,7 @@ export default function SectionCreateAdmin({
               name="slug"
               maxLength={120}
               pattern="[a-z0-9-]*"
-              placeholder="nama-folder"
+              placeholder="nama-fitur"
               disabled={saving}
             />
           </label>
@@ -100,7 +100,7 @@ export default function SectionCreateAdmin({
             <textarea
               name="description"
               maxLength={500}
-              placeholder="Deskripsi singkat folder..."
+              placeholder="Deskripsi singkat fitur..."
               disabled={saving}
             />
           </label>
@@ -110,7 +110,7 @@ export default function SectionCreateAdmin({
             type="submit"
             disabled={saving}
           >
-            {saving ? "menyimpan..." : "simpan folder"}
+            {saving ? "menyimpan..." : "simpan fitur"}
           </button>
 
           {message && (

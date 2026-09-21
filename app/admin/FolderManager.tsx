@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import ContentTableBuilder, { type ContentTableData } from "@/app/components/ContentTableBuilder";
@@ -47,7 +47,7 @@ type Section =
   | "artikel"
   | "layanan"
   | "ruang-belajar"
-  | "sinopsis"
+  | "ruang-jeda"
   | "kontak";
 
 type Folder = {
@@ -56,6 +56,7 @@ type Folder = {
   title: string;
   slug: string;
   description: string;
+  parent_id?: string | null;
 };
 
 type AdminRole = "writer" | "admin" | "superadmin";
@@ -80,14 +81,14 @@ const sections: { value: Section; label: string }[] = [
   { value: "tentang", label: "Tentang" },
   { value: "layanan", label: "Perjalanan" },
   { value: "ruang-belajar", label: "Ruang Belajar" },
-  { value: "sinopsis", label: "Sinopsis" },
-  { value: "artikel", label: "Artikel" },
+  { value: "ruang-jeda", label: "Ruang Jeda" },
+  { value: "artikel", label: "Cerita & Makna" },
   { value: "kontak", label: "Kontak" },
 ];
 
 function confirmFolderDelete(event: React.FormEvent<HTMLFormElement>) {
   if (!window.confirm(
-    "Yakin folder ini dihapus?\n\nSemua tulisan di dalam folder ini juga akan ikut terhapus."
+    "Yakin fitur ini dihapus?\n\nSemua tulisan di dalam fitur ini juga akan ikut terhapus."
   )) {
     event.preventDefault();
   }
@@ -116,12 +117,45 @@ export default function FolderManager({
   const isSuperAdmin = adminRole === "superadmin";
   const [section,setSection] = useState<Section>(initialSection);
   const [showFolderForm,setShowFolderForm] = useState(false);
+  const [childFolderParent,setChildFolderParent] = useState("");
   const [entryFolder,setEntryFolder] = useState("");
   const [editingFolder,setEditingFolder] = useState("");
   const [editingEntry,setEditingEntry] = useState("");
   const [entryPreview,setEntryPreview] = useState<EntryPreview>(null);
 
-  const visibleFolders = folders.filter((folder) => folder.section === section);
+  const sectionFolders = folders.filter(
+    (folder) => folder.section === section
+  );
+
+  const visibleFolders = (() => {
+    const result: Array<Folder & { depth: number }> = [];
+    const visited = new Set<string>();
+
+    function appendFolder(folder: Folder, depth: number) {
+      if (visited.has(folder.id)) return;
+
+      visited.add(folder.id);
+      result.push({ ...folder, depth });
+
+      sectionFolders
+        .filter((child) => child.parent_id === folder.id)
+        .sort((a, b) => a.title.localeCompare(b.title))
+        .forEach((child) => appendFolder(child, depth + 1));
+    }
+
+    sectionFolders
+      .filter((folder) => !folder.parent_id)
+      .sort((a, b) => a.title.localeCompare(b.title))
+      .forEach((folder) => appendFolder(folder, 0));
+
+    // Pengaman untuk data lama yang induknya sudah tidak tersedia.
+    sectionFolders
+      .filter((folder) => !visited.has(folder.id))
+      .sort((a, b) => a.title.localeCompare(b.title))
+      .forEach((folder) => appendFolder(folder, 0));
+
+    return result;
+  })();
   const currentLabel = sections.find((item) => item.value === section)?.label ?? "";
 
   function openEntryPreview(button: HTMLButtonElement) {
@@ -160,8 +194,8 @@ export default function FolderManager({
           <h2>Pilih bagian halaman</h2>
           <p style={{marginTop:"6px",opacity:.7}}>
             {isWriter
-              ? "Pilih folder → tulis draft → kirim untuk review. Publikasi dilakukan Admin/Superadmin."
-              : "Pilih bagian → buat folder → tambahkan banyak tulisan sesuai tema folder."}
+              ? "Pilih fitur â†’ tulis draft â†’ kirim untuk review. Publikasi dilakukan Admin/Superadmin."
+              : "Pilih bagian â†’ buat fitur â†’ tambahkan banyak tulisan sesuai tema fitur."}
           </p>
         </div>
 
@@ -171,7 +205,7 @@ export default function FolderManager({
             type="button"
             onClick={() => setShowFolderForm((value) => !value)}
           >
-            {showFolderForm ? "tutup" : "+ folder baru"}
+            {showFolderForm ? "tutup" : "+ fitur baru"}
           </button>
         )}
       </div>
@@ -205,7 +239,7 @@ export default function FolderManager({
 
           <div className="admin-two-col">
             <label>
-              Nama folder
+              Nama fitur
               <input name="title" maxLength={120} required/>
             </label>
             <label>
@@ -220,7 +254,7 @@ export default function FolderManager({
           </label>
 
           <button className="login-submit admin-save" type="submit">
-            simpan folder
+            simpan fitur
           </button>
         </form>
       )}
@@ -228,7 +262,7 @@ export default function FolderManager({
       <div className="article-admin-list">
         {visibleFolders.length === 0 && (
           <div className="empty-admin">
-            Belum ada folder di bagian {currentLabel}.
+            Belum ada fitur di bagian {currentLabel}.
           </div>
         )}
 
@@ -243,13 +277,30 @@ export default function FolderManager({
             <article className="folder-admin-block" key={folder.id}>
               <div className="admin-row">
                 <div className="admin-row-copy">
-                  <strong>{folder.title}</strong>
+                  <strong style={{ paddingLeft: `${folder.depth * 22}px` }}>
+                    {folder.depth > 0 && <span aria-hidden="true">{"\u2014 "}</span>}
+                    {folder.title}
+                  </strong>
                   <span>/{folder.slug}</span>
                   {folder.description && <span>{folder.description}</span>}
                   <span>{folderEntries.length} tulisan</span>
                 </div>
 
                 <div className="admin-row-actions">
+                  {!isWriter && (
+                    <button
+                      className="admin-mini"
+                      type="button"
+                      onClick={() =>
+                        setChildFolderParent(
+                          childFolderParent === folder.id ? "" : folder.id
+                        )
+                      }
+                    >
+                      {childFolderParent === folder.id ? "tutup fitur" : "+ fitur"}
+                    </button>
+                  )}
+
                   <button
                     className="admin-mini"
                     type="button"
@@ -287,16 +338,76 @@ export default function FolderManager({
                 </div>
               </div>
 
+              {!isWriter && childFolderParent === folder.id && (
+                <div className="folder-entry-admin">
+                  <p className="eyebrow">tambah fitur</p>
+                  <h3>Di dalam {folder.title}</h3>
+
+                  <form
+                    action={createContentFolder}
+                    className="proper-admin-form folder-add-form"
+                  >
+                    <input
+                      type="hidden"
+                      name="section"
+                      value={folder.section}
+                    />
+
+                    <input
+                      type="hidden"
+                      name="parent_id"
+                      value={folder.id}
+                    />
+
+                    <div className="admin-two-col">
+                      <label>
+                        Nama fitur
+                        <input
+                          name="title"
+                          maxLength={120}
+                          required
+                        />
+                      </label>
+
+                      <label>
+                        Slug opsional
+                        <input
+                          name="slug"
+                          maxLength={120}
+                          pattern="[a-z0-9-]*"
+                        />
+                      </label>
+                    </div>
+
+                    <label>
+                      Deskripsi
+                      <textarea
+                        name="description"
+                        className="summary-field"
+                        maxLength={500}
+                      />
+                    </label>
+
+                    <button
+                      className="login-submit admin-save"
+                      type="submit"
+                    >
+                      simpan fitur
+                    </button>
+                  </form>
+                </div>
+              )}
+
               {!isWriter && folderEditOpen && (
                 <div className="folder-entry-admin">
-                  <p className="eyebrow">rename / edit folder</p>
+                  <p className="eyebrow">rename / edit fitur</p>
 
                   <form action={updateContentFolder} className="proper-admin-form">
                     <input type="hidden" name="id" value={folder.id}/>
 
                     <div className="admin-two-col">
                       <label>
-                        Nama folder
+                        Nama fitur
                         <input
                           name="title"
                           maxLength={120}
@@ -327,7 +438,7 @@ export default function FolderManager({
                     </label>
 
                     <button className="login-submit admin-save" type="submit">
-                      simpan perubahan folder
+                      simpan perubahan fitur
                     </button>
                   </form>
                 </div>
@@ -339,7 +450,7 @@ export default function FolderManager({
                     <p className="eyebrow">tulis konten</p>
                     <h3>{folder.title}</h3>
                     <p style={{opacity:.7,marginTop:"5px"}}>
-                      Kamu bisa menyimpan banyak tulisan di folder tema ini.
+                      Kamu bisa menyimpan banyak tulisan di fitur ini.
                     </p>
                   </div>
 
@@ -424,7 +535,7 @@ export default function FolderManager({
                   <div style={{marginTop:"18px"}}>
                     {folderEntries.length === 0 && (
                       <div className="empty-admin">
-                        Belum ada tulisan di folder ini.
+                        Belum ada tulisan di fitur ini.
                       </div>
                     )}
 
@@ -632,3 +743,10 @@ export default function FolderManager({
     </section>
   );
 }
+
+
+
+
+
+
+

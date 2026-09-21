@@ -26,7 +26,7 @@ function LeafIcon({ slug }: { slug: string }) {
   if (slug === "ruang-belajar") {
     return <svg {...common}><path d="M48 79V39" stroke="#356f38" strokeWidth="3" strokeLinecap="round"/><path d="M48 42C25 42 20 27 24 17c15 0 24 7 24 25Z" fill="#659d4c"/><path d="M48 42c23 0 28-15 24-25-15 0-24 7-24 25Z" fill="#3d7e3b"/><path d="M48 49c-18 0-25-10-25-20 15 0 22 6 25 20Z" fill="#4e8d42" opacity=".8"/></svg>;
   }
-  if (slug === "sinopsis") {
+  if (slug === "ruang-jeda") {
     return <svg {...common}><path d="M49 82C34 64 24 47 21 23c26-8 48 4 54 26-10 20-17 28-26 33Z" fill="#3d823d"/><path d="M27 29c10 8 17 16 22 27M39 20c4 12 7 24 8 37M58 23c-2 12-5 22-10 32" fill="none" stroke="#dbead5" strokeWidth="2.2" strokeLinecap="round"/><path d="M22 45c8-3 16-3 24 0M28 59c7-2 13-1 19 2" fill="none" stroke="#dbead5" strokeWidth="2.2" strokeLinecap="round"/></svg>;
   }
   if (slug === "artikel") {

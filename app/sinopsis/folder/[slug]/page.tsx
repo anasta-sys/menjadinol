@@ -1,8 +1,10 @@
-import FolderPublicPage from "@/app/components/FolderPublicPage";
+﻿import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
-
-export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
+export default async function LegacySinopsisFolderPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = await params;
-  return <FolderPublicPage section="sinopsis" slug={slug} />;
+  redirect(`/ruang-jeda/folder/${slug}`);
 }

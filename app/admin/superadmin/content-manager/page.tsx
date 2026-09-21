@@ -14,8 +14,8 @@ const SECTIONS = [
   { slug: "tentang", dbSection: "tentang", label: "Tentang" },
   { slug: "perjalanan", dbSection: "layanan", label: "Perjalanan" },
   { slug: "ruang-belajar", dbSection: "ruang-belajar", label: "Ruang Belajar" },
-  { slug: "sinopsis", dbSection: "sinopsis", label: "Sinopsis" },
-  { slug: "artikel", dbSection: "artikel", label: "Artikel" },
+  { slug: "ruang-jeda", dbSection: "ruang-jeda", label: "Ruang Jeda" },
+  { slug: "artikel", dbSection: "artikel", label: "Cerita & Makna" },
   { slug: "kontak", dbSection: "kontak", label: "Kontak" },
 ] as const;
 

@@ -7,7 +7,7 @@ type Section =
   | "artikel"
   | "layanan"
   | "ruang-belajar"
-  | "sinopsis"
+  | "ruang-jeda"
   | "kontak";
 
 type Folder = {
@@ -38,7 +38,7 @@ function sectionIcon(section: Section) {
       return "🪷";
     case "ruang-belajar":
       return "☘️";
-    case "sinopsis":
+    case "ruang-jeda":
       return "🌸";
     case "artikel":
       return "✨";

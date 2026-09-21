@@ -5,42 +5,35 @@ import SectionCreatePanel from "@/app/components/SectionCreatePanel";
 import EditablePageIntro from "@/app/components/EditablePageIntro";
 
 export const metadata = {
-  title: "Ruang Belajar",
+  title: "Cerita & Makna",
 };
 
 export const dynamic = "force-dynamic";
 
-export default async function RuangBelajarPage() {
+export default async function Page() {
   const supabase = await createClient();
 
-  const { data: folders, error } = await supabase
+  const { data: folders } = await supabase
     .from("content_folders")
     .select("id,section,title,slug,description,parent_id")
-    .eq("section", "ruang-belajar")
+    .eq("section", "artikel")
     .eq("is_published", true)
     .is("parent_id", null)
     .order("sort_order", { ascending: true })
     .order("title", { ascending: true });
 
-  if (error) {
-    console.error(
-      "Gagal mengambil fitur Ruang Belajar:",
-      error.message
-    );
-  }
-
   return (
-    <main className="learning-page">
+    <main className="article-index">
       <section
         className="shell"
         style={{
-          paddingTop: "78px",
-          paddingBottom: "78px",
+          paddingTop: "8px",
+          paddingBottom: "8px",
         }}
       >
         <div
           style={{
-            width: "min(100%, 1200px)",
+            width: "min(100%, 1040px)",
             margin: "0 auto",
             background: "rgba(255, 255, 255, 0.94)",
             border: "1px solid rgba(34, 74, 55, 0.10)",
@@ -54,11 +47,10 @@ export default async function RuangBelajarPage() {
           }}
         >
           <EditablePageIntro
-            pageKey="ruang-belajar"
-            defaultEyebrow="ruang belajar"
-            defaultTitle="Belajar melalui perjalanan"
-            defaultDescription="Kumpulan kajian, refleksi, dan pembelajaran yang dapat dibuka satu per satu sesuai perjalanan yang sedang ingin dipahami."
-            leadClassName="learning-lead"
+            pageKey="artikel"
+            defaultEyebrow="artikel"
+            defaultTitle="Catatan sepanjang jalan"
+            defaultDescription=""
           />
 
           <div
@@ -77,8 +69,8 @@ export default async function RuangBelajarPage() {
             }}
           >
             <SectionCreatePanel
-              section="ruang-belajar"
-              label="belajar"
+              section="artikel"
+              label="Cerita & Makna"
             />
 
             <PageBackLink />

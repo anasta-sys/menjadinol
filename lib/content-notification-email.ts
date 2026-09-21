@@ -22,10 +22,10 @@ function escapeHtml(value: string) {
 function getSectionLabel(section: string) {
   const labels: Record<string, string> = {
     "ruang-belajar": "Ruang Belajar",
-    artikel: "Artikel",
+    artikel: "Cerita & Makna",
     layanan: "Perjalanan",
     tentang: "Tentang",
-    sinopsis: "Sinopsis",
+    "ruang-jeda": "Ruang Jeda",
     kontak: "Kontak",
   };
 

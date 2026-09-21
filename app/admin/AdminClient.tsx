@@ -325,7 +325,7 @@ export default function AdminClient({
         setSaveState("saved");
         setSaveMessage(
           status === "published"
-            ? "Artikel berhasil dipublikasikan."
+            ? "Cerita & Makna berhasil dipublikasikan."
             : "Draft berhasil disimpan."
         );
 
@@ -356,7 +356,7 @@ export default function AdminClient({
               <p className="eyebrow">editor</p>
 
               <h1>
-                {editing ? "Edit artikel" : "Artikel baru"}
+                {editing ? "Edit Cerita & Makna" : "Cerita & Makna baru"}
               </h1>
 
               {editing && (

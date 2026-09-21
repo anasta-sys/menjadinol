@@ -8,8 +8,8 @@ const staticPaths = [
   "/tentang",
   "/perjalanan",
   "/ruang-belajar",
-  "/sinopsis",
-  "/artikel",
+  "/ruang-jeda",
+  "/cerita-makna",
   "/kontak",
 ];
 

@@ -9,9 +9,9 @@ const cards = [
     icon: "book",
   },
   {
-    title: "Artikel",
+    title: "Cerita & Makna",
     desc: "Tulisan tentang rasa, kesadaran, penerimaan, dan makna dalam perjalanan hidup.",
-    href: "/artikel",
+    href: "/cerita-makna",
     tone: "cream",
     icon: "article",
   },
@@ -23,9 +23,9 @@ const cards = [
     icon: "journey",
   },
   {
-    title: "Sinopsis",
+    title: "Ruang Jeda",
     desc: "Ringkasan pembelajaran dan pemahaman untuk melihat perjalanan dengan lebih utuh.",
-    href: "/sinopsis",
+    href: "/ruang-jeda",
     tone: "blue",
     icon: "summary",
   },

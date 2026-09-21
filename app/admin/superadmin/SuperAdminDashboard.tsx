@@ -34,9 +34,9 @@ function formatDate(value?: string | null) {
 function sectionLabel(section?: string) {
   if (section === "ruang-belajar") return "Ruang Belajar";
   if (section === "layanan") return "Perjalanan";
-  if (section === "artikel") return "Artikel";
+  if (section === "artikel") return "Cerita & Makna";
   if (section === "tentang") return "Tentang";
-  if (section === "sinopsis") return "Sinopsis";
+  if (section === "ruang-jeda") return "Ruang Jeda";
   if (section === "kontak") return "Kontak";
   return section || "—";
 }

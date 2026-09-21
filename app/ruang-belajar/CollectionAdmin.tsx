@@ -17,7 +17,7 @@ function confirmDelete(
 ) {
   if (
     !window.confirm(
-      "Yakin folder ini dihapus? Semua tulisan di dalamnya juga akan ikut terhapus."
+      "Yakin fitur ini dihapus? Semua tulisan di dalamnya juga akan ikut terhapus."
     )
   ) {
     event.preventDefault();
@@ -39,7 +39,7 @@ export default function CollectionAdmin({
             admin
           </span>
           <h2>
-            Kelola folder belajar
+            Kelola fitur belajar
           </h2>
         </div>
 
@@ -52,7 +52,7 @@ export default function CollectionAdmin({
         >
           {open
             ? "tutup"
-            : "+ buat folder baru"}
+            : "+ buat fitur baru"}
         </button>
       </div>
 
@@ -62,7 +62,7 @@ export default function CollectionAdmin({
           className="learning-folder-form"
         >
           <label>
-            Nama folder
+            Nama fitur
             <input
               name="title"
               maxLength={120}
@@ -91,7 +91,7 @@ export default function CollectionAdmin({
             className="learning-save-button"
             type="submit"
           >
-            simpan folder
+            simpan fitur
           </button>
         </form>
       )}

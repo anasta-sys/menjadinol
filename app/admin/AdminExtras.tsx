@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 
 import { createClient as createServiceClient } from "@supabase/supabase-js";
 import { requireAdminSession, type AdminRole } from "@/lib/admin-auth";
@@ -17,7 +17,7 @@ export default async function AdminExtras({
     | "tentang"
     | "layanan"
     | "ruang-belajar"
-    | "sinopsis"
+    | "ruang-jeda"
     | "artikel"
     | "kontak";
 }) {
@@ -55,7 +55,7 @@ export default async function AdminExtras({
   const [{ data: folders }, { data: entries }] = await Promise.all([
     adminDb
       .from("content_folders")
-      .select("id,section,title,slug,description")
+      .select("id,section,title,slug,description,parent_id")
       .order("section", { ascending: true })
       .order("title", { ascending: true }),
 
@@ -233,3 +233,4 @@ export default async function AdminExtras({
     </>
   );
 }
+

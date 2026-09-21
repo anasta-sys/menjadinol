@@ -8,7 +8,7 @@ type PageKey =
   | "tentang"
   | "perjalanan"
   | "ruang-belajar"
-  | "sinopsis"
+  | "ruang-jeda"
   | "artikel"
   | "kontak";
 
@@ -16,7 +16,7 @@ const allowedPages = new Set<PageKey>([
   "tentang",
   "perjalanan",
   "ruang-belajar",
-  "sinopsis",
+  "ruang-jeda",
   "artikel",
   "kontak",
 ]);

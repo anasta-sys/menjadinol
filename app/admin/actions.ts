@@ -62,7 +62,7 @@ export async function savePost(fd:FormData){
 
   if(result.error) throw new Error(result.error.message);
 
-  revalidatePath("/artikel");
+  revalidatePath("/cerita-makna");
   revalidatePath("/admin");
 }
 
@@ -73,7 +73,7 @@ export async function deletePost(fd:FormData){
   const {error} = await supabase.from("posts").delete().eq("id",id);
   if(error) throw new Error(error.message);
 
-  revalidatePath("/artikel");
+  revalidatePath("/cerita-makna");
   revalidatePath("/admin");
 }
 

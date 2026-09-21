@@ -52,7 +52,7 @@ export function SectionLeaf({
     );
   }
 
-  if (slug === "sinopsis") {
+  if (slug === "ruang-jeda") {
     return (
       <svg {...common}>
         <path d="M24 103C22 70 37 36 83 17c15 31 3 68-36 84Z" fill="#438141"/>
