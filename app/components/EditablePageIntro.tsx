@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+﻿import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import PageIntroEditor from "@/app/components/PageIntroEditor";
 
@@ -7,7 +7,7 @@ type PageKey =
   | "perjalanan"
   | "ruang-belajar"
   | "ruang-jeda"
-  | "artikel"
+  | "cerita-makna"
   | "kontak";
 
 function formatWib(
@@ -39,7 +39,7 @@ function formatWib(
       .format(date)
       .replace(":", ".");
 
-  return `${tanggal} · ${jam} WIB`;
+  return `${tanggal} Â· ${jam} WIB`;
 }
 
 export default async function EditablePageIntro({
@@ -202,7 +202,7 @@ export default async function EditablePageIntro({
             lineHeight: 1.6,
           }}
         >
-          {/* BARIS 1 — PENULIS */}
+          {/* BARIS 1 â€” PENULIS */}
           <div>
           <span>Ditulis oleh</span>
 
@@ -218,14 +218,14 @@ export default async function EditablePageIntro({
           </strong>
 
             <span>
-              {" · "}
+              {" Â· "}
               {formatWib(
                 createdAt
               )}
             </span>
           </div>
 
-          {/* BARIS 2 — REVISI */}
+          {/* BARIS 2 â€” REVISI */}
           {hasRevision && (
             <div
               style={{
@@ -241,7 +241,7 @@ export default async function EditablePageIntro({
             </div>
           )}
 
-          {/* BARIS 3 — LOKASI */}
+          {/* BARIS 3 â€” LOKASI */}
           {content?.writer_location && (
             <div
               style={{
@@ -250,7 +250,7 @@ export default async function EditablePageIntro({
                 lineHeight: 1.6,
               }}
             >
-              📍{" "}
+              ðŸ“{" "}
               {
                 content.writer_location
               }
@@ -284,4 +284,5 @@ export default async function EditablePageIntro({
     </>
   );
 }
+
 

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
   useState,
@@ -21,7 +21,7 @@ export default function PageIntroEditor({
     | "perjalanan"
     | "ruang-belajar"
     | "ruang-jeda"
-    | "artikel"
+    | "cerita-makna"
     | "kontak";
   eyebrow: string;
   title: string;
@@ -75,7 +75,7 @@ export default function PageIntroEditor({
       >
         {open
           ? "batal"
-          : "✎ edit halaman"}
+          : "âœŽ edit halaman"}
       </button>
 
       {open && (
@@ -143,3 +143,4 @@ export default function PageIntroEditor({
     </div>
   );
 }
+

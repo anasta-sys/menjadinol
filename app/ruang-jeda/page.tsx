@@ -28,9 +28,9 @@ export default async function Page() {
 
         <EditablePageIntro
           pageKey="ruang-jeda"
-          defaultEyebrow="sinopsis"
-          defaultTitle="Cerita yang singgah, makna yang dibawa pulang"
-          defaultDescription="Catatan tentang buku, film, dokumenter, dan tontonan yang meninggalkan makna, dilihat melalui perjalanan Jalan Pulang."
+          defaultEyebrow="ruang jeda"
+          defaultTitle="Berhenti sejenak, memberi ruang pada diri."
+          defaultDescription="Ruang untuk berjeda dari riuh, menyadari apa yang sedang dirasakan, melepaskan yang tak lagi perlu dibawa, dan kembali melihat diri dengan lebih jernih."
         />
 
         <SectionFolders
@@ -47,6 +47,7 @@ export default async function Page() {
     </main>
   );
 }
+
 
 
 

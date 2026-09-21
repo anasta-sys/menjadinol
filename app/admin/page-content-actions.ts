@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
@@ -9,7 +9,7 @@ type PageKey =
   | "perjalanan"
   | "ruang-belajar"
   | "ruang-jeda"
-  | "artikel"
+  | "cerita-makna"
   | "kontak";
 
 const allowedPages = new Set<PageKey>([
@@ -17,7 +17,7 @@ const allowedPages = new Set<PageKey>([
   "perjalanan",
   "ruang-belajar",
   "ruang-jeda",
-  "artikel",
+  "cerita-makna",
   "kontak",
 ]);
 
