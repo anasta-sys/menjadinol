@@ -1,4 +1,4 @@
-﻿import PageBackLink from "@/app/components/PageBackLink";
+import PageBackLink from "@/app/components/PageBackLink";
 import { createClient } from "@/lib/supabase/server";
 import SectionFolders from "@/app/components/SectionFolders";
 import SectionCreatePanel from "@/app/components/SectionCreatePanel";
@@ -16,7 +16,7 @@ export default async function Page() {
   const { data: folders } = await supabase
     .from("content_folders")
     .select("id,section,title,slug,description,parent_id")
-    .eq("section", "cerita-makna")
+    .eq("section", "artikel")
     .eq("is_published", true)
     .is("parent_id", null)
     .order("sort_order", { ascending: true })
@@ -69,7 +69,7 @@ export default async function Page() {
             }}
           >
             <SectionCreatePanel
-              section="cerita-makna"
+              section="artikel"
               label="Cerita & Makna"
             />
 
@@ -80,4 +80,3 @@ export default async function Page() {
     </main>
   );
 }
-
