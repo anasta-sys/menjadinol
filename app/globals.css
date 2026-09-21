@@ -7660,3 +7660,30 @@ body.reader-copy-protected .reader-protected-shell .jp-rich-content *::selection
   }
 }
 
+
+/* =========================================================
+   MENJADI NOL — BROWSER HORIZONTAL SCROLLBAR
+   ========================================================= */
+
+html,
+body {
+  overflow-x: auto !important;
+}
+
+.folder-public-page,
+.folder-public-page .shell.inner-card,
+.folder-public-page .folder-entry-list,
+.folder-public-page .folder-entry-reader,
+.folder-public-page .folder-entry-card {
+  overflow-x: visible !important;
+}
+
+/* Teks biasa tetap membungkus; hanya media/tabel yang boleh melebar. */
+.folder-public-page .folder-entry-body,
+.folder-public-page .folder-entry-excerpt,
+.folder-public-page h1,
+.folder-public-page h2,
+.folder-public-page p {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}

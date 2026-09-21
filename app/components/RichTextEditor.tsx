@@ -433,7 +433,12 @@ export default function RichTextEditor({
         .json()
         .catch(() => ({}));
 
-      if (!response.ok || !result?.url) {
+      const uploadResultValid =
+        kind === "pdf"
+          ? Boolean(result?.path)
+          : Boolean(result?.url);
+
+      if (!response.ok || !uploadResultValid) {
         throw new Error(
           result?.error || "Upload gagal."
         );
@@ -448,8 +453,11 @@ export default function RichTextEditor({
           `<figure class="jp-rich-media"><img src="${result.url}" alt="${safeName}" loading="lazy"><figcaption>${safeName}</figcaption></figure><p><br></p>`
         );
       } else {
+        const safePath = String(result.path || "")
+          .replace(/[<>"']/g, "");
+
         insertHtml(
-          `<p class="jp-rich-file"><a href="${result.url}" target="_blank" rel="noopener noreferrer">📄 ${safeName}</a></p><p><br></p>`
+          `<div class="jp-secure-pdf" data-path="${safePath}" data-name="${safeName}"></div><p><br></p>`
         );
       }
     } catch (error) {

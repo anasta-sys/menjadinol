@@ -35,17 +35,12 @@ type Entry = {
   created_at: string | null;
   updated_at: string | null;
   writer_location?: string | null;
-
-  // Identitas penulis disimpan sebagai UUID di database.
-  // Nama yang dikirim ke client hanya display_name.
   author_id: string | null;
   author_name?: string | null;
 };
 
 function publicPath(section: Section) {
-  return section === "layanan"
-    ? "/perjalanan"
-    : `/${section}`;
+  return section === "layanan" ? "/perjalanan" : `/${section}`;
 }
 
 function sectionLabel(section: Section) {
@@ -119,13 +114,6 @@ export default async function FolderPublicPage({
     );
   }
 
-  /*
-   * Nama penulis diambil SERVER-SIDE menggunakan Admin Client.
-   * Service role tidak pernah dikirim ke browser.
-   *
-   * Kita hanya mengambil user_id + display_name,
-   * bukan email/password/session admin.
-   */
   const adminSupabase = createAdminClient();
 
   const authorIds = Array.from(
@@ -237,7 +225,15 @@ export default async function FolderPublicPage({
 
   return (
     <main className="inner-page folder-public-page">
-      <div className="shell inner-card">
+      <div
+        className="shell inner-card"
+        style={{
+          width: "100%",
+          maxWidth: "100%",
+          minWidth: 0,
+          boxSizing: "border-box",
+        }}
+      >
         <p className="eyebrow">
           {sectionLabel(section)}
         </p>
@@ -250,7 +246,16 @@ export default async function FolderPublicPage({
           </p>
         )}
 
-        <div className="folder-entry-list">
+        <div
+          className="folder-entry-list"
+          style={{
+            width: "100%",
+            maxWidth: "100%",
+            minWidth: 0,
+            overflow: "hidden",
+            boxSizing: "border-box",
+          }}
+        >
           <FolderEntryList
             entries={entriesWithSignedUrls as Entry[]}
             isAdmin={isAdmin}
