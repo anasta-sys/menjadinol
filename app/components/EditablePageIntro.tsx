@@ -39,7 +39,7 @@ function formatWib(
       .format(date)
       .replace(":", ".");
 
-  return `${tanggal} Â· ${jam} WIB`;
+  return `${tanggal} - ${jam} WIB`;
 }
 
 export default async function EditablePageIntro({
@@ -55,8 +55,7 @@ export default async function EditablePageIntro({
   defaultDescription: string;
   leadClassName?: string;
 }) {
-  const supabase =
-    await createClient();
+  const supabase = await createClient();
 
   const {
     data: content,
@@ -202,30 +201,30 @@ export default async function EditablePageIntro({
             lineHeight: 1.6,
           }}
         >
-          {/* BARIS 1 â€” PENULIS */}
+          {/* BARIS 1 - PENULIS */}
           <div>
-          <span>Ditulis oleh</span>
+            <span>Ditulis oleh</span>
 
-          <strong
-            style={{
-            color: "#536653",
-            fontWeight: 700,
-            marginLeft: "4px",
-            }}
-          >
-          {authorName ||
-           "Penulis belum tercatat"}
-          </strong>
+            <strong
+              style={{
+                color: "#536653",
+                fontWeight: 700,
+                marginLeft: "4px",
+              }}
+            >
+              {authorName ||
+                "Penulis belum tercatat"}
+            </strong>
 
             <span>
-              {" Â· "}
+              {" · "}
               {formatWib(
                 createdAt
               )}
             </span>
           </div>
 
-          {/* BARIS 2 â€” REVISI */}
+          {/* BARIS 2 - REVISI */}
           {hasRevision && (
             <div
               style={{
@@ -241,7 +240,7 @@ export default async function EditablePageIntro({
             </div>
           )}
 
-          {/* BARIS 3 â€” LOKASI */}
+          {/* BARIS 3 - LOKASI */}
           {content?.writer_location && (
             <div
               style={{
@@ -250,7 +249,7 @@ export default async function EditablePageIntro({
                 lineHeight: 1.6,
               }}
             >
-              ðŸ“{" "}
+              Lokasi:{" "}
               {
                 content.writer_location
               }
@@ -284,5 +283,3 @@ export default async function EditablePageIntro({
     </>
   );
 }
-
-
