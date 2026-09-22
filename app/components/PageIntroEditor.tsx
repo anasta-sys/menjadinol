@@ -75,7 +75,7 @@ export default function PageIntroEditor({
       >
         {open
           ? "batal"
-          : "âœŽ edit halaman"}
+          : "edit halaman"}
       </button>
 
       {open && (
