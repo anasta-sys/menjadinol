@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import SectionFolderAdminActions from "@/app/components/SectionFolderAdminActions";
 
@@ -20,10 +20,10 @@ type Folder = {
 };
 
 function sectionPath(section: Section) {
-  if (section === "layanan") return "/perjalanan/folder";
-  if (section === "ruang-belajar") return "/ruang-belajar/tema";
-  if (section === "artikel") return "/cerita-makna/folder";
-  return `/${section}/folder`;
+  if (section === "layanan") return "/perjalanan";
+  if (section === "ruang-belajar") return "/ruang-belajar";
+  if (section === "artikel") return "/cerita-makna";
+  return `/${section}`;
 }
 
 function JourneyIcon({ index }: { index: number }) {
@@ -228,6 +228,7 @@ export default async function SectionFolders({
     </section>
   );
 }
+
 
 
 

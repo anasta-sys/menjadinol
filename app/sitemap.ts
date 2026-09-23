@@ -14,9 +14,9 @@ const staticPaths = [
 ];
 
 function folderPath(section: string, slug: string) {
-  if (section === "layanan") return `/perjalanan/folder/${slug}`;
-  if (section === "ruang-belajar") return `/ruang-belajar/tema/${slug}`;
-  return `/${section}/folder/${slug}`;
+  if (section === "layanan") return `/perjalanan/${slug}`;
+  if (section === "artikel") return `/cerita-makna/${slug}`;
+  return `/${section}/${slug}`;
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -47,3 +47,4 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return base;
   }
 }
+

@@ -47,10 +47,10 @@ function publicPath(section: Section) {
 }
 
 function folderPath(section: Section) {
-  if (section === "layanan") return "/perjalanan/folder";
-  if (section === "ruang-belajar") return "/ruang-belajar/tema";
-  if (section === "artikel") return "/cerita-makna/folder";
-  return `/${section}/folder`;
+  if (section === "layanan") return "/perjalanan";
+  if (section === "ruang-belajar") return "/ruang-belajar";
+  if (section === "artikel") return "/cerita-makna";
+  return `/${section}`;
 }
 
 function sectionLabel(section: Section) {
@@ -367,6 +367,7 @@ export default async function FolderPublicPage({
     </main>
   );
 }
+
 
 
 
