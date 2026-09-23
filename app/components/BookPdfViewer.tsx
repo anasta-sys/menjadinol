@@ -142,7 +142,6 @@ export default function BookPdfViewer({
         pdfDocument = await pdfjs.getDocument({
           data: bytes,
           useWorkerFetch: false,
-          isEvalSupported: false,
         }).promise;
 
         if (!active) return;
