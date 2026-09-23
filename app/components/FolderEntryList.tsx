@@ -660,12 +660,21 @@ export function EntryContent({
   );
 }
 
+function publicSectionPath(section: string) {
+  if (section === "layanan") return "perjalanan";
+  if (section === "artikel") return "cerita-makna";
+  return section;
+}
 export default function FolderEntryList({
   entries,
   isAdmin,
+  section,
+  folderSlug,
 }: {
   entries: Entry[];
   isAdmin: boolean;
+  section: string;
+  folderSlug: string;
 }) {
   const searchParams = useSearchParams();
   const entryFromUrl = searchParams.get("entry");
@@ -734,7 +743,7 @@ export default function FolderEntryList({
             key={entry.id}
             type="button"
             className="entry-index-item"
-            onClick={() => setSelectedId(entry.id)}
+            onClick={() => { window.location.href = `/${publicSectionPath(section)}/${encodeURIComponent(folderSlug)}/${encodeURIComponent(entry.slug)}`; }}
           >
             <span className="entry-index-no">
               {String(index + 1).padStart(2, "0")}
@@ -769,6 +778,10 @@ export default function FolderEntryList({
     </section>
   );
 }
+
+
+
+
 
 
 

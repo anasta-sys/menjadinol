@@ -342,6 +342,8 @@ export default async function FolderPublicPage({
             <FolderEntryList
               entries={entriesWithSignedUrls as Entry[]}
               isAdmin={isAdmin}
+              section={section}
+              folderSlug={folder.slug}
             />
           </div>
 
@@ -367,6 +369,7 @@ export default async function FolderPublicPage({
     </main>
   );
 }
+
 
 
 

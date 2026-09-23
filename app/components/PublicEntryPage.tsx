@@ -58,9 +58,11 @@ function sectionLabel(section: string) {
 export default async function PublicEntryPage({
   section,
   slug,
+  folderSlug,
 }: {
   section: string;
   slug: string;
+  folderSlug?: string;
 }) {
   const supabase = await createClient();
 
@@ -79,7 +81,7 @@ export default async function PublicEntryPage({
 
   const { data: folder, error: folderError } = await supabase
     .from("content_folders")
-    .select("id,section,is_published")
+    .select("id,section,slug,is_published")
     .eq("id", entry.folder_id)
     .eq("is_published", true)
     .maybeSingle();
@@ -87,7 +89,8 @@ export default async function PublicEntryPage({
   if (
     folderError ||
     !folder ||
-    !publicSectionMatches(folder.section, section)
+    !publicSectionMatches(folder.section, section) ||
+    (folderSlug && folder.slug !== folderSlug)
   ) {
     notFound();
   }
@@ -168,3 +171,6 @@ export default async function PublicEntryPage({
     </main>
   );
 }
+
+
+
