@@ -671,7 +671,7 @@ export default function FolderEntryList({
   if (entries.length === 0) {
     return (
       <p className="inner-lead">
-        Folder ini belum memiliki tulisan.
+        Fitur ini belum memiliki tulisan.
       </p>
     );
   }
@@ -720,7 +720,7 @@ export default function FolderEntryList({
         </h2>
 
         <p>
-          {entries.length} tulisan tersedia di folder ini.
+          {entries.length} tulisan tersedia di fitur ini.
         </p>
       </div>
 
