@@ -1,5 +1,7 @@
 "use client";
 
+import BookPdfViewer from "./BookPdfViewer";
+
 import {
   useEffect,
   useMemo,
@@ -538,8 +540,9 @@ export default function AttachmentViewer({
         !error &&
         fileUrl &&
         isPdf && (
-          <PdfCanvasViewer
+          <BookPdfViewer
             src={fileUrl}
+            title={displayName}
           />
         )}
 

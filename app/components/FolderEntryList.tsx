@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import EntryInlineAdminActions from "@/app/components/EntryInlineAdminActions";
 import type { ContentTableData } from "@/app/components/ContentTableBuilder";
 import SecureRichTextBody from "@/app/components/SecureRichTextBody";
+import BookPdfViewer from "@/app/components/BookPdfViewer";
 
 type TableData = ContentTableData | null;
 
@@ -454,9 +455,7 @@ function EntryContent({
               title={entry.attachment_name ?? "Materi gambar"}
             />
           ) : isPdf ? (
-            <SecurePdfCanvas
-              url={entry.attachment_url}
-            />
+            <BookPdfViewer src={entry.attachment_url} title={entry.attachment_name ?? entry.title} />
           ) : isVideo ? (
             <div className="material-preview material-video-wrap">
               <video
