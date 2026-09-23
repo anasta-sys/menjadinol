@@ -13,6 +13,7 @@ type BookPdfViewerProps = {
   src?: string;
   data?: ArrayBuffer | Uint8Array;
   title?: string;
+  tableData?: { headers: string[]; rows: string[][] } | null;
 };
 
 type PdfPage = {
@@ -46,10 +47,53 @@ const BookPage = forwardRef<
   );
 });
 
+
+const TableBookPage = forwardRef<
+  HTMLDivElement,
+  {
+    headers: string[];
+    rows: string[][];
+    pageNumber: number;
+  }
+>(function TableBookPage({ headers, rows, pageNumber }, ref) {
+  return (
+    <div ref={ref} className="mn-book-page">
+      <div className="mn-book-paper mn-book-table-paper">
+        <div className="mn-book-table-scroll">
+          <table className="mn-book-table">
+            <thead>
+              <tr>
+                {headers.map((header, index) => (
+                  <th key={index}>{header}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, rowIndex) => (
+                <tr key={rowIndex}>
+                  {headers.map((_, columnIndex) => (
+                    <td key={columnIndex}>
+                      {row?.[columnIndex] ?? ""}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <span className="mn-book-page-number">
+          {pageNumber}
+        </span>
+      </div>
+    </div>
+  );
+});
 export default function BookPdfViewer({
   src,
   data,
   title = "Dokumen",
+  tableData = null,
 }: BookPdfViewerProps) {
   const flipBookRef = useRef<any>(null);
 
@@ -269,7 +313,7 @@ export default function BookPdfViewer({
         event.preventDefault()
       }
     >
-      <div style={{textAlign:"center",fontWeight:700,padding:"8px",background:"#eef2e6"}}>📖 MODE BUKU AKTIF</div><div className="mn-book-toolbar">
+      <div className="mn-book-toolbar">
         <button
           type="button"
           onClick={previousPage}
@@ -361,6 +405,15 @@ export default function BookPdfViewer({
                 title={title}
               />
             ))}
+
+            {tableData && tableData.headers.length > 0 && (
+              <TableBookPage
+                key="table-page"
+                headers={tableData.headers}
+                rows={tableData.rows}
+                pageNumber={pages.length + 1}
+              />
+            )}
           </HTMLFlipBook>
         </div>
       </div>

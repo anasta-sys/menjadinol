@@ -455,7 +455,7 @@ function EntryContent({
               title={entry.attachment_name ?? "Materi gambar"}
             />
           ) : isPdf ? (
-            <BookPdfViewer src={entry.attachment_url} title={entry.attachment_name ?? entry.title} />
+            <BookPdfViewer src={entry.attachment_url} title={entry.attachment_name ?? entry.title} tableData={entry.table_data} />
           ) : isVideo ? (
             <div className="material-preview material-video-wrap">
               <video

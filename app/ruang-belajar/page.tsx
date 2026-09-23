@@ -19,7 +19,6 @@ export default async function RuangBelajarPage() {
     .eq("section", "ruang-belajar")
     .eq("is_published", true)
     .is("parent_id", null)
-    .order("sort_order", { ascending: true })
     .order("title", { ascending: true });
 
   if (error) {
