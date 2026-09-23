@@ -4,20 +4,28 @@ import { createClient } from "@/lib/supabase/server";
 type LatestEntry = {
   id: string;
   folder_id: string;
+  slug: string;
+  published_at: string | null;
 };
 
 type ContentFolder = {
   section: string;
-  slug: string;
 };
+
+function publicSection(section: string) {
+  if (section === "artikel") return "cerita-makna";
+  if (section === "layanan") return "perjalanan";
+  return section;
+}
 
 export default async function LatestContentNotice() {
   const supabase = await createClient();
 
   const { data: latestEntry, error: entryError } = await supabase
     .from("content_folder_entries")
-    .select("id,folder_id,published_at")
+    .select("id,folder_id,slug,published_at")
     .eq("status", "published")
+    .not("published_at", "is", null)
     .order("published_at", { ascending: false })
     .limit(1)
     .maybeSingle<LatestEntry>();
@@ -28,7 +36,7 @@ export default async function LatestContentNotice() {
 
   const { data: folder, error: folderError } = await supabase
     .from("content_folders")
-    .select("section,slug")
+    .select("section")
     .eq("id", latestEntry.folder_id)
     .eq("is_published", true)
     .maybeSingle<ContentFolder>();
@@ -37,7 +45,8 @@ export default async function LatestContentNotice() {
     return null;
   }
 
-  const href = `/${folder.section}/folder/${folder.slug}?entry=${encodeURIComponent(latestEntry.id)}`;
+  const section = publicSection(folder.section);
+  const href = `/${section}/${encodeURIComponent(latestEntry.slug)}`;
 
   return (
     <Link
@@ -61,5 +70,3 @@ export default async function LatestContentNotice() {
     </Link>
   );
 }
-
-
