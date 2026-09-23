@@ -330,7 +330,7 @@ function SecurePdfCanvas({
   );
 }
 
-function EntryContent({
+export function EntryContent({
   entry,
   isAdmin,
 }: {
@@ -769,6 +769,7 @@ export default function FolderEntryList({
     </section>
   );
 }
+
 
 
 
