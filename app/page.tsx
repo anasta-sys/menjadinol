@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LatestContentNotice from "@/app/components/LatestContentNotice";
 
 const cards = [
   {
@@ -133,6 +134,7 @@ export default function Home() {
               >
                 Tentang Kami
               </Link>
+              <LatestContentNotice />
             </div>
           </div>
 
@@ -177,3 +179,6 @@ export default function Home() {
     </main>
   );
 }
+
+
+

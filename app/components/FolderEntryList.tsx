@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import EntryInlineAdminActions from "@/app/components/EntryInlineAdminActions";
 import type { ContentTableData } from "@/app/components/ContentTableBuilder";
 import SecureRichTextBody from "@/app/components/SecureRichTextBody";
@@ -666,8 +667,10 @@ export default function FolderEntryList({
   entries: Entry[];
   isAdmin: boolean;
 }) {
+  const searchParams = useSearchParams();
+  const entryFromUrl = searchParams.get("entry");
   const [selectedId, setSelectedId] =
-    useState<string | null>(null);
+    useState<string | null>(() => entryFromUrl);
 
   if (entries.length === 0) {
     return (
@@ -766,4 +769,6 @@ export default function FolderEntryList({
     </section>
   );
 }
+
+
 
