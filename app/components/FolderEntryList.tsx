@@ -21,6 +21,7 @@ type Entry = {
   attachment_mime?: string | null;
   attachment_size?: number | null;
   attachment_url?: string | null;
+  attachment_secure_url?: string | null;
 
   status: "draft" | "published";
   created_at?: string | null;
@@ -455,7 +456,7 @@ function EntryContent({
               title={entry.attachment_name ?? "Materi gambar"}
             />
           ) : isPdf ? (
-            <BookPdfViewer src={entry.attachment_url} title={entry.attachment_name ?? entry.title} tableData={entry.table_data} />
+            <BookPdfViewer src={entry.attachment_secure_url ?? entry.attachment_url} title={entry.attachment_name ?? entry.title} tableData={{ headers: Array.isArray(headers) ? headers : [], rows: Array.isArray(rows) ? rows : [] }} />
           ) : isVideo ? (
             <div className="material-preview material-video-wrap">
               <video
@@ -765,3 +766,4 @@ export default function FolderEntryList({
     </section>
   );
 }
+

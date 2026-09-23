@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -31,6 +31,7 @@ type Entry = {
   attachment_mime: string | null;
   attachment_size: number | null;
   attachment_url?: string | null;
+  attachment_secure_url?: string | null;
   status: EntryStatus;
   created_at: string | null;
   updated_at: string | null;
@@ -238,6 +239,7 @@ export default async function FolderPublicPage({
           author_name: authorName,
           has_attachment: true,
           attachment_url: data.signedUrl,
+          attachment_secure_url: `/api/material/view?path=${encodeURIComponent(entry.attachment_path)}`,
         };
       } catch (error) {
         console.error(
@@ -365,6 +367,9 @@ export default async function FolderPublicPage({
     </main>
   );
 }
+
+
+
 
 
 

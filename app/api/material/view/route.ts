@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { createClient as createServerClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 
 import {
@@ -59,35 +60,49 @@ export async function GET(request: NextRequest) {
     // 1. CEK LOGIN READER
     // =====================================================
 
-    const cookieStore = await cookies();
+    const serverSupabase = await createServerClient();
+    const { data: { user } } = await serverSupabase.auth.getUser();
 
-    const accessToken =
-      cookieStore.get(READER_ACCESS_COOKIE)?.value ?? "";
+    let allowed = false;
 
-    if (!accessToken) {
-      return NextResponse.json(
-        {
-          error: "Akses ditolak.",
-        },
-        {
-          status: 401,
-        }
+    if (user) {
+      const adminDb = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        { auth: { autoRefreshToken: false, persistSession: false } }
       );
+
+      const { data: adminUser } = await adminDb
+        .from("admin_users")
+        .select("role")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (
+        adminUser &&
+        ["writer", "admin", "superadmin"].includes(String(adminUser.role))
+      ) {
+        const { data: claims } = await serverSupabase.auth.getClaims();
+        allowed = claims?.claims?.aal === "aal2";
+      }
     }
 
-    const reader = await verifyReaderAccessToken(accessToken);
+    if (!allowed) {
+      const cookieStore = await cookies();
+      const accessToken =
+        cookieStore.get(READER_ACCESS_COOKIE)?.value ?? "";
 
-    if (!reader) {
-      return NextResponse.json(
-        {
-          error: "Sesi pembaca tidak valid.",
-        },
-        {
-          status: 401,
-        }
-      );
+      const reader = accessToken
+        ? await verifyReaderAccessToken(accessToken)
+        : null;
+
+      if (!reader) {
+        return NextResponse.json(
+          { error: "Akses ditolak." },
+          { status: 401 }
+        );
+      }
     }
-
     // =====================================================
     // 2. AMBIL PATH
     // =====================================================
@@ -363,3 +378,4 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+

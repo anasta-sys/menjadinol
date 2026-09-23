@@ -3,10 +3,10 @@
 import {
   forwardRef,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
-
 import HTMLFlipBook from "react-pageflip";
 
 type BookPdfViewerProps = {
@@ -19,42 +19,29 @@ type BookPdfViewerProps = {
 type PdfPage = {
   pageNumber: number;
   imageUrl: string;
-  width: number;
-  height: number;
 };
 
 const BookPage = forwardRef<
   HTMLDivElement,
-  {
-    page: PdfPage;
-    title: string;
-  }
+  { page: PdfPage; title: string }
 >(function BookPage({ page, title }, ref) {
   return (
     <div ref={ref} className="mn-book-page">
       <div className="mn-book-paper">
         <img
           src={page.imageUrl}
-          alt={`${title} — halaman ${page.pageNumber}`}
+          alt={`${title} - halaman ${page.pageNumber}`}
           draggable={false}
         />
-
-        <span className="mn-book-page-number">
-          {page.pageNumber}
-        </span>
+        <span className="mn-book-page-number">{page.pageNumber}</span>
       </div>
     </div>
   );
 });
 
-
 const TableBookPage = forwardRef<
   HTMLDivElement,
-  {
-    headers: string[];
-    rows: string[][];
-    pageNumber: number;
-  }
+  { headers: string[]; rows: string[][]; pageNumber: number }
 >(function TableBookPage({ headers, rows, pageNumber }, ref) {
   return (
     <div ref={ref} className="mn-book-page">
@@ -72,23 +59,19 @@ const TableBookPage = forwardRef<
               {rows.map((row, rowIndex) => (
                 <tr key={rowIndex}>
                   {headers.map((_, columnIndex) => (
-                    <td key={columnIndex}>
-                      {row?.[columnIndex] ?? ""}
-                    </td>
+                    <td key={columnIndex}>{row?.[columnIndex] ?? ""}</td>
                   ))}
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-
-        <span className="mn-book-page-number">
-          {pageNumber}
-        </span>
+        <span className="mn-book-page-number">{pageNumber}</span>
       </div>
     </div>
   );
 });
+
 export default function BookPdfViewer({
   src,
   data,
@@ -96,64 +79,73 @@ export default function BookPdfViewer({
   tableData = null,
 }: BookPdfViewerProps) {
   const flipBookRef = useRef<any>(null);
+  const objectUrlsRef = useRef<string[]>([]);
 
   const [pages, setPages] = useState<PdfPage[]>([]);
   const [loading, setLoading] = useState(true);
+  const [renderDone, setRenderDone] = useState(false);
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const [zoom, setZoom] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const checkScreen = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
+    const checkScreen = () => setIsMobile(window.innerWidth < 768);
     checkScreen();
-
     window.addEventListener("resize", checkScreen);
-
-    return () => {
-      window.removeEventListener("resize", checkScreen);
-    };
+    return () => window.removeEventListener("resize", checkScreen);
   }, []);
 
   useEffect(() => {
     let active = true;
     let pdfDocument: any = null;
-    const objectUrls: string[] = [];
+
+    objectUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+    objectUrlsRef.current = [];
 
     async function loadPdf() {
       setLoading(true);
+      setRenderDone(false);
       setError("");
       setPages([]);
       setCurrentPage(0);
 
       try {
         const pdfjs = await import("pdfjs-dist");
+        pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 
-        pdfjs.GlobalWorkerOptions.workerSrc =
-          "/pdf.worker.min.mjs";
-
-        let source: any;
+        let bytes: Uint8Array;
 
         if (data) {
-          const copied =
+          bytes =
             data instanceof Uint8Array
               ? new Uint8Array(data)
               : new Uint8Array(data.slice(0));
-
-          source = { data: copied };
         } else if (src) {
-          source = { url: src };
+          const response = await fetch(src, {
+            credentials: "include",
+            cache: "no-store",
+          });
+
+          if (!response.ok) {
+            throw new Error(`PDF gagal dimuat (${response.status}).`);
+          }
+
+          const buffer = await response.arrayBuffer();
+          bytes = new Uint8Array(buffer);
         } else {
           throw new Error("Sumber PDF tidak tersedia.");
         }
 
-        pdfDocument =
-          await pdfjs.getDocument(source).promise;
+        if (!active) return;
 
-        const renderedPages: PdfPage[] = [];
+        pdfDocument = await pdfjs.getDocument({
+          data: bytes,
+          useWorkerFetch: false,
+          isEvalSupported: false,
+        }).promise;
+
+        if (!active) return;
 
         for (
           let pageNumber = 1;
@@ -162,68 +154,57 @@ export default function BookPdfViewer({
         ) {
           if (!active) return;
 
-          const page =
-            await pdfDocument.getPage(pageNumber);
+          const page = await pdfDocument.getPage(pageNumber);
+          const viewport = page.getViewport({
+            scale: isMobile ? 1.2 : 1.45,
+          });
 
-          const viewport =
-            page.getViewport({ scale: 1.55 });
-
-          const canvas =
-            document.createElement("canvas");
-
-          const context =
-            canvas.getContext("2d");
+          const canvas = document.createElement("canvas");
+          const context = canvas.getContext("2d");
 
           if (!context) {
-            throw new Error(
-              "Canvas PDF tidak tersedia."
-            );
+            throw new Error("Canvas PDF tidak tersedia.");
           }
 
-          canvas.width =
-            Math.ceil(viewport.width);
-
-          canvas.height =
-            Math.ceil(viewport.height);
+          canvas.width = Math.ceil(viewport.width);
+          canvas.height = Math.ceil(viewport.height);
 
           await page.render({
             canvasContext: context,
             viewport,
           }).promise;
 
-          const blob =
-            await new Promise<Blob | null>(
-              (resolve) =>
-                canvas.toBlob(
-                  resolve,
-                  "image/webp",
-                  0.92
-                )
-            );
+          if (!active) return;
 
-          if (!blob) {
-            throw new Error(
-              `Halaman ${pageNumber} gagal dirender.`
-            );
-          }
-
-          const imageUrl =
-            URL.createObjectURL(blob);
-
-          objectUrls.push(imageUrl);
-
-          renderedPages.push({
-            pageNumber,
-            imageUrl,
-            width: viewport.width,
-            height: viewport.height,
+          const blob = await new Promise<Blob | null>((resolve) => {
+            canvas.toBlob(resolve, "image/jpeg", 0.9);
           });
 
+          if (!blob) {
+            throw new Error(`Halaman ${pageNumber} gagal dirender.`);
+          }
+
+          const imageUrl = URL.createObjectURL(blob);
+          objectUrlsRef.current.push(imageUrl);
+
+          if (active) {
+            setPages((previous) => [
+              ...previous,
+              { pageNumber, imageUrl },
+            ]);
+            setLoading(false);
+          }
+
           page.cleanup?.();
+
+          await new Promise<void>((resolve) => {
+            window.setTimeout(resolve, 0);
+          });
         }
 
         if (active) {
-          setPages(renderedPages);
+          setRenderDone(true);
+          setLoading(false);
         }
       } catch (err) {
         console.error("BookPdfViewer:", err);
@@ -234,9 +215,6 @@ export default function BookPdfViewer({
               ? err.message
               : "PDF tidak dapat ditampilkan."
           );
-        }
-      } finally {
-        if (active) {
           setLoading(false);
         }
       }
@@ -251,67 +229,73 @@ export default function BookPdfViewer({
         pdfDocument?.destroy?.();
       } catch {}
 
-      objectUrls.forEach((url) => {
-        URL.revokeObjectURL(url);
-      });
+      objectUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+      objectUrlsRef.current = [];
     };
-  }, [src, data]);
+  }, [src, data, isMobile]);
+
+  const hasTablePage =
+    Array.isArray(tableData?.headers) &&
+    tableData.headers.length > 0;
+
+  const totalPages = pages.length + (hasTablePage ? 1 : 0);
+
+  const bookPages = useMemo(() => {
+    const items: React.ReactElement[] = pages.map((page) => (
+      <BookPage
+        key={`pdf-${page.pageNumber}`}
+        page={page}
+        title={title}
+      />
+    ));
+
+    if (hasTablePage && tableData) {
+      items.push(
+        <TableBookPage
+          key="table-page"
+          headers={tableData.headers}
+          rows={Array.isArray(tableData.rows) ? tableData.rows : []}
+          pageNumber={pages.length + 1}
+        />
+      );
+    }
+
+    return items;
+  }, [pages, title, hasTablePage, tableData]);
 
   function previousPage() {
-    flipBookRef.current
-      ?.pageFlip()
-      ?.flipPrev();
+    flipBookRef.current?.pageFlip()?.flipPrev();
   }
 
   function nextPage() {
-    flipBookRef.current
-      ?.pageFlip()
-      ?.flipNext();
+    flipBookRef.current?.pageFlip()?.flipNext();
   }
 
   function zoomOut() {
-    setZoom((value) =>
-      Math.max(0.75, value - 0.1)
-    );
+    setZoom((value) => Math.max(0.75, Number((value - 0.1).toFixed(2))));
   }
 
   function zoomIn() {
-    setZoom((value) =>
-      Math.min(1.5, value + 0.1)
-    );
+    setZoom((value) => Math.min(1.5, Number((value + 0.1).toFixed(2))));
   }
 
-  if (loading) {
-    return (
-      <div className="mn-book-state">
-        Membuka buku...
-      </div>
-    );
+  if (loading && !pages.length) {
+    return <div className="mn-book-state">Membuka buku...</div>;
   }
 
-  if (error) {
-    return (
-      <div className="mn-book-error">
-        {error}
-      </div>
-    );
+  if (error && !pages.length) {
+    return <div className="mn-book-error">{error}</div>;
   }
 
   if (!pages.length) {
-    return (
-      <div className="mn-book-error">
-        PDF tidak memiliki halaman.
-      </div>
-    );
+    return <div className="mn-book-error">PDF tidak memiliki halaman.</div>;
   }
 
   return (
     <section
       className="mn-book-root"
       aria-label={`Buku PDF: ${title}`}
-      onContextMenu={(event) =>
-        event.preventDefault()
-      }
+      onContextMenu={(event) => event.preventDefault()}
     >
       <div className="mn-book-toolbar">
         <button
@@ -319,14 +303,12 @@ export default function BookPdfViewer({
           onClick={previousPage}
           aria-label="Halaman sebelumnya"
         >
-          ←
+          &lt;
         </button>
 
         <span className="mn-book-counter">
-          {Math.min(
-            currentPage + 1,
-            pages.length
-          )} / {pages.length}
+          {Math.min(currentPage + 1, Math.max(totalPages, 1))} /{" "}
+          {Math.max(totalPages, 1)}
         </span>
 
         <button
@@ -334,38 +316,32 @@ export default function BookPdfViewer({
           onClick={nextPage}
           aria-label="Halaman berikutnya"
         >
-          →
+          &gt;
         </button>
 
         <span className="mn-book-divider" />
 
-        <button
-          type="button"
-          onClick={zoomOut}
-          aria-label="Perkecil"
-        >
-          −
+        <button type="button" onClick={zoomOut} aria-label="Perkecil">
+          -
         </button>
 
-        <span className="mn-book-zoom">
-          {Math.round(zoom * 100)}%
-        </span>
+        <span className="mn-book-zoom">{Math.round(zoom * 100)}%</span>
 
-        <button
-          type="button"
-          onClick={zoomIn}
-          aria-label="Perbesar"
-        >
+        <button type="button" onClick={zoomIn} aria-label="Perbesar">
           +
         </button>
       </div>
 
+      {!renderDone && (
+        <p className="mn-book-progress">
+          Menyiapkan halaman berikutnya...
+        </p>
+      )}
+
       <div className="mn-book-viewport">
         <div
           className="mn-book-scale"
-          style={{
-            transform: `scale(${zoom})`,
-          }}
+          style={{ transform: `scale(${zoom})` }}
         >
           <HTMLFlipBook
             ref={flipBookRef}
@@ -393,27 +369,10 @@ export default function BookPdfViewer({
             style={{}}
             className="mn-flipbook"
             onFlip={(event: any) => {
-              setCurrentPage(
-                Number(event?.data ?? 0)
-              );
+              setCurrentPage(Number(event?.data ?? 0));
             }}
           >
-            {pages.map((page) => (
-              <BookPage
-                key={page.pageNumber}
-                page={page}
-                title={title}
-              />
-            ))}
-
-            {tableData && tableData.headers.length > 0 && (
-              <TableBookPage
-                key="table-page"
-                headers={tableData.headers}
-                rows={tableData.rows}
-                pageNumber={pages.length + 1}
-              />
-            )}
+            {bookPages}
           </HTMLFlipBook>
         </div>
       </div>
@@ -433,12 +392,7 @@ export default function BookPdfViewer({
           box-sizing: border-box;
           border: 1px solid #deddd5;
           border-radius: 20px;
-          background:
-            linear-gradient(
-              180deg,
-              #f7f4e9 0%,
-              #efecdf 100%
-            );
+          background: linear-gradient(180deg, #f7f4e9 0%, #efecdf 100%);
           overflow: hidden;
           user-select: none;
         }
@@ -449,7 +403,7 @@ export default function BookPdfViewer({
           justify-content: center;
           flex-wrap: wrap;
           gap: 8px;
-          margin-bottom: 18px;
+          margin-bottom: 10px;
         }
 
         .mn-book-toolbar button {
@@ -481,6 +435,13 @@ export default function BookPdfViewer({
           height: 24px;
           margin: 0 4px;
           background: #d4d5ca;
+        }
+
+        .mn-book-progress {
+          margin: 0 0 8px;
+          text-align: center;
+          color: #7a7c72;
+          font-size: 11px;
         }
 
         .mn-book-viewport {
@@ -524,9 +485,7 @@ export default function BookPdfViewer({
           height: 100%;
           background: white;
           overflow: hidden;
-          box-shadow:
-            inset 0 0 0 1px
-            rgba(0, 0, 0, 0.04);
+          box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
         }
 
         :global(.mn-book-paper img) {
@@ -543,11 +502,45 @@ export default function BookPdfViewer({
           bottom: 8px;
           padding: 3px 7px;
           border-radius: 999px;
-          background:
-            rgba(255, 255, 255, 0.82);
+          background: rgba(255, 255, 255, 0.82);
           color: #697069;
           font-size: 9px;
           line-height: 1;
+        }
+
+        :global(.mn-book-table-paper) {
+          padding: 22px 18px 34px;
+          box-sizing: border-box;
+        }
+
+        :global(.mn-book-table-scroll) {
+          width: 100%;
+          height: 100%;
+          overflow: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        :global(.mn-book-table) {
+          width: 100%;
+          min-width: 520px;
+          border-collapse: collapse;
+          color: #38443d;
+          font-size: 10px;
+          line-height: 1.45;
+        }
+
+        :global(.mn-book-table th),
+        :global(.mn-book-table td) {
+          padding: 7px 8px;
+          border: 1px solid #d9dccf;
+          text-align: left;
+          vertical-align: top;
+        }
+
+        :global(.mn-book-table th) {
+          background: #edf0e4;
+          color: #234b40;
+          font-weight: 700;
         }
 
         .mn-book-state,
@@ -565,13 +558,12 @@ export default function BookPdfViewer({
 
         @media (max-width: 767px) {
           .mn-book-root {
-            width: 100%;
             padding: 10px;
             border-radius: 16px;
           }
 
           .mn-book-toolbar {
-            margin-bottom: 10px;
+            margin-bottom: 8px;
           }
 
           .mn-book-viewport {
@@ -581,6 +573,10 @@ export default function BookPdfViewer({
 
           .mn-book-scale {
             justify-content: flex-start;
+          }
+
+          :global(.mn-book-table) {
+            min-width: 600px;
           }
         }
 
