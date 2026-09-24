@@ -111,7 +111,7 @@ export default function TentangMenjadiNolPage() {
 
       <section className="tmn-spaces">
         <div className="tmn-section-label">
-          FITUR YANG ADA DI MENJADI NOL
+          FITUR 
         </div>
 
         <div className="tmn-space-grid">
