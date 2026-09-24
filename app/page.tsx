@@ -125,12 +125,12 @@ export default function Home() {
                 className="mn-primary"
                 href="/ruang-belajar"
               >
-                Mulai Perjalanan →
+              Mulai Perjalanan &gt;
               </Link>
 
               <Link
                 className="mn-secondary"
-                href="/tentang"
+                href="/tentang-menjadi-nol"
               >
                 Tentang Kami
               </Link>
@@ -145,9 +145,9 @@ export default function Home() {
             />
 
             <blockquote>
-              “Semua jawaban
+              &ldquo;Semua jawaban
               <br />
-              ada di dalam diri.”
+              ada di dalam diri.&rdquo;
             </blockquote>
           </div>
         </div>
@@ -171,7 +171,7 @@ export default function Home() {
 
             <span className="mn-card-link">
               Jelajahi
-              <span aria-hidden="true">→</span>
+              <span aria-hidden="true">&gt;</span>
             </span>
           </Link>
         ))}

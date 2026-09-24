@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import ContentTableBuilder, { type ContentTableData } from "@/app/components/ContentTableBuilder";
@@ -194,8 +194,8 @@ export default function FolderManager({
           <h2>Pilih bagian halaman</h2>
           <p style={{marginTop:"6px",opacity:.7}}>
             {isWriter
-              ? "Pilih fitur â†’ tulis draft â†’ kirim untuk review. Publikasi dilakukan Admin/Superadmin."
-              : "Pilih bagian â†’ buat fitur â†’ tambahkan banyak tulisan sesuai tema fitur."}
+          ? "Pilih fitur -> tulis draft -> kirim untuk review. Publikasi dilakukan Admin/Superadmin."
+          : "Pilih bagian -> buat fitur -> tambahkan banyak tulisan sesuai tema fitur."}
           </p>
         </div>
 
