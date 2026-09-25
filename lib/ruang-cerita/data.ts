@@ -135,6 +135,13 @@ async function requireReader() {
   };
 }
 
+export async function getReaderProfile() {
+  const { reader } = await requireReader();
+
+  return {
+    full_name: String(reader.full_name || "").trim(),
+  };
+}
 function makeTitle(content: string) {
   const normalized = content.replace(/\s+/g, " ").trim();
 

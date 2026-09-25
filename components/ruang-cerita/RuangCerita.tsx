@@ -97,6 +97,7 @@ export default function RuangCerita() {
 
   const [stories, setStories] = useState<CeritaConversation[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [readerName, setReaderName] = useState("");
   const [activeConversation, setActiveConversation] =
     useState<CeritaConversation | null>(null);
   const [messages, setMessages] = useState<CeritaMessage[]>([]);
@@ -110,13 +111,17 @@ export default function RuangCerita() {
 
     async function loadUnreadReplies() {
       try {
-        const result = await getStories();
+        const [result, profile] = await Promise.all([
+          getStories(),
+          getReaderProfile(),
+        ]);
 
         if (!mounted) {
           return;
         }
 
         setStories(result);
+        setReaderName(profile.full_name);
 
         const count = result.filter(
           (item) => item.status === "new_reply"
