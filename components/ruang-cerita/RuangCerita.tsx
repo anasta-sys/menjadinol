@@ -345,7 +345,7 @@ export default function RuangCerita() {
               <RuangCeritaSymbol />
 
               <div className="rc-panel-brand-copy">
-                <strong>Ruang Cerita</strong>
+                <strong>RUANG CERITA</strong>
                 <span>Sebuah ruang untuk bercerita.</span>
               </div>
             </div>
@@ -373,12 +373,12 @@ export default function RuangCerita() {
             </div>
           </header>
 
-          <div className="rc-demo-body">
+          <div className={`rc-demo-body ${view === "write" ? "rc-demo-body-write" : ""}`}>
 
             {view === "write" ? (
               <div className="rc-screen">
                 <div className="rc-screen-heading">
-                  <span className="rc-kicker">RUANG CERITA</span>
+                  <span className="rc-kicker">MENJADI NOL</span>
 
                   <h2>
                     Apa yang sedang memenuhi ruang di dalam dirimu?
@@ -784,13 +784,6 @@ export default function RuangCerita() {
               </div>
             ) : null}
           </div>
-
-          <footer className="rc-demo-footer">
-            <span>MENJADI NOL</span>
-            <small>
-              Ruang privat untuk berbagi dan didengarkan.
-            </small>
-          </footer>
         </section>
       ) : null}
 
