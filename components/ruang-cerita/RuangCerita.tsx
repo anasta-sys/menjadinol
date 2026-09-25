@@ -6,7 +6,8 @@ import {
   createStory,
   continueStory,
   getStories,
-  getThread,
+  getThread,
+  getReaderProfile,
   type CeritaConversation,
   type CeritaMessage,
 } from "@/lib/ruang-cerita/data";
@@ -111,17 +112,13 @@ export default function RuangCerita() {
 
     async function loadUnreadReplies() {
       try {
-        const [result, profile] = await Promise.all([
-          getStories(),
-          getReaderProfile(),
-        ]);
+        const result = await getStories();
 
         if (!mounted) {
           return;
         }
 
         setStories(result);
-        setReaderName(profile.full_name);
 
         const count = result.filter(
           (item) => item.status === "new_reply"
@@ -136,6 +133,18 @@ export default function RuangCerita() {
     }
 
     void loadUnreadReplies();
+
+    void getReaderProfile()
+      .then((profile) => {
+        if (mounted) {
+          setReaderName(profile.full_name || "Pembaca");
+        }
+      })
+      .catch(() => {
+        if (mounted) {
+          setReaderName("Pembaca");
+        }
+      });
 
     return () => {
       mounted = false;
@@ -633,10 +642,7 @@ export default function RuangCerita() {
                           }
                         >
                           <span className="rc-letter-label">
-                            {message.role ===
-                            "reader"
-                              ? "Ceritamu"
-                              : "Balasan Ruang Cerita"}
+                            {message.role === "reader" ? (readerName || "Ceritamu") : "Balasan Ruang Cerita"}
                           </span>
 
                           <time>
