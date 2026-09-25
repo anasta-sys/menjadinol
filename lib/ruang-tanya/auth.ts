@@ -126,7 +126,7 @@ export async function requireRuangTanyaReader(
   } = await adminDb
     .from("reader_users")
     .select(
-      "id,user_id,name,is_active,status"
+      "id,user_id,full_name,is_active,status"
     )
     .eq("user_id", user.id)
     .maybeSingle();
@@ -171,7 +171,7 @@ export async function requireRuangTanyaReader(
     readerId: String(reader.id),
     userId: String(reader.user_id),
     name:
-      String(reader.name || "").trim() ||
+      String(reader.full_name || "").trim() ||
       String(
         user.user_metadata?.name || ""
       ).trim() ||
