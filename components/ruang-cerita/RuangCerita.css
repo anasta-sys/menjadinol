@@ -1,0 +1,2912 @@
+.rc-widget,
+.rc-widget * {
+  box-sizing: border-box;
+}
+
+.rc-widget {
+  --cream: #fffaf0;
+  --paper: #fffdf7;
+  --green: #245b3d;
+  --green2: #47764d;
+  --sage: #819d70;
+  --gold: #d3a13d;
+  --muted: #78827a;
+
+  position: fixed;
+  z-index: 2147483000;
+  right: 120px;
+  bottom: 24px;
+
+  font-family: Aptos, "Segoe UI", Arial, sans-serif;
+  color: var(--green);
+}
+
+/* =========================================================
+   FLOATING LAUNCHER
+========================================================= */
+
+.rc-launch-area {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.rc-launch {
+  position: relative;
+
+  width: 64px;
+  height: 64px;
+  padding: 0;
+
+  display: grid;
+  place-items: center;
+
+  overflow: visible;
+
+  border: 2px solid #d4aa54;
+  border-radius: 50%;
+
+  background: #fffaf0;
+
+  box-shadow:
+    0 12px 30px rgba(38,75,48,.18),
+    0 0 0 5px rgba(255,250,240,.76);
+
+  cursor: pointer;
+
+  transition: transform .18s ease;
+}
+
+.rc-launch:hover {
+  transform: translateY(-3px) scale(1.035);
+}
+
+.rc-launch-label {
+  position: absolute;
+  right: 77px;
+
+  width: auto;
+  min-width: 108px;
+  padding: 9px 16px;
+
+  border: 1px solid rgba(48,83,55,.12);
+  border-radius: 999px;
+
+  background: rgba(255,250,240,.97);
+
+  color: #315f43;
+
+  box-shadow: 0 8px 24px rgba(42,70,48,.11);
+
+  font-family: Aptos, "Segoe UI", Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+
+  white-space: nowrap;
+
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(7px);
+
+  transition: .16s ease;
+
+  pointer-events: none;
+}
+
+.rc-launch-area:hover .rc-launch-label {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+
+.rc-story-symbol {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.rc-story-symbol-inner {
+  position: absolute;
+  inset: 4px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  border: 2px solid #658252;
+  border-radius: 50%;
+
+  background: #fffaf0;
+}
+
+.rc-story-logo {
+  width: 78%;
+  height: 78%;
+  object-fit: contain;
+}
+
+.rc-story-leaves {
+  position: absolute;
+  top: 0;
+  right: -3px;
+
+  width: 28px;
+  height: 32px;
+
+  pointer-events: none;
+}
+
+.rc-story-leaf {
+  position: absolute;
+
+  background:
+    linear-gradient(135deg,#a2b97c,#507044);
+
+  box-shadow: 0 1px 2px rgba(48,74,57,.12);
+}
+
+.rc-story-leaf-one {
+  top: 0;
+  right: 1px;
+
+  width: 15px;
+  height: 23px;
+
+  border-radius: 100% 0 100% 0;
+
+  transform: rotate(24deg);
+}
+
+.rc-story-leaf-two {
+  top: 15px;
+  right: 0;
+
+  width: 11px;
+  height: 17px;
+
+  border-radius: 0 100% 0 100%;
+
+  transform: rotate(-7deg);
+}
+
+.rc-story-stem {
+  position: absolute;
+  top: 9px;
+  right: 13px;
+
+  width: 2px;
+  height: 25px;
+
+  border-radius: 999px;
+
+  background: #637a51;
+
+  transform: rotate(25deg);
+}
+
+.rc-unread-badge {
+  position: absolute;
+  z-index: 10;
+
+  top: -6px;
+  right: -6px;
+
+  width: 22px;
+  height: 22px;
+
+  display: grid;
+  place-items: center;
+
+  border: 2px solid #fff8e9;
+  border-radius: 50%;
+
+  background: #db5943;
+  color: white;
+
+  box-shadow: 0 4px 10px rgba(100,50,40,.2);
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* =========================================================
+   PANEL
+========================================================= */
+
+.rc-panel,
+.rc-demo-panel {
+  position: absolute;
+  right: 0;
+  bottom: 78px;
+
+  width: 470px !important;
+  height: min(650px, calc(100dvh - 120px)) !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+
+  overflow: hidden;
+
+  border: 1px solid rgba(211,161,61,.68) !important;
+  border-radius: 27px !important;
+
+  background: #fffaf0 !important;
+
+  box-shadow:
+    0 34px 80px rgba(40,69,48,.18),
+    0 10px 28px rgba(87,69,36,.10) !important;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.rc-panel-header,
+.rc-demo-header {
+  flex: 0 0 78px !important;
+
+  min-height: 78px !important;
+  padding: 11px 18px !important;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  border-bottom: 1px solid rgba(211,161,61,.36) !important;
+
+  background:
+    radial-gradient(circle at 76% -25%,rgba(245,207,119,.26),transparent 35%),
+    #fffaf0 !important;
+}
+
+.rc-panel-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.rc-demo-header .rc-story-symbol {
+  width: 49px;
+  height: 49px;
+  flex: 0 0 49px;
+}
+
+.rc-panel-brand-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.rc-panel-brand-copy strong {
+  color: #235b3b !important;
+
+  font-family: Aptos, "Segoe UI", Arial, sans-serif !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0 !important;
+}
+
+.rc-panel-brand-copy span {
+  color: #7b857c !important;
+
+  font-family: Aptos, "Segoe UI", Arial, sans-serif !important;
+  font-size: 10.5px !important;
+  letter-spacing: 0 !important;
+}
+
+.rc-panel-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rc-control {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+
+  display: grid;
+  place-items: center;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: transparent;
+  color: #315e43;
+
+  font-size: 15px;
+
+  cursor: pointer;
+}
+
+.rc-control:hover {
+  background: rgba(57,104,67,.08);
+}
+
+/* =========================================================
+   SCROLLING BODY
+========================================================= */
+
+.rc-demo-body {
+  position: relative;
+
+  flex: 1 1 auto;
+  min-height: 0;
+
+  overflow: auto;
+
+  background:
+    radial-gradient(circle at 82% 12%, rgba(247,205,102,.30), transparent 28%),
+    radial-gradient(circle at 8% 72%, rgba(145,177,120,.18), transparent 30%),
+    radial-gradient(circle at 92% 78%, rgba(188,205,153,.20), transparent 25%),
+    linear-gradient(145deg,#fffdf8 0%,#fff8e7 52%,#f8f6e8 100%);
+
+  background-size: auto;
+  background-repeat: no-repeat;
+}
+
+/* scrollbar stays visible */
+
+.rc-demo-body::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+}
+
+.rc-demo-body::-webkit-scrollbar-track {
+  background: rgba(255,250,239,.9);
+}
+
+.rc-demo-body::-webkit-scrollbar-thumb {
+  border: 3px solid rgba(255,250,239,.9);
+  border-radius: 999px;
+
+  background: #a7a79f;
+}
+
+/* =========================================================
+   WRITE SCREEN
+========================================================= */
+
+.rc-screen {
+  position: relative;
+  z-index: 1;
+
+  min-width: 438px;
+  min-height: 100%;
+
+  padding: 27px 31px 30px;
+
+  color: #31533d;
+}
+
+.rc-screen-heading {
+  max-width: 370px;
+  margin: 0 auto 18px;
+
+  text-align: center;
+}
+
+.rc-kicker {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #b97920;
+
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .25em;
+}
+
+.rc-screen-heading h2,
+.rc-list-top h2,
+.rc-thread-title h2,
+.rc-result-screen h2 {
+  color: #24583b;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 400;
+}
+
+.rc-screen-heading h2 {
+  max-width: 360px;
+
+  margin: 0 auto 11px;
+
+  font-size: 30px;
+  line-height: 1.06;
+  letter-spacing: -.018em;
+}
+
+.rc-screen-heading p,
+.rc-result-screen > p {
+  margin: 0;
+
+  color: #758077;
+
+  font-size: 11.5px;
+  line-height: 1.55;
+}
+
+/* =========================================================
+   JOURNAL PAPER
+========================================================= */
+
+.rc-story-input {
+  width: 100%;
+  min-width: 390px;
+  min-height: 215px;
+
+  padding: 18px 19px;
+
+  resize: vertical;
+
+  border: 1px solid rgba(86,126,75,.52);
+  border-radius: 19px;
+  outline: 0;
+
+  background:
+    repeating-linear-gradient(
+      180deg,
+      rgba(255,254,248,.96) 0,
+      rgba(255,254,248,.96) 39px,
+      rgba(106,126,92,.075) 40px
+    );
+
+  color: #334d39;
+
+  box-shadow:
+    0 11px 25px rgba(49,78,53,.08),
+    0 0 0 5px rgba(255,250,230,.55);
+
+  font-family: Aptos, "Segoe UI", Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.rc-story-input::placeholder {
+  color: #9aa69c;
+}
+
+.rc-story-input:focus {
+  border-color: #4f8154;
+
+  box-shadow:
+    0 0 0 4px rgba(76,125,79,.10),
+    0 12px 27px rgba(49,78,53,.08);
+}
+
+/* =========================================================
+   PRIVACY
+========================================================= */
+
+.rc-private-note {
+  margin: 15px 2px 14px;
+  padding: 10px 12px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  border: 1px solid rgba(96,132,83,.18);
+  border-radius: 15px;
+
+  background: rgba(238,244,222,.84);
+}
+
+.rc-lock {
+  width: 27px;
+  height: 27px;
+  flex: 0 0 27px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+
+  background: #dceacb;
+  color: #507443;
+
+  font-size: 11px;
+}
+
+.rc-private-note p {
+  margin: 0;
+
+  color: #5c6c60;
+
+  font-size: 9.5px;
+  line-height: 1.45;
+}
+
+/* =========================================================
+   CTA
+========================================================= */
+
+.rc-demo-primary {
+  width: 100%;
+  min-height: 48px;
+
+  border: 1px solid #d1a148;
+  border-radius: 999px;
+
+  background:
+    linear-gradient(135deg,#39714a 0%,#195335 100%);
+
+  color: #fffdf4;
+
+  box-shadow:
+    0 0 0 3px rgba(244,205,115,.26),
+    0 10px 24px rgba(32,79,48,.22);
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 17px;
+
+  cursor: pointer;
+
+  transition:
+    transform .16s ease,
+    box-shadow .16s ease;
+}
+
+.rc-demo-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 0 0 3px rgba(244,205,115,.34),
+    0 13px 28px rgba(32,79,48,.27);
+}
+
+.rc-demo-primary:disabled {
+  opacity: .58;
+  cursor: default;
+}
+
+.rc-text-button {
+  display: block;
+
+  margin: 15px auto 0;
+  padding: 4px 8px;
+
+  border: 0;
+
+  background: transparent;
+  color: #315f3d;
+
+  font-family: Aptos, "Segoe UI", Arial, sans-serif;
+  font-size: 10.5px;
+  font-weight: 550;
+
+  text-decoration: underline;
+  text-decoration-color: rgba(49,95,61,.34);
+  text-underline-offset: 4px;
+
+  cursor: pointer;
+}
+
+/* =========================================================
+   RESULT
+========================================================= */
+
+.rc-result-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+}
+
+.rc-result-screen h2 {
+  margin: 20px 0 8px;
+  font-size: 25px;
+}
+
+.rc-envelope {
+  position: relative;
+
+  width: 108px;
+  height: 76px;
+
+  border: 1px solid #d2a54c;
+  border-radius: 13px;
+
+  background: linear-gradient(145deg,#fffdf6,#f7e7bd);
+
+  box-shadow: 0 12px 26px rgba(100,82,45,.10);
+}
+
+.rc-envelope-leaf {
+  position: absolute;
+
+  top: -15px;
+  right: 15px;
+
+  width: 18px;
+  height: 30px;
+
+  border-radius: 100% 0 100% 0;
+
+  background: linear-gradient(135deg,#9fb779,#507145);
+
+  transform: rotate(27deg);
+}
+
+.rc-envelope-check {
+  position: absolute;
+
+  right: -14px;
+  bottom: -14px;
+
+  width: 37px;
+  height: 37px;
+
+  display: grid;
+  place-items: center;
+
+  border: 4px solid #fffaf0;
+  border-radius: 50%;
+
+  background: #326943;
+  color: white;
+
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.rc-status-card {
+  width: 275px;
+
+  margin: 22px 0 18px;
+  padding: 14px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  border: 1px solid rgba(206,162,75,.22);
+  border-radius: 15px;
+
+  background: rgba(249,237,202,.86);
+}
+
+.rc-status-card span {
+  color: #7e6c4c;
+  font-size: 10px;
+}
+
+.rc-status-card strong {
+  color: #31563d;
+  font-size: 13px;
+}
+
+/* =========================================================
+   SECONDARY BUTTON
+========================================================= */
+
+.rc-demo-secondary,
+.rc-small-primary {
+  font-family: Aptos, "Segoe UI", Arial, sans-serif;
+  cursor: pointer;
+}
+
+.rc-demo-secondary {
+  min-width: 170px;
+  min-height: 42px;
+
+  padding: 0 18px;
+
+  border: 1px solid rgba(56,101,65,.30);
+  border-radius: 999px;
+
+  background: #fffaf0;
+  color: #315f3f;
+
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.rc-small-primary {
+  padding: 9px 13px;
+
+  border: 0;
+  border-radius: 999px;
+
+  background: #326842;
+  color: white;
+
+  font-size: 10px;
+  font-weight: 650;
+}
+
+/* =========================================================
+   STORY LIST
+========================================================= */
+
+.rc-list-top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+
+  margin-bottom: 18px;
+}
+
+.rc-list-top h2 {
+  max-width: 250px;
+
+  margin: 6px 0 0;
+
+  font-size: 22px;
+  line-height: 1.15;
+}
+
+.rc-story-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+
+  min-width: 405px;
+}
+
+.rc-story-row {
+  width: 100%;
+
+  padding: 13px;
+
+  display: grid;
+  grid-template-columns: minmax(180px,1fr) auto 18px;
+  align-items: center;
+  gap: 9px;
+
+  border: 1px solid rgba(91,119,82,.18);
+  border-radius: 14px;
+
+  background: rgba(255,253,247,.94);
+
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.rc-story-row-copy {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rc-story-row-copy strong {
+  overflow: hidden;
+
+  color: #304c38;
+
+  font-size: 12px;
+  font-weight: 650;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rc-story-row-copy small {
+  color: #858b82;
+  font-size: 9px;
+}
+
+.rc-status {
+  padding: 5px 8px;
+
+  border-radius: 999px;
+
+  font-size: 8.5px;
+  white-space: nowrap;
+}
+
+.rc-status-new {
+  background: #f9ddd4;
+  color: #a64c39;
+}
+
+.rc-status-read {
+  background: #e1edf5;
+  color: #456f8c;
+}
+
+.rc-status-wait {
+  background: #f7e9bd;
+  color: #866720;
+}
+
+.rc-status-done {
+  background: #dfeede;
+  color: #4c7552;
+}
+
+.rc-row-arrow {
+  color: #536d57;
+  font-size: 16px;
+}
+
+/* =========================================================
+   THREAD
+========================================================= */
+
+.rc-back {
+  margin: 0 0 15px;
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+  color: #496b50;
+
+  font-size: 10px;
+
+  cursor: pointer;
+}
+
+.rc-thread-title {
+  margin-bottom: 18px;
+  text-align: center;
+}
+
+.rc-thread-title h2 {
+  margin: 0 0 4px;
+  font-size: 24px;
+}
+
+.rc-thread-title span {
+  color: #898d85;
+  font-size: 9px;
+}
+
+.rc-thread-line {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  margin-bottom: 18px;
+  padding-left: 22px;
+}
+
+.rc-thread-line::before {
+  content: "";
+
+  position: absolute;
+
+  top: 10px;
+  bottom: 10px;
+  left: 7px;
+
+  width: 1px;
+
+  background: rgba(183,153,92,.34);
+}
+
+.rc-letter {
+  padding: 14px 15px;
+
+  border-radius: 14px;
+}
+
+.rc-letter-user {
+  background: rgba(249,237,214,.94);
+}
+
+.rc-letter-admin {
+  background: rgba(229,239,220,.95);
+}
+
+.rc-letter-label {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: #304b38;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.rc-letter time {
+  display: block;
+
+  margin-bottom: 9px;
+
+  color: #8a8d84;
+
+  font-size: 8.5px;
+}
+
+.rc-letter p {
+  margin: 0;
+
+  color: #48564a;
+
+  font-size: 11.5px;
+  line-height: 1.6;
+}
+
+.rc-thread-leaf {
+  position: relative;
+  z-index: 2;
+
+  width: 17px;
+  height: 17px;
+
+  margin-left: -23px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+
+  background: #edf2e5;
+  color: #668057;
+
+  font-size: 11px;
+}
+
+.rc-left-heading {
+  margin-left: 0;
+  text-align: left;
+}
+
+/* old CSS botanical not used */
+
+.rc-botanical {
+  display: none !important;
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.rc-demo-footer {
+  flex: 0 0 43px;
+
+  min-height: 43px;
+  padding: 8px 17px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  border-top: 1px solid rgba(211,161,61,.30);
+
+  background: #fff9eb;
+}
+
+.rc-demo-footer span {
+  color: #aa701d;
+
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .18em;
+}
+
+.rc-demo-footer small {
+  color: #858b82;
+  font-size: 8px;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width:600px) {
+  .rc-widget {
+    right: 90px;
+    bottom: 14px;
+  }
+
+  .rc-panel,
+  .rc-demo-panel {
+    position: fixed;
+
+    left: 10px;
+    right: 10px;
+    bottom: 82px;
+
+    width: auto !important;
+    height: min(650px,calc(100dvh - 105px)) !important;
+
+    border-radius: 23px !important;
+  }
+
+  .rc-launch {
+    width: 58px;
+    height: 58px;
+  }
+
+  .rc-launch-label {
+    display: none;
+  }
+
+  .rc-screen {
+    padding: 24px 22px 27px;
+  }
+}
+
+/* Horizontal scrolling is intentionally preserved. */
+
+@media (prefers-reduced-motion:reduce) {
+  .rc-launch,
+  .rc-demo-primary {
+    transition: none;
+  }
+}
+
+
+/* RC ORGANIC FLOW START */
+
+/* More breathing room */
+.rc-screen {
+  padding: 31px 34px 34px !important;
+}
+
+/* Botanical becomes atmosphere, not decoration blocks */
+.rc-demo-body {
+  background-size:
+    108% 108%,
+    auto,
+    auto !important;
+
+  background-position:
+    center,
+    center,
+    center !important;
+}
+
+/* Keep plants away from the main sentence */
+.rc-screen-heading {
+  position: relative;
+  z-index: 3;
+
+  max-width: 350px !important;
+
+  margin:
+    2px auto
+    24px !important;
+
+  padding:
+    0 17px !important;
+}
+
+.rc-kicker {
+  margin-bottom: 11px !important;
+
+  font-size: 8px !important;
+  letter-spacing: .28em !important;
+}
+
+/* Softer editorial heading */
+.rc-screen-heading h2 {
+  max-width: 325px !important;
+
+  margin:
+    0 auto
+    12px !important;
+
+  font-size: 27px !important;
+  line-height: 1.10 !important;
+  letter-spacing: -.025em !important;
+}
+
+.rc-screen-heading p {
+  max-width: 315px !important;
+
+  margin: 0 auto !important;
+
+  font-size: 10.5px !important;
+  line-height: 1.65 !important;
+}
+
+/* Journal sheet: softer, less form-like */
+.rc-story-input {
+  position: relative;
+  z-index: 3;
+
+  min-height: 205px !important;
+
+  padding:
+    20px 21px !important;
+
+  border:
+    1px solid rgba(81,121,75,.34) !important;
+
+  border-radius:
+    23px 18px 24px 19px !important;
+
+  background:
+    repeating-linear-gradient(
+      180deg,
+      rgba(255,254,248,.94) 0,
+      rgba(255,254,248,.94) 39px,
+      rgba(102,124,92,.055) 40px
+    ) !important;
+
+  box-shadow:
+    0 18px 38px rgba(49,77,52,.075),
+    0 3px 9px rgba(74,87,59,.04) !important;
+}
+
+/* Privacy becomes a gentle note instead of another form field */
+.rc-private-note {
+  position: relative;
+  z-index: 3;
+
+  width:
+    calc(100% - 20px) !important;
+
+  margin:
+    16px auto
+    17px !important;
+
+  padding:
+    8px 10px !important;
+
+  gap:
+    9px !important;
+
+  border:
+    0 !important;
+
+  border-radius:
+    14px !important;
+
+  background:
+    rgba(239,244,224,.64) !important;
+
+  box-shadow:
+    none !important;
+}
+
+.rc-lock {
+  width:
+    24px !important;
+
+  height:
+    24px !important;
+
+  flex-basis:
+    24px !important;
+
+  background:
+    rgba(208,225,190,.70) !important;
+}
+
+.rc-private-note p {
+  font-size:
+    9px !important;
+
+  line-height:
+    1.45 !important;
+}
+
+/* CTA no longer looks like a giant form submit */
+.rc-demo-primary {
+  position: relative;
+  z-index: 4;
+
+  display: block !important;
+
+  width:
+    calc(100% - 56px) !important;
+
+  min-height:
+    44px !important;
+
+  margin:
+    4px auto 0 !important;
+
+  border-radius:
+    999px !important;
+
+  font-size:
+    15px !important;
+
+  box-shadow:
+    0 9px 21px rgba(35,79,48,.16),
+    0 0 0 2px rgba(213,170,83,.18) !important;
+}
+
+/* Disabled remains attractive, not grey */
+.rc-demo-primary:disabled {
+  opacity:
+    1 !important;
+
+  background:
+    linear-gradient(
+      135deg,
+      #8ca98a,
+      #688c70
+    ) !important;
+
+  color:
+    rgba(255,253,244,.92) !important;
+}
+
+/* History link gets air around it */
+.rc-text-button {
+  position: relative;
+  z-index: 4;
+
+  margin:
+    15px auto
+    4px !important;
+
+  font-size:
+    10px !important;
+}
+
+/* Header less app-like */
+.rc-panel-header,
+.rc-demo-header {
+  padding:
+    10px 20px !important;
+
+  background:
+    linear-gradient(
+      105deg,
+      #fffaf0 0%,
+      #fff8e9 60%,
+      #fffdf6 100%
+    ) !important;
+}
+
+.rc-panel-brand-copy strong {
+  font-size:
+    17px !important;
+}
+
+.rc-panel-brand-copy span {
+  opacity:
+    .82;
+}
+
+/* Controls quieter */
+.rc-control {
+  width:
+    29px !important;
+
+  height:
+    29px !important;
+
+  opacity:
+    .78;
+}
+
+/* Footer lighter */
+.rc-demo-footer {
+  min-height:
+    39px !important;
+
+  flex-basis:
+    39px !important;
+
+  background:
+    rgba(255,250,239,.92) !important;
+}
+
+/* Keep the scrollbar, but make it visually quieter */
+.rc-demo-body::-webkit-scrollbar {
+  width:
+    8px !important;
+
+  height:
+    8px !important;
+}
+
+.rc-demo-body::-webkit-scrollbar-thumb {
+  border:
+    2px solid rgba(255,250,239,.94) !important;
+
+  background:
+    rgba(103,111,100,.55) !important;
+}
+
+/* RC ORGANIC FLOW END */
+
+
+/* RC SUNNY NATURE FINAL START */
+
+/* ----------------------------------------------------------
+   SUNNY NATURE BODY
+---------------------------------------------------------- */
+
+.rc-demo-body {
+  position: relative !important;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255,250,239,.90) 0%,
+      rgba(255,251,241,.84) 25%,
+      rgba(255,252,245,.91) 51%,
+      rgba(255,249,233,.72) 77%,
+      rgba(245,236,197,.40) 100%
+    ),
+    url("/ruang-cerita-nature.png") center / cover no-repeat !important;
+
+  background-attachment: local !important;
+}
+
+/* sunlight */
+.rc-demo-body::before {
+  content: "";
+
+  position: absolute;
+  z-index: 0;
+
+  top: -70px;
+  left: -85px;
+
+  width: 300px;
+  height: 260px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(255,226,137,.44) 0%,
+      rgba(255,237,185,.20) 42%,
+      transparent 72%
+    );
+
+  filter: blur(10px);
+
+  pointer-events: none;
+}
+
+/* soft green glow */
+.rc-demo-body::after {
+  content: "";
+
+  position: absolute;
+  z-index: 0;
+
+  right: -85px;
+  bottom: -100px;
+
+  width: 270px;
+  height: 270px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(137,169,104,.22),
+      transparent 69%
+    );
+
+  filter: blur(15px);
+
+  pointer-events: none;
+}
+
+/* ----------------------------------------------------------
+   MORE ORGANIC CONTENT
+---------------------------------------------------------- */
+
+.rc-screen {
+  position: relative !important;
+  z-index: 2 !important;
+
+  padding:
+    30px 34px
+    34px !important;
+}
+
+/* no more rigid centered block */
+.rc-screen-heading {
+  max-width: 348px !important;
+
+  margin:
+    0 auto
+    22px !important;
+
+  padding:
+    0 7px !important;
+
+  text-align: left !important;
+}
+
+.rc-kicker {
+  margin-bottom:
+    10px !important;
+
+  color:
+    #b87925 !important;
+
+  font-size:
+    8px !important;
+
+  font-weight:
+    750 !important;
+
+  letter-spacing:
+    .25em !important;
+}
+
+/* editorial instead of form title */
+.rc-screen-heading h2 {
+  max-width:
+    320px !important;
+
+  margin:
+    0 0
+    11px !important;
+
+  color:
+    #24583b !important;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif !important;
+
+  font-size:
+    28px !important;
+
+  font-weight:
+    400 !important;
+
+  line-height:
+    1.08 !important;
+
+  letter-spacing:
+    -.025em !important;
+}
+
+.rc-screen-heading p {
+  max-width:
+    315px !important;
+
+  margin:
+    0 !important;
+
+  color:
+    #68776b !important;
+
+  font-size:
+    10.5px !important;
+
+  line-height:
+    1.65 !important;
+}
+
+/* ----------------------------------------------------------
+   FLOATING JOURNAL PAPER
+---------------------------------------------------------- */
+
+.rc-story-input {
+  position: relative !important;
+  z-index: 3 !important;
+
+  width:
+    calc(100% - 8px) !important;
+
+  min-width:
+    390px !important;
+
+  min-height:
+    200px !important;
+
+  margin:
+    0 0 0
+    8px !important;
+
+  padding:
+    20px 21px !important;
+
+  border:
+    1px solid
+    rgba(70,112,69,.37) !important;
+
+  border-radius:
+    26px 19px
+    27px 21px !important;
+
+  outline:
+    none !important;
+
+  background:
+    repeating-linear-gradient(
+      180deg,
+      rgba(255,254,247,.92) 0,
+      rgba(255,254,247,.92) 38px,
+      rgba(93,120,83,.055) 39px
+    ) !important;
+
+  backdrop-filter:
+    blur(9px) !important;
+
+  -webkit-backdrop-filter:
+    blur(9px) !important;
+
+  box-shadow:
+    0 22px 45px
+      rgba(39,71,45,.11),
+    0 4px 10px
+      rgba(72,78,46,.05),
+    inset 0 1px 0
+      rgba(255,255,255,.86) !important;
+
+  color:
+    #344e3a !important;
+
+  font-family:
+    Aptos,
+    "Segoe UI",
+    Arial,
+    sans-serif !important;
+
+  font-size:
+    13px !important;
+
+  line-height:
+    1.7 !important;
+}
+
+.rc-story-input::placeholder {
+  color:
+    #91a096 !important;
+}
+
+.rc-story-input:focus {
+  border-color:
+    rgba(58,112,67,.66) !important;
+
+  box-shadow:
+    0 0 0 4px
+      rgba(74,128,77,.09),
+    0 24px 48px
+      rgba(39,71,45,.13) !important;
+}
+
+/* ----------------------------------------------------------
+   PRIVACY - NO MORE BOX
+---------------------------------------------------------- */
+
+.rc-private-note {
+  position: relative !important;
+  z-index: 3 !important;
+
+  width:
+    calc(100% - 44px) !important;
+
+  margin:
+    17px auto
+    16px !important;
+
+  padding:
+    7px 3px !important;
+
+  display:
+    flex !important;
+
+  align-items:
+    center !important;
+
+  gap:
+    8px !important;
+
+  border:
+    0 !important;
+
+  background:
+    transparent !important;
+
+  box-shadow:
+    none !important;
+}
+
+.rc-lock {
+  width:
+    23px !important;
+
+  height:
+    23px !important;
+
+  flex:
+    0 0
+    23px !important;
+
+  display:
+    grid !important;
+
+  place-items:
+    center !important;
+
+  border:
+    1px solid
+    rgba(72,112,64,.14) !important;
+
+  border-radius:
+    50% !important;
+
+  background:
+    rgba(234,242,219,.83) !important;
+
+  color:
+    #55794c !important;
+}
+
+.rc-private-note p {
+  margin:
+    0 !important;
+
+  color:
+    #58695c !important;
+
+  font-size:
+    9px !important;
+
+  line-height:
+    1.45 !important;
+}
+
+/* ----------------------------------------------------------
+   CTA - LIGHTER AND MORE ELEGANT
+---------------------------------------------------------- */
+
+.rc-demo-primary {
+  position:
+    relative !important;
+
+  z-index:
+    4 !important;
+
+  display:
+    block !important;
+
+  width:
+    calc(100% - 78px) !important;
+
+  min-height:
+    44px !important;
+
+  margin:
+    2px auto
+    0 !important;
+
+  border:
+    1px solid
+    rgba(211,161,61,.82) !important;
+
+  border-radius:
+    999px !important;
+
+  background:
+    linear-gradient(
+      135deg,
+      #4c7d50,
+      #245f3c
+    ) !important;
+
+  color:
+    #fffdf5 !important;
+
+  box-shadow:
+    0 10px 23px
+      rgba(33,77,45,.20),
+    0 0 0 3px
+      rgba(255,225,148,.16) !important;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif !important;
+
+  font-size:
+    15px !important;
+
+  cursor:
+    pointer !important;
+}
+
+.rc-demo-primary:hover:not(:disabled) {
+  transform:
+    translateY(-2px) !important;
+
+  box-shadow:
+    0 14px 29px
+      rgba(33,77,45,.25),
+    0 0 0 3px
+      rgba(255,225,148,.22) !important;
+}
+
+.rc-demo-primary:disabled {
+  opacity:
+    .78 !important;
+
+  background:
+    linear-gradient(
+      135deg,
+      #88a47d,
+      #668c69
+    ) !important;
+}
+
+/* ----------------------------------------------------------
+   HISTORY LINK
+---------------------------------------------------------- */
+
+.rc-text-button {
+  position:
+    relative !important;
+
+  z-index:
+    4 !important;
+
+  margin:
+    15px auto
+    5px !important;
+
+  padding:
+    5px 11px !important;
+
+  color:
+    #315f40 !important;
+
+  background:
+    rgba(255,252,242,.50) !important;
+
+  border:
+    0 !important;
+
+  border-radius:
+    999px !important;
+
+  font-size:
+    10px !important;
+
+  text-decoration:
+    underline !important;
+
+  text-decoration-color:
+    rgba(49,95,64,.30) !important;
+
+  text-underline-offset:
+    4px !important;
+}
+
+/* ----------------------------------------------------------
+   SUNNY HEADER
+---------------------------------------------------------- */
+
+.rc-panel-header,
+.rc-demo-header {
+  background:
+    linear-gradient(
+      105deg,
+      rgba(255,251,241,.98),
+      rgba(255,245,218,.94)
+    ) !important;
+
+  border-bottom:
+    1px solid
+    rgba(211,161,61,.30) !important;
+}
+
+/* ----------------------------------------------------------
+   SUNNY FOOTER
+---------------------------------------------------------- */
+
+.rc-demo-footer {
+  background:
+    linear-gradient(
+      90deg,
+      #fff8e6,
+      #fffdf6
+    ) !important;
+
+  border-top:
+    1px solid
+    rgba(211,161,61,.26) !important;
+}
+
+/* ----------------------------------------------------------
+   SCROLLBAR PRESERVED
+---------------------------------------------------------- */
+
+.rc-demo-body::-webkit-scrollbar {
+  width:
+    8px !important;
+
+  height:
+    8px !important;
+}
+
+.rc-demo-body::-webkit-scrollbar-track {
+  background:
+    rgba(255,250,238,.74) !important;
+}
+
+.rc-demo-body::-webkit-scrollbar-thumb {
+  border:
+    2px solid
+    rgba(255,250,238,.82) !important;
+
+  border-radius:
+    999px !important;
+
+  background:
+    rgba(78,103,75,.52) !important;
+}
+
+/* ----------------------------------------------------------
+   OTHER SCREENS ALSO RECEIVE NATURE ATMOSPHERE
+---------------------------------------------------------- */
+
+.rc-result-screen,
+.rc-thread-screen {
+  position:
+    relative !important;
+
+  z-index:
+    2 !important;
+}
+
+.rc-letter-user {
+  background:
+    rgba(255,246,222,.88) !important;
+
+  backdrop-filter:
+    blur(7px) !important;
+}
+
+.rc-letter-admin {
+  background:
+    rgba(230,241,220,.90) !important;
+
+  backdrop-filter:
+    blur(7px) !important;
+}
+
+.rc-story-row {
+  background:
+    rgba(255,253,246,.87) !important;
+
+  backdrop-filter:
+    blur(8px) !important;
+}
+
+/* No old fake botanical */
+.rc-botanical {
+  display:
+    none !important;
+}
+
+/* RC SUNNY NATURE FINAL END */
+/* Main-site launcher interaction fix */
+.rc-widget {
+  pointer-events: none !important;
+}
+
+.rc-panel,
+.rc-launch-area {
+  pointer-events: auto !important;
+}
+
+.rc-launch-area {
+  position: relative !important;
+  z-index: 2147483646 !important;
+}
+
+.rc-launch {
+  position: relative !important;
+  z-index: 2147483647 !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+.rc-launch-label {
+  pointer-events: none !important;
+}
+/* RC CLICK LAYER FINAL */
+.rc-widget {
+  pointer-events: none !important;
+}
+
+.rc-panel {
+  pointer-events: auto !important;
+}
+
+.rc-launch-area {
+  position: relative !important;
+  z-index: 2147483646 !important;
+  pointer-events: none !important;
+}
+
+.rc-launch {
+  position: relative !important;
+  z-index: 2147483647 !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+.rc-launch-label {
+  pointer-events: none !important;
+}
+
+/* RC PRIMARY GREEN - SAME AS MULAI PERJALANAN */
+.rc-demo-primary {
+  background: #174d38 !important;
+  color: #ffffff !important;
+}
+
+.rc-demo-primary:hover:not(:disabled) {
+  background: #174d38 !important;
+  opacity: 0.9;
+}
+
+
+/* ============================================================
+   RUANG CERITA - FINAL READER BOTANICAL THREAD
+   ============================================================ */
+
+/* RIWAYAT CERITA - dibuat jelas dan mudah diklik */
+.rc-history-link,
+.rc-history-button {
+  min-height: 38px !important;
+  padding: 0 18px !important;
+  border: 1px solid rgba(23, 77, 56, .28) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 253, 247, .88) !important;
+  color: #174d38 !important;
+  font-family: Aptos, "Segoe UI", Arial, sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  text-decoration: none !important;
+  box-shadow: 0 5px 15px rgba(23, 77, 56, .06) !important;
+  opacity: 1 !important;
+  cursor: pointer !important;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease !important;
+}
+
+.rc-history-link:hover,
+.rc-history-button:hover {
+  border-color: #174d38 !important;
+  background: #f4f8ef !important;
+  box-shadow: 0 7px 18px rgba(23, 77, 56, .10) !important;
+  transform: translateY(-1px);
+}
+
+/* fallback untuk tombol/link riwayat yang sekarang */
+.rc-panel button:not(.rc-launch):not(.rc-close):not(.rc-minimize) {
+  opacity: 1;
+}
+
+/* THREAD */
+.rc-thread {
+  position: relative !important;
+}
+
+/* Semua kartu pesan */
+.rc-message {
+  position: relative !important;
+  overflow: hidden !important;
+  border-radius: 19px !important;
+  box-shadow: 0 6px 18px rgba(52, 67, 52, .055) !important;
+}
+
+/* CERITA READER - warm cream/gold */
+.rc-message-reader,
+.rc-message.user,
+.rc-message.reader {
+  border: 1px solid rgba(185, 146, 55, .24) !important;
+  background:
+    linear-gradient(
+      120deg,
+      rgba(255, 251, 238, .97),
+      rgba(250, 244, 225, .90)
+    ) !important;
+  color: #30483a !important;
+}
+
+/* aksen emas di kiri cerita */
+.rc-message-reader::before,
+.rc-message.user::before,
+.rc-message.reader::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 3px !important;
+  background: rgba(181, 140, 47, .72) !important;
+}
+
+/* BALASAN ADMIN - sage/green */
+.rc-message-admin,
+.rc-message.assistant,
+.rc-message.admin {
+  border: 1px solid rgba(61, 112, 73, .22) !important;
+  background:
+    linear-gradient(
+      120deg,
+      rgba(229, 240, 224, .97),
+      rgba(240, 246, 234, .92)
+    ) !important;
+  color: #294637 !important;
+}
+
+/* aksen hijau di kiri balasan */
+.rc-message-admin::before,
+.rc-message.assistant::before,
+.rc-message.admin::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 3px !important;
+  background: #34734d !important;
+}
+
+/* Judul/nama pengirim */
+.rc-message strong,
+.rc-message-title,
+.rc-message-author {
+  color: #214b36 !important;
+  font-weight: 700 !important;
+}
+
+/* Waktu */
+.rc-message time,
+.rc-message-date {
+  color: #8d8a7f !important;
+  font-family: Aptos, "Segoe UI", Arial, sans-serif !important;
+  font-size: 9px !important;
+}
+
+/* Isi pesan */
+.rc-message-content,
+.rc-message p {
+  color: inherit !important;
+  line-height: 1.65 !important;
+}
+
+/* Badge/status CERITA */
+.rc-message-reader .rc-message-role,
+.rc-message.reader .rc-message-role,
+.rc-message.user .rc-message-role {
+  border: 1px solid rgba(181, 140, 47, .30) !important;
+  background: rgba(255, 250, 234, .75) !important;
+  color: #98711d !important;
+}
+
+/* Badge/status BALASAN */
+.rc-message-admin .rc-message-role,
+.rc-message.admin .rc-message-role,
+.rc-message.assistant .rc-message-role {
+  border: 1px solid rgba(55, 111, 72, .23) !important;
+  background: rgba(221, 236, 217, .72) !important;
+  color: #356845 !important;
+}
+
+/* Tombol lanjutkan cerita */
+.rc-continue-button {
+  border: 1px solid #174d38 !important;
+  background: #174d38 !important;
+  color: #ffffff !important;
+  box-shadow: 0 7px 18px rgba(23, 77, 56, .14) !important;
+}
+
+.rc-continue-button:hover {
+  background: #103e2c !important;
+  border-color: #103e2c !important;
+  transform: translateY(-1px);
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
+  .rc-history-link,
+  .rc-history-button {
+    min-height: 36px !important;
+    padding: 0 15px !important;
+    font-size: 11px !important;
+  }
+
+  .rc-message {
+    border-radius: 17px !important;
+  }
+}
+
+
+/* ============================================================
+   RUANG CERITA - APPROVED BOTANICAL VISUAL FINAL
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   LINK RIWAYAT DI HALAMAN AWAL
+   ------------------------------------------------------------ */
+
+.rc-screen > .rc-text-button {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: fit-content !important;
+  min-width: 270px !important;
+  min-height: 39px !important;
+
+  margin: 13px auto 0 !important;
+  padding: 0 19px !important;
+
+  border: 1px solid rgba(23, 77, 56, .32) !important;
+  border-radius: 999px !important;
+
+  background: rgba(255, 253, 247, .94) !important;
+  color: #174d38 !important;
+
+  font-family: Aptos, "Segoe UI", Arial, sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+
+  text-decoration: none !important;
+  text-align: center !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+
+  box-shadow:
+    0 5px 16px rgba(23, 77, 56, .07) !important;
+
+  cursor: pointer !important;
+
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease !important;
+}
+
+.rc-screen > .rc-text-button:hover {
+  border-color: #174d38 !important;
+  background: #f1f6ed !important;
+
+  box-shadow:
+    0 7px 19px rgba(23, 77, 56, .11) !important;
+
+  transform: translateY(-1px) !important;
+}
+
+
+/* ------------------------------------------------------------
+   THREAD SCREEN
+   ------------------------------------------------------------ */
+
+.rc-thread-screen {
+  position: relative !important;
+  padding-left: 25px !important;
+  padding-right: 25px !important;
+}
+
+
+/* ------------------------------------------------------------
+   KEMBALI KE DAFTAR
+   ------------------------------------------------------------ */
+
+.rc-thread-screen > .rc-back {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  min-height: 36px !important;
+  margin: 0 0 16px !important;
+  padding: 0 16px !important;
+
+  border: 1px solid rgba(178, 139, 50, .40) !important;
+  border-radius: 999px !important;
+
+  background: rgba(255, 252, 243, .88) !important;
+  color: #174d38 !important;
+
+  font-family: Aptos, "Segoe UI", Arial, sans-serif !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+
+  box-shadow:
+    0 4px 13px rgba(62, 67, 48, .05) !important;
+}
+
+
+/* ------------------------------------------------------------
+   JUDUL THREAD
+   ------------------------------------------------------------ */
+
+.rc-thread-title {
+  position: relative !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+
+  margin: 0 0 22px !important;
+  padding: 4px 16px 23px !important;
+
+  text-align: center !important;
+}
+
+.rc-thread-title::before {
+  content: "RUANG CERITA" !important;
+
+  display: block !important;
+
+  margin-bottom: 8px !important;
+
+  color: #9a7425 !important;
+
+  font-family: Aptos, "Segoe UI", Arial, sans-serif !important;
+  font-size: 8px !important;
+  font-weight: 800 !important;
+  letter-spacing: .25em !important;
+}
+
+.rc-thread-title::after {
+  content: "" !important;
+
+  display: block !important;
+
+  width: 86px !important;
+  height: 1px !important;
+
+  margin-top: 14px !important;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(177, 139, 51, .72),
+      transparent
+    ) !important;
+}
+
+.rc-thread-title h2 {
+  max-width: 390px !important;
+
+  margin: 0 !important;
+
+  color: #174631 !important;
+
+  font-family: Georgia, "Times New Roman", serif !important;
+  font-size: 25px !important;
+  font-weight: 400 !important;
+  line-height: 1.17 !important;
+  letter-spacing: -.015em !important;
+
+  overflow-wrap: anywhere !important;
+}
+
+.rc-thread-title > span {
+  display: block !important;
+
+  margin-top: 10px !important;
+
+  color: #8f8879 !important;
+
+  font-family: Aptos, "Segoe UI", Arial, sans-serif !important;
+  font-size: 9px !important;
+}
+
+
+/* ------------------------------------------------------------
+   TIMELINE
+   ------------------------------------------------------------ */
+
+.rc-thread-line {
+  position: relative !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 13px !important;
+
+  margin: 0 !important;
+  padding: 0 0 5px 23px !important;
+}
+
+.rc-thread-line::before {
+  content: "" !important;
+
+  position: absolute !important;
+  top: 17px !important;
+  bottom: 17px !important;
+  left: 5px !important;
+
+  width: 1px !important;
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(181, 140, 47, .65),
+      rgba(66, 119, 76, .55)
+    ) !important;
+}
+
+
+/* ------------------------------------------------------------
+   WRAPPER SETIAP PESAN
+   ------------------------------------------------------------ */
+
+.rc-thread-line > div {
+  position: relative !important;
+}
+
+
+/* titik timeline */
+.rc-thread-line > div::before {
+  content: "" !important;
+
+  position: absolute !important;
+  z-index: 3 !important;
+
+  top: 28px !important;
+  left: -22px !important;
+
+  width: 8px !important;
+  height: 8px !important;
+
+  box-sizing: border-box !important;
+
+  border: 2px solid #fffaf0 !important;
+  border-radius: 50% !important;
+
+  background: #b58d35 !important;
+
+  box-shadow:
+    0 0 0 1px rgba(174, 133, 41, .40) !important;
+}
+
+/* titik untuk balasan admin */
+.rc-thread-line > div:has(.rc-letter-admin)::before {
+  background: #34734d !important;
+
+  box-shadow:
+    0 0 0 1px rgba(52, 115, 77, .38) !important;
+}
+
+
+/* ------------------------------------------------------------
+   BASE CARD
+   ------------------------------------------------------------ */
+
+.rc-thread-line .rc-letter {
+  position: relative !important;
+
+  width: 100% !important;
+  box-sizing: border-box !important;
+
+  margin: 0 !important;
+  padding: 18px 19px 19px !important;
+
+  overflow: hidden !important;
+
+  border-radius: 18px !important;
+
+  box-shadow:
+    0 6px 18px rgba(53, 67, 52, .055) !important;
+}
+
+
+/* ------------------------------------------------------------
+   CERITAMU = CREAM / GOLD
+   ------------------------------------------------------------ */
+
+.rc-thread-line .rc-letter-user {
+  border: 1px solid rgba(183, 143, 51, .25) !important;
+
+  background:
+    linear-gradient(
+      120deg,
+      rgba(255, 251, 239, .98),
+      rgba(250, 244, 225, .91)
+    ) !important;
+
+  color: #31473a !important;
+}
+
+.rc-thread-line .rc-letter-user::after {
+  content: "CERITA" !important;
+
+  position: absolute !important;
+  top: 14px !important;
+  right: 15px !important;
+
+  padding: 5px 9px !important;
+
+  border: 1px solid rgba(181, 140, 47, .30) !important;
+  border-radius: 999px !important;
+
+  background: rgba(255, 250, 235, .84) !important;
+
+  color: #98701c !important;
+
+  font-family: Aptos, "Segoe UI", Arial, sans-serif !important;
+  font-size: 7px !important;
+  font-weight: 800 !important;
+  letter-spacing: .18em !important;
+}
+
+
+/* ------------------------------------------------------------
+   BALASAN = SAGE / GREEN
+   ------------------------------------------------------------ */
+
+.rc-thread-line .rc-letter-admin {
+  border: 1px solid rgba(55, 111, 72, .22) !important;
+  border-left: 3px solid #34734d !important;
+
+  background:
+    linear-gradient(
+      120deg,
+      rgba(226, 239, 222, .98),
+      rgba(240, 246, 234, .94)
+    ) !important;
+
+  color: #294537 !important;
+}
+
+.rc-thread-line .rc-letter-admin::after {
+  content: "BALASAN" !important;
+
+  position: absolute !important;
+  top: 14px !important;
+  right: 15px !important;
+
+  padding: 5px 9px !important;
+
+  border: 1px solid rgba(55, 111, 72, .24) !important;
+  border-radius: 999px !important;
+
+  background: rgba(218, 234, 215, .88) !important;
+
+  color: #356945 !important;
+
+  font-family: Aptos, "Segoe UI", Arial, sans-serif !important;
+  font-size: 7px !important;
+  font-weight: 800 !important;
+  letter-spacing: .18em !important;
+}
+
+
+/* ------------------------------------------------------------
+   LABEL ASLI: Ceritamu / Balasan Ruang Cerita
+   ------------------------------------------------------------ */
+
+.rc-thread-line .rc-letter-label {
+  display: block !important;
+
+  max-width: calc(100% - 88px) !important;
+
+  margin: 0 0 3px !important;
+
+  color: #214b36 !important;
+
+  font-family: Georgia, "Times New Roman", serif !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  line-height: 1.25 !important;
+}
+
+.rc-thread-line .rc-letter-admin .rc-letter-label {
+  color: #28563b !important;
+}
+
+
+/* tanggal */
+.rc-thread-line .rc-letter time {
+  display: block !important;
+
+  margin: 0 0 13px !important;
+
+  color: #918b7e !important;
+
+  font-family: Aptos, "Segoe UI", Arial, sans-serif !important;
+  font-size: 8px !important;
+  line-height: 1.3 !important;
+}
+
+
+/* isi */
+.rc-thread-line .rc-letter p {
+  margin: 0 !important;
+
+  color: inherit !important;
+
+  font-family: Georgia, "Times New Roman", serif !important;
+  font-size: 13px !important;
+  line-height: 1.68 !important;
+
+  white-space: pre-wrap !important;
+  overflow-wrap: anywhere !important;
+}
+
+
+/* ------------------------------------------------------------
+   HILANGKAN BINTANG/LEAF TEKS LAMA
+   timeline sekarang sudah menggantikannya
+   ------------------------------------------------------------ */
+
+.rc-thread-leaf {
+  display: none !important;
+}
+
+
+/* ------------------------------------------------------------
+   LANJUTKAN CERITA
+   ------------------------------------------------------------ */
+
+.rc-thread-screen > .rc-demo-primary {
+  width: min(310px, 92%) !important;
+  min-height: 43px !important;
+
+  margin: 20px auto 4px !important;
+
+  border: 1px solid #174d38 !important;
+  border-radius: 999px !important;
+
+  background: #174d38 !important;
+  color: #ffffff !important;
+
+  font-family: Georgia, "Times New Roman", serif !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+
+  box-shadow:
+    0 8px 20px rgba(23, 77, 56, .14) !important;
+
+  transition:
+    background 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease !important;
+}
+
+.rc-thread-screen > .rc-demo-primary:hover {
+  background: #103e2c !important;
+
+  box-shadow:
+    0 10px 23px rgba(23, 77, 56, .18) !important;
+
+  transform: translateY(-1px) !important;
+}
+
+
+/* ------------------------------------------------------------
+   MOBILE
+   ------------------------------------------------------------ */
+
+@media (max-width: 600px) {
+
+  .rc-screen > .rc-text-button {
+    min-width: 250px !important;
+    min-height: 38px !important;
+
+    padding: 0 16px !important;
+
+    font-size: 11px !important;
+  }
+
+  .rc-thread-screen {
+    padding-left: 19px !important;
+    padding-right: 19px !important;
+  }
+
+  .rc-thread-title h2 {
+    font-size: 22px !important;
+  }
+
+  .rc-thread-line {
+    padding-left: 21px !important;
+  }
+
+  .rc-thread-line .rc-letter {
+    padding: 17px 15px 18px !important;
+    border-radius: 17px !important;
+  }
+
+  .rc-thread-line .rc-letter-label {
+    font-size: 12px !important;
+  }
+
+  .rc-thread-line .rc-letter p {
+    font-size: 12px !important;
+  }
+
+  .rc-thread-line .rc-letter-user::after,
+  .rc-thread-line .rc-letter-admin::after {
+    top: 12px !important;
+    right: 12px !important;
+  }
+}
+
+
+/* ============================================================
+   RUANG CERITA - ELEGANT CONTINUE BUTTON FINAL
+   ============================================================ */
+
+.rc-thread-screen > .rc-demo-primary {
+  position: relative !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+
+  width: fit-content !important;
+  min-width: 230px !important;
+  min-height: 42px !important;
+
+  margin: 22px auto 8px !important;
+  padding: 0 23px !important;
+
+  border: 1px solid rgba(23, 77, 56, .32) !important;
+  border-radius: 999px !important;
+
+  background:
+    rgba(255, 253, 247, .92) !important;
+
+  color: #174d38 !important;
+
+  font-family:
+    Georgia, "Times New Roman", serif !important;
+
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  letter-spacing: .01em !important;
+
+  box-shadow:
+    0 5px 16px rgba(23, 77, 56, .055) !important;
+
+  cursor: pointer !important;
+
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease !important;
+}
+
+.rc-thread-screen > .rc-demo-primary::after {
+  content: ">" !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: 18px !important;
+  height: 18px !important;
+
+  border: 1px solid rgba(23, 77, 56, .20) !important;
+  border-radius: 50% !important;
+
+  font-family:
+    Aptos, "Segoe UI", Arial, sans-serif !important;
+
+  font-size: 10px !important;
+  font-weight: 500 !important;
+
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease !important;
+}
+
+.rc-thread-screen > .rc-demo-primary:hover {
+  border-color: #174d38 !important;
+
+  background: #174d38 !important;
+  color: #ffffff !important;
+
+  box-shadow:
+    0 8px 20px rgba(23, 77, 56, .13) !important;
+
+  transform: translateY(-1px) !important;
+}
+
+.rc-thread-screen > .rc-demo-primary:hover::after {
+  border-color: rgba(255, 255, 255, .42) !important;
+  transform: translateX(2px) !important;
+}
+
+@media (max-width: 600px) {
+  .rc-thread-screen > .rc-demo-primary {
+    min-width: 210px !important;
+    min-height: 40px !important;
+
+    margin-top: 20px !important;
+    padding: 0 20px !important;
+
+    font-size: 12px !important;
+  }
+}
+
+
+/* ============================================================
+   RUANG CERITA - CLEAR BACK TO STORY BUTTON
+   ============================================================ */
+
+.rc-back {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: fit-content !important;
+  min-height: 36px !important;
+
+  margin: 2px 0 17px !important;
+  padding: 0 15px !important;
+
+  border: 1px solid rgba(23, 77, 56, .28) !important;
+  border-radius: 999px !important;
+
+  background: rgba(255, 253, 247, .94) !important;
+  color: #174d38 !important;
+
+  font-family: Aptos, "Segoe UI", Arial, sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+
+  text-decoration: none !important;
+  opacity: 1 !important;
+
+  box-shadow:
+    0 5px 15px rgba(23, 77, 56, .07) !important;
+
+  cursor: pointer !important;
+
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease !important;
+}
+
+.rc-back:hover {
+  border-color: #174d38 !important;
+  background: #174d38 !important;
+  color: #ffffff !important;
+  transform: translateY(-1px) !important;
+}
+
+@media (max-width: 600px) {
+  .rc-back {
+    min-height: 34px !important;
+    padding: 0 13px !important;
+    font-size: 10px !important;
+  }
+}
+
+/* RC EXPORT PAGINATION FINAL */
+
+.rc-story-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  gap: 7px;
+  margin: 18px 0 4px;
+}
+
+.rc-page-number {
+  width: 32px;
+  height: 32px;
+
+  display: grid;
+  place-items: center;
+
+  padding: 0;
+
+  border: 1px solid rgba(74, 112, 79, 0.28);
+  border-radius: 9px;
+
+  background: rgba(255, 252, 243, 0.90);
+  color: #47634e;
+
+  font-family: Aptos, "Segoe UI", Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+
+.rc-page-number:hover,
+.rc-page-number:focus-visible {
+  background: #e1ead7;
+  border-color: #8ca27d;
+  color: #315b43;
+  transform: translateY(-1px);
+}
+
+.rc-page-number.is-active {
+  background: #78916b;
+  border-color: #78916b;
+  color: #ffffff;
+}
+
+.rc-thread-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.rc-thread-actions .rc-demo-primary {
+  margin-top: 0 !important;
+}
+
+.rc-export-button {
+  min-height: 43px;
+
+  padding: 0 22px;
+
+  border: 1px solid rgba(72, 112, 78, 0.45);
+  border-radius: 999px;
+
+  background: rgba(255, 251, 240, 0.92);
+  color: #3f684d;
+
+  font-family: Aptos, "Segoe UI", Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.rc-export-button:hover,
+.rc-export-button:focus-visible {
+  background: #e3ecd9;
+  border-color: #819a73;
+
+  box-shadow:
+    0 6px 16px rgba(57, 91, 61, 0.10);
+
+  transform: translateY(-1px);
+}
+
+@media (max-width: 600px) {
+  .rc-thread-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .rc-thread-actions > button {
+    width: 100%;
+  }
+}

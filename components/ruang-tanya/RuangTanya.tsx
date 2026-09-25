@@ -1,0 +1,1242 @@
+"use client";
+
+import Image from "next/image";
+import "./RuangTanya.css";
+import {
+  FormEvent,
+  KeyboardEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+
+type Source = {
+  title: string;
+  section: string;
+  folderTitle: string;
+  slug: string;
+  folderSlug: string;
+};
+
+type Msg = {
+  id: string;
+  role: "user" | "assistant";
+  text: string;
+  time: string;
+  sources?: Source[];
+};
+
+type HistoryConversation = {
+  id: string;
+  title: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+type HistorySource = {
+  title: string;
+  url?: string | null;
+  section?: string | null;
+};
+
+const prompts = [
+  { text: "Jelaskan tulisan yang sedang kubaca", icon: "document" },
+  { text: "Carikan bacaan yang berkaitan", icon: "book" },
+  { text: "Apa makna ikhlas?", icon: "leaf" },
+];
+
+function makeId() {
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function messageTime() {
+  return new Intl.DateTimeFormat("id-ID", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(new Date());
+}
+
+function DocumentIcon() {
+  return (
+    <svg viewBox="0 0 24 24">
+      <path d="M7 3.5h7l4 4v13H7z" />
+      <path d="M14 3.5v4h4M10 12h5M10 15h5" />
+    </svg>
+  );
+}
+
+function BookIcon() {
+  return (
+    <svg viewBox="0 0 24 24">
+      <path d="M4 5.5c2.8-.8 5.4-.3 8 1.5v12c-2.6-1.8-5.2-2.3-8-1.5z" />
+      <path d="M20 5.5c-2.8-.8-5.4-.3-8 1.5v12c2.6-1.8 5.2-2.3 8-1.5z" />
+    </svg>
+  );
+}
+
+function LeafIcon() {
+  return (
+    <svg viewBox="0 0 24 24">
+      <path d="M19 4.5C12.7 5.1 7.6 8.1 6 14.5c3.5 1.5 7.3.4 9.7-2.1C18 10 19 7 19 4.5z" />
+      <path d="M5 20c2.5-5 6-8.5 11-11" />
+    </svg>
+  );
+}
+
+function PromptIcon({ type }: { type: string }) {
+  if (type === "book") return <BookIcon />;
+  if (type === "leaf") return <LeafIcon />;
+  return <DocumentIcon />;
+}
+
+function SendIcon() {
+  return (
+    <svg viewBox="0 0 24 24">
+      <path d="M4 11.2 20 4l-7.1 16-2.2-6.4L4 11.2z" />
+      <path d="m10.7 13.6 4.6-4.7" />
+    </svg>
+  );
+}
+
+function ArrowIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M5 12h13" />
+      <path d="m14 8 4 4-4 4" />
+    </svg>
+  );
+}
+function ClipIcon() {
+  return (
+    <svg viewBox="0 0 24 24">
+      <path d="M8 12.5v-5a4 4 0 0 1 8 0v8a6 6 0 0 1-12 0v-8" />
+    </svg>
+  );
+}
+
+function UserIcon() {
+  return (
+    <svg viewBox="0 0 24 24">
+      <circle cx="12" cy="8" r="3.4" />
+      <path d="M5.5 20c.7-4 3-6 6.5-6s5.8 2 6.5 6" />
+    </svg>
+  );
+}
+
+function renderAnswerText(text: string) {
+  return text.split("\n").map((line, lineIndex) => {
+    const parts = line.split(/(\*\*[^*]+\*\*)/g);
+
+    return (
+      <span key={`line-${lineIndex}`}>
+        {parts.map((part, partIndex) => {
+          if (part.startsWith("**") && part.endsWith("**")) {
+            return (
+              <strong key={`part-${partIndex}`}>
+                {part.slice(2, -2)}
+              </strong>
+            );
+          }
+
+          return (
+            <span key={`part-${partIndex}`}>
+              {part}
+            </span>
+          );
+        })}
+
+        {lineIndex < text.split("\n").length - 1 && <br />}
+      </span>
+    );
+  });
+}
+export default function RuangTanya({ userName = "Kamu" }: { userName?: string }) {
+  const [open, setOpen] = useState(false);
+  const [minimized, setMinimized] = useState(false);
+  const [input, setInput] = useState("");
+  const [msgs, setMsgs] = useState<Msg[]>([]);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editText, setEditText] = useState("");
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [historyBusy, setHistoryBusy] = useState(false);
+  const [historyItems, setHistoryItems] = useState<HistoryConversation[]>([]);
+  const [historyError, setHistoryError] = useState("");
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo({
+      top: scrollRef.current.scrollHeight,
+      behavior: "smooth",
+    });
+  }, [msgs, busy]);
+
+  useEffect(() => {
+    if (open && !minimized) {
+      window.setTimeout(() => inputRef.current?.focus(), 100);
+    }
+  }, [open, minimized]);
+
+  async function submitText(raw: string) {
+    const text = raw.trim().slice(0, 2000);
+    if (!text || busy) return;
+
+    const now = messageTime();
+    const localUserMessageId = makeId();
+
+    setMsgs((current) => [
+      ...current,
+      {
+        id: localUserMessageId,
+        role: "user",
+        text,
+        time: now,
+      },
+    ]);
+
+    setInput("");
+    setBusy(true);
+
+    try {
+      const response = await fetch("/api/ruang-tanya/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        credentials: "same-origin",
+        cache: "no-store",
+        body: JSON.stringify({
+          message: text,
+          pageUrl: window.location.href,
+          ...(conversationId ? { conversationId } : {}),
+        }),
+      });
+
+      const data: unknown = await response.json().catch(() => ({}));
+      const payload =
+        data && typeof data === "object"
+          ? (data as Record<string, unknown>)
+          : {};
+
+      if (
+        response.ok &&
+        typeof payload.conversationId === "string"
+      ) {
+        setConversationId(payload.conversationId);
+      }
+      const answer =
+        response.ok && typeof payload.answer === "string"
+          ? payload.answer
+          : typeof payload.error === "string"
+            ? payload.error
+            : "Permintaan belum dapat diproses.";
+
+      const dbUserMessageId =
+        response.ok && typeof payload.userMessageId === "string"
+          ? payload.userMessageId
+          : null;
+
+      const dbAssistantMessageId =
+        response.ok && typeof payload.messageId === "string"
+          ? payload.messageId
+          : null;
+
+      if (dbUserMessageId) {
+        setMsgs((current) =>
+          current.map((item) =>
+            item.id === localUserMessageId
+              ? { ...item, id: dbUserMessageId }
+              : item
+          )
+        );
+      }
+
+      const sources: Source[] =
+        response.ok && Array.isArray(payload.sources)
+          ? payload.sources
+              .filter(
+                (source: unknown): source is Source =>
+                  !!source &&
+                  typeof source === "object" &&
+                  typeof (source as Source).title === "string" &&
+                  typeof (source as Source).slug === "string"
+              )
+              .slice(0, 2)
+          : [];
+
+      setMsgs((current) => [
+        ...current,
+        {
+          id: dbAssistantMessageId ?? makeId(),
+          role: "assistant",
+          text: answer.slice(0, 6000),
+          time: messageTime(),
+          sources,
+        },
+      ]);
+    } catch {
+      setMsgs((current) => [
+        ...current,
+        {
+          id: makeId(),
+          role: "assistant",
+          text: "Ruang Tanya sedang tidak dapat dihubungi. Coba lagi sebentar.",
+          time: messageTime(),
+        },
+      ]);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function startEdit(message: Msg) {
+    if (busy) return;
+    setEditingId(message.id);
+    setEditText(message.text);
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setEditText("");
+  }
+
+  async function resendEdited(messageId: string) {
+    const text = editText.trim().slice(0, 2000);
+    if (!text || busy) return;
+
+    const index = msgs.findIndex((message) => message.id === messageId);
+    if (index < 0) return;
+
+    const editedMessage: Msg = {
+      ...msgs[index],
+      text,
+      time: messageTime(),
+    };
+
+    setMsgs([...msgs.slice(0, index), editedMessage]);
+    setEditingId(null);
+    setEditText("");
+    setBusy(true);
+
+    try {
+      const response = await fetch("/api/ruang-tanya/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        credentials: "same-origin",
+        cache: "no-store",
+        body: JSON.stringify({
+          message: text,
+          pageUrl: window.location.href,
+          action: "edit",
+          userMessageId: messageId,
+          ...(conversationId ? { conversationId } : {}),
+        }),
+      });
+
+      const data: unknown = await response.json().catch(() => ({}));
+      const payload =
+        data && typeof data === "object"
+          ? (data as Record<string, unknown>)
+          : {};
+
+      if (
+        response.ok &&
+        typeof payload.conversationId === "string"
+      ) {
+        setConversationId(payload.conversationId);
+      }
+            const dbAssistantMessageId =
+        response.ok && typeof payload.messageId === "string"
+          ? payload.messageId
+          : null;
+const answer =
+        response.ok && typeof payload.answer === "string"
+          ? payload.answer
+          : typeof payload.error === "string"
+            ? payload.error
+            : "Permintaan belum dapat diproses.";
+
+      const sources: Source[] =
+        response.ok && Array.isArray(payload.sources)
+          ? payload.sources
+              .filter(
+                (source: unknown): source is Source =>
+                  !!source &&
+                  typeof source === "object" &&
+                  typeof (source as Source).title === "string" &&
+                  typeof (source as Source).slug === "string"
+              )
+              .slice(0, 2)
+          : [];
+
+      setMsgs((current) => [
+        ...current,
+        {
+          id: dbAssistantMessageId ?? makeId(),
+          role: "assistant",
+          text: answer.slice(0, 6000),
+          time: messageTime(),
+          sources,
+        },
+      ]);
+    } catch {
+      setMsgs((current) => [
+        ...current,
+        {
+          id: makeId(),
+          role: "assistant",
+          text: "Ruang Tanya sedang tidak dapat dihubungi. Coba lagi sebentar.",
+          time: messageTime(),
+        },
+      ]);
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function copyAnswer(message: Msg) {
+    try {
+      const cleanText = message.text
+        .replace(/\*\*(.*?)\*\*/g, "$1")
+        .replace(/^\s*[-*]\s+/gm, "- ")
+        .trim();
+
+      await navigator.clipboard.writeText(cleanText);
+      setCopiedId(message.id);
+
+      window.setTimeout(() => {
+        setCopiedId((current) =>
+          current === message.id ? null : current
+        );
+      }, 1600);
+    } catch {
+      setCopiedId(null);
+    }
+  }
+
+  async function retryAnswer(messageId: string) {
+    if (busy) return;
+
+    const assistantIndex = msgs.findIndex(
+      (message) => message.id === messageId
+    );
+
+    if (assistantIndex < 0) return;
+
+    let userIndex = assistantIndex - 1;
+
+    while (userIndex >= 0 && msgs[userIndex].role !== "user") {
+      userIndex -= 1;
+    }
+
+    if (userIndex < 0) return;
+
+    const question = msgs[userIndex].text.trim().slice(0, 2000);
+    if (!question) return;
+
+    setMsgs((current) => current.slice(0, assistantIndex));
+    setBusy(true);
+
+    try {
+      const response = await fetch("/api/ruang-tanya/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        credentials: "same-origin",
+        cache: "no-store",
+        body: JSON.stringify({
+          message: question,
+          pageUrl: window.location.href,
+          action: "retry",
+          assistantMessageId: messageId,
+          ...(conversationId ? { conversationId } : {}),
+        }),
+      });
+
+      const data: unknown = await response.json().catch(() => ({}));
+      const payload =
+        data && typeof data === "object"
+          ? (data as Record<string, unknown>)
+          : {};
+
+      if (
+        response.ok &&
+        typeof payload.conversationId === "string"
+      ) {
+        setConversationId(payload.conversationId);
+      }
+            const dbAssistantMessageId =
+        response.ok && typeof payload.messageId === "string"
+          ? payload.messageId
+          : null;
+const answer =
+        response.ok && typeof payload.answer === "string"
+          ? payload.answer
+          : typeof payload.error === "string"
+            ? payload.error
+            : "Permintaan belum dapat diproses.";
+
+      const sources: Source[] =
+        response.ok && Array.isArray(payload.sources)
+          ? payload.sources
+              .filter(
+                (source: unknown): source is Source =>
+                  !!source &&
+                  typeof source === "object" &&
+                  typeof (source as Source).title === "string" &&
+                  typeof (source as Source).slug === "string"
+              )
+              .slice(0, 2)
+          : [];
+
+      setMsgs((current) => [
+        ...current,
+        {
+          id: dbAssistantMessageId ?? makeId(),
+          role: "assistant",
+          text: answer.slice(0, 6000),
+          time: messageTime(),
+          sources,
+        },
+      ]);
+    } catch {
+      setMsgs((current) => [
+        ...current,
+        {
+          id: makeId(),
+          role: "assistant",
+          text: "Ruang Tanya sedang tidak dapat dihubungi. Coba lagi sebentar.",
+          time: messageTime(),
+        },
+      ]);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function formatHistoryDate(value?: string) {
+    if (!value) return "";
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) return "";
+
+    return new Intl.DateTimeFormat("id-ID", {
+      day: "2-digit",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).format(date);
+  }
+
+  function formatStoredMessageTime(value?: string) {
+    if (!value) return messageTime();
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) return messageTime();
+
+    return new Intl.DateTimeFormat("id-ID", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).format(date);
+  }
+
+  async function loadHistory() {
+    if (historyBusy) return;
+
+    setHistoryOpen(true);
+    setHistoryBusy(true);
+    setHistoryError("");
+
+    try {
+      const response = await fetch("/api/ruang-tanya/conversations", {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
+        credentials: "same-origin",
+        cache: "no-store",
+      });
+
+      const data: unknown = await response.json().catch(() => ({}));
+      const payload =
+        data && typeof data === "object"
+          ? (data as Record<string, unknown>)
+          : {};
+
+      if (!response.ok) {
+        setHistoryError(
+          typeof payload.error === "string"
+            ? payload.error
+            : "Riwayat belum dapat dimuat."
+        );
+        return;
+      }
+
+      const conversations = Array.isArray(payload.conversations)
+        ? payload.conversations
+        : [];
+
+      setHistoryItems(
+        conversations
+          .filter(
+            (item): item is HistoryConversation =>
+              !!item &&
+              typeof item === "object" &&
+              typeof (item as HistoryConversation).id === "string" &&
+              typeof (item as HistoryConversation).title === "string"
+          )
+          .slice(0, 50)
+      );
+    } catch {
+      setHistoryError("Riwayat belum dapat dimuat.");
+    } finally {
+      setHistoryBusy(false);
+    }
+  }
+
+  async function openHistoryConversation(id: string) {
+    if (historyBusy || busy) return;
+
+    setHistoryBusy(true);
+    setHistoryError("");
+
+    try {
+      const response = await fetch(
+        `/api/ruang-tanya/conversations?id=${encodeURIComponent(id)}`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+          },
+          credentials: "same-origin",
+          cache: "no-store",
+        }
+      );
+
+      const data: unknown = await response.json().catch(() => ({}));
+      const payload =
+        data && typeof data === "object"
+          ? (data as Record<string, unknown>)
+          : {};
+
+      if (!response.ok) {
+        setHistoryError(
+          typeof payload.error === "string"
+            ? payload.error
+            : "Percakapan belum dapat dibuka."
+        );
+        return;
+      }
+
+      const rawMessages = Array.isArray(payload.messages)
+        ? payload.messages
+        : [];
+
+      const loadedMessages: Msg[] = rawMessages
+        .filter(
+          (item): item is Record<string, unknown> =>
+            !!item &&
+            typeof item === "object" &&
+            typeof (item as Record<string, unknown>).id === "string" &&
+            ((item as Record<string, unknown>).role === "user" ||
+              (item as Record<string, unknown>).role === "assistant") &&
+            typeof (item as Record<string, unknown>).content === "string"
+        )
+        .map((item) => {
+          const rawSources = Array.isArray(item.sources)
+            ? item.sources
+            : [];
+
+          const sources: Source[] = rawSources
+            .filter(
+              (source): source is HistorySource =>
+                !!source &&
+                typeof source === "object" &&
+                typeof (source as HistorySource).title === "string"
+            )
+            .map((source) => {
+              const url =
+                typeof source.url === "string"
+                  ? source.url
+                  : "";
+
+              const parts = url
+                .split("?")[0]
+                .split("#")[0]
+                .split("/")
+                .filter(Boolean);
+
+              return {
+                title: source.title,
+                section:
+                  typeof source.section === "string"
+                    ? source.section
+                    : "",
+                folderTitle: "",
+                folderSlug: parts.length >= 3 ? parts[1] : "",
+                slug: parts.length >= 3 ? parts[2] : "",
+              };
+            });
+
+          return {
+            id: String(item.id),
+            role: item.role as "user" | "assistant",
+            text: String(item.content),
+            time: formatStoredMessageTime(
+              typeof item.createdAt === "string"
+                ? item.createdAt
+                : undefined
+            ),
+            sources,
+          };
+        });
+
+      setConversationId(id);
+      setMsgs(loadedMessages);
+      setInput("");
+      setEditingId(null);
+      setEditText("");
+      setCopiedId(null);
+      setHistoryOpen(false);
+
+      window.setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+    } catch {
+      setHistoryError("Percakapan belum dapat dibuka.");
+    } finally {
+      setHistoryBusy(false);
+    }
+  }
+
+  function newConversation() {
+    if (busy) return;
+
+    setMsgs([]);
+    setConversationId(null);
+    setInput("");
+    setEditingId(null);
+    setEditText("");
+    setCopiedId(null);
+    setHistoryOpen(false);
+    setHistoryError("");
+
+    window.setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
+  }
+  function send(e: FormEvent) {
+    e.preventDefault();
+    void submitText(input);
+  }
+
+  function onKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      void submitText(input);
+    }
+  }
+
+  function openWidget() {
+    setOpen(true);
+    setMinimized(false);
+  }
+
+  useEffect(() => {
+    function toggleFromSite() {
+      setOpen((currentOpen) => {
+        if (!currentOpen) {
+          setMinimized(false);
+          return true;
+        }
+
+        setMinimized(false);
+        return false;
+      });
+    }
+
+    window.addEventListener(
+      "menjadinol:open-ruang-tanya",
+      toggleFromSite
+    );
+
+    return () => {
+      window.removeEventListener(
+        "menjadinol:open-ruang-tanya",
+        toggleFromSite
+      );
+    };
+  }, []);
+
+  const hasConversation = msgs.length > 0;
+
+  return (
+    <div className="rt-shell">
+      {open && !minimized && (
+        <section
+          className={`rt-panel ${hasConversation ? "rt-chat-state" : "rt-welcome-state"}`}
+          role="dialog"
+          aria-label="Ruang Tanya"
+        >
+          <header className="rt-header">
+            <div className="rt-header-logo">
+              <Image
+                src="/menjadi-nol-symbol-transparent.png"
+                alt=""
+                width={58}
+                height={58}
+                priority
+              />
+            </div>
+
+            <div className="rt-heading">
+              <strong>RUANG TANYA</strong>
+              <span>Ruang untuk bertanya dan memahami.</span>
+            </div>
+
+            <div className="rt-window-actions">
+              <button
+                type="button"
+                className="rt-history-trigger"
+                onClick={() => {
+                  if (historyOpen) {
+                    setHistoryOpen(false);
+                  } else {
+                    void loadHistory();
+                  }
+                }}
+                disabled={historyBusy}
+                aria-label="Riwayat percakapan"
+                title="Riwayat percakapan"
+              >
+                History
+              </button>
+
+              {hasConversation && (
+                <button
+                  type="button"
+                  className="rt-new-chat"
+                  onClick={newConversation}
+                  disabled={busy}
+                  aria-label="Percakapan baru"
+                  title="Percakapan baru"
+                >
+                  +
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={() => setMinimized(true)}
+                aria-label="Minimalkan Ruang Tanya"
+              >
+                -
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                aria-label="Tutup Ruang Tanya"
+              >
+                x
+              </button>
+            </div>
+          </header>
+
+          {historyOpen && (
+            <section className="rt-history-panel" aria-label="Riwayat percakapan">
+              <div className="rt-history-head">
+                <div>
+                  <span className="rt-history-eyebrow">RUANG TANYA</span>
+                  <strong>Riwayat percakapan</strong>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setHistoryOpen(false)}
+                  aria-label="Tutup riwayat"
+                >
+                  x
+                </button>
+              </div>
+
+              <div className="rt-history-list">
+                {historyBusy && historyItems.length === 0 ? (
+                  <p className="rt-history-empty">Memuat riwayat...</p>
+                ) : historyError ? (
+                  <p className="rt-history-empty">{historyError}</p>
+                ) : historyItems.length === 0 ? (
+                  <p className="rt-history-empty">
+                    Belum ada percakapan tersimpan.
+                  </p>
+                ) : (
+                  historyItems.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      className={`rt-history-item ${
+                        conversationId === item.id ? "is-active" : ""
+                      }`}
+                      onClick={() => void openHistoryConversation(item.id)}
+                      disabled={historyBusy || busy}
+                    >
+                      <span className="rt-history-item-title">
+                        {item.title}
+                      </span>
+
+                      <span className="rt-history-item-date">
+                        {formatHistoryDate(item.updatedAt || item.createdAt)}
+                      </span>
+                    </button>
+                  ))
+                )}
+              </div>
+
+              <button
+                type="button"
+                className="rt-history-new"
+                onClick={newConversation}
+                disabled={busy}
+              >
+                + Percakapan baru
+              </button>
+            </section>
+          )}
+
+          <div className="rt-content" ref={scrollRef}>
+            {!hasConversation ? (
+              <section className="rt-welcome">
+                <div className="rt-branch" aria-hidden="true">
+                  <span className="rt-branch-line" />
+                  <i className="leaf-a" />
+                  <i className="leaf-b" />
+                  <i className="leaf-c" />
+                  <i className="leaf-d" />
+                  <span className="rt-branch-sun" />
+                </div>
+
+                <div className="rt-welcome-copy">
+                  <span className="rt-eyebrow">MENJADI NOL</span>
+
+                  <h2>
+                    Ada yang ingin
+                    <br />
+                    kamu pahami?
+                  </h2>
+
+                  <span className="rt-title-line" />
+
+                  <p>
+                    Tanyakan tentang tulisan yang sedang dibaca
+                    atau telusuri materi di Menjadi Nol.
+                  </p>
+                </div>
+
+                <div className="rt-prompts">
+                  {prompts.map((prompt) => (
+                    <button
+                      key={prompt.text}
+                      type="button"
+                      onClick={() => void submitText(prompt.text)}
+                      disabled={busy}
+                    >
+                      <span className="rt-prompt-icon">
+                        <PromptIcon type={prompt.icon} />
+                      </span>
+
+                      <span className="rt-prompt-label">
+                        {prompt.text}
+                      </span>
+
+                      <span className="rt-arrow"><ArrowIcon /></span>
+                    </button>
+                  ))}
+                </div>
+              </section>
+            ) : (
+              <section className="rt-conversation">
+                {msgs.map((message) =>
+                  message.role === "user" ? (
+                    <article
+                      className="rt-user-row"
+                      key={message.id}
+                    >
+                      <div className="rt-user-content">
+                        {editingId === message.id ? (
+                          <div className="rt-edit-box">
+                            <textarea
+                              value={editText}
+                              onChange={(e) =>
+                                setEditText(e.target.value.slice(0, 2000))
+                              }
+                              maxLength={2000}
+                              rows={3}
+                              autoFocus
+                              aria-label="Edit pertanyaan"
+                            />
+
+                            <div className="rt-edit-footer">
+                              <span>{editText.length}/2000</span>
+
+                              <div className="rt-edit-actions">
+                                <button
+                                  type="button"
+                                  className="rt-edit-cancel"
+                                  onClick={cancelEdit}
+                                >
+                                  Batal
+                                </button>
+
+                                <button
+                                  type="button"
+                                  className="rt-edit-resend"
+                                  onClick={() => void resendEdited(message.id)}
+                                  disabled={busy || !editText.trim()}
+                                >
+                                  Kirim ulang
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <div className="rt-user-bubble">
+                              {message.text}
+
+                              <span
+                                className="rt-user-leaf"
+                                aria-hidden="true"
+                              >
+                                <LeafIcon />
+                              </span>
+                            </div>
+
+                            <div className="rt-user-meta">
+                              <span className="rt-user-name">{userName}</span>
+                              <span aria-hidden="true">·</span>
+                              <time>{message.time}</time>
+
+                              <button
+                                type="button"
+                                className="rt-edit-trigger"
+                                onClick={() => startEdit(message)}
+                                disabled={busy}
+                              >
+                                Edit
+                              </button>
+                            </div>
+                          </>
+                        )}
+                      </div>
+
+                      <div className="rt-user-avatar">
+                        <UserIcon />
+                      </div>
+                    </article>
+                  ) : (
+                    <article
+                      className="rt-answer-row"
+                      key={message.id}
+                    >
+                      <div className="rt-answer-avatar">
+                        <Image
+                          src="/menjadi-nol-symbol-transparent.png"
+                          alt=""
+                          width={38}
+                          height={38}
+                        />
+                      </div>
+
+                      <div className="rt-answer-column">
+                        <div className="rt-answer-card">
+                          <div className="rt-answer-text">
+                            {renderAnswerText(message.text)}
+                          </div>
+
+                          <blockquote>
+                            Ruang untuk melihat kembali,
+                            memahami, dan menemukan makna
+                            dengan lebih jernih.
+                          </blockquote>
+
+                          {!!message.sources?.length && (
+                            <>
+                              <div className="rt-related-title">
+                                <BookIcon />
+                                <span>Bacaan terkait:</span>
+                              </div>
+
+                              {message.sources.map((source) => {
+                                const section =
+                                  source.section === "artikel"
+                                    ? "cerita-makna"
+                                    : source.section === "layanan"
+                                      ? "perjalanan"
+                                      : source.section;
+
+                                const href =
+                                  section &&
+                                  source.folderSlug &&
+                                  source.slug
+                                    ? `/${section}/${source.folderSlug}/${source.slug}`
+                                    : "#";
+
+                                return (
+                                  <a
+                                    key={`${source.folderSlug}-${source.slug}`}
+                                    className="rt-related-item"
+                                    href={href}
+                                  >
+                                    <DocumentIcon />
+                                    <span>{source.title}</span>
+                                    <b className="rt-related-arrow">
+                                      <ArrowIcon />
+                                    </b>
+                                  </a>
+                                );
+                              })}
+                            </>
+                          )}
+                        </div>
+
+                        <div className="rt-answer-meta">
+                          <time>{message.time}</time>
+
+                          <div className="rt-answer-actions">
+                            <button
+                              type="button"
+                              onClick={() => void copyAnswer(message)}
+                              aria-label="Salin jawaban"
+                            >
+                              {copiedId === message.id ? "Tersalin" : "Salin"}
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => void retryAnswer(message.id)}
+                              disabled={busy}
+                              aria-label="Coba lagi"
+                            >
+                              Coba lagi
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </article>
+                  )
+                )}
+
+                {busy && (
+                  <article className="rt-answer-row">
+                    <div className="rt-answer-avatar">
+                      <Image
+                        src="/menjadi-nol-symbol-transparent.png"
+                        alt=""
+                        width={38}
+                        height={38}
+                      />
+                    </div>
+
+                    <div className="rt-answer-column">
+                      <div className="rt-answer-card rt-thinking">
+                        <i />
+                        <i />
+                        <i />
+                        <span>Menelusuri Ruang Menjadi Nol...</span>
+                      </div>
+                    </div>
+                  </article>
+                )}
+              </section>
+            )}
+          </div>
+
+          <form className="rt-composer" onSubmit={send}>
+            <div className="rt-input">
+              <span className="rt-clip">
+                <ClipIcon />
+              </span>
+
+              <textarea
+                ref={inputRef}
+                value={input}
+                onChange={(e) =>
+                  setInput(e.target.value.slice(0, 2000))
+                }
+                onKeyDown={onKeyDown}
+                maxLength={2000}
+                rows={1}
+                placeholder="Tulis pertanyaanmu..."
+                disabled={busy}
+                aria-label="Pertanyaan"
+              />
+
+              <span className="rt-count">
+                {input.length}/2000
+              </span>
+            </div>
+
+            <button
+              className="rt-send"
+              type="submit"
+              disabled={busy || !input.trim()}
+              aria-label="Kirim pertanyaan"
+            >
+              <SendIcon />
+            </button>
+          </form>
+
+          <p className="rt-note">
+            <span aria-hidden="true">&diams;</span>
+            Ruang Tanya dapat keliru. Periksa kembali bacaan sumber saat tersedia.
+          </p>
+        </section>
+      )}
+
+      <div className="rt-floating-wrap">
+        <span className="rt-floating-label">Ruang Tanya</span>
+
+        <button
+        className="rt-floating"
+        type="button"
+        onClick={
+          open && !minimized
+            ? () => setMinimized(true)
+            : openWidget
+        }
+        aria-label="Buka Ruang Tanya"
+      >
+        <Image
+          src="/menjadi-nol-symbol-transparent.png"
+          alt=""
+          width={64}
+          height={64}
+          priority
+        />
+      </button>
+      </div>
+    </div>
+  );
+}

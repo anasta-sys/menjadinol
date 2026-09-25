@@ -10,6 +10,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import ReaderProtectedShell from "@/app/components/ReaderProtectedShell";
 import PageViewTracker from "@/app/components/PageViewTracker";
+import SiteWidgets from "@/components/ruang-tanya/SiteWidgets";
 
 const site =
   process.env.NEXT_PUBLIC_SITE_URL || "https://menjadinol.com";
@@ -161,6 +162,7 @@ if (user) {
           {children}
 
           <Footer />
+          <SiteWidgets accountName={accountName} />
         </ReaderProtectedShell>
       </body>
     </html>

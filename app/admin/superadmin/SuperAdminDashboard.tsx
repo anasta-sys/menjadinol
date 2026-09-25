@@ -94,6 +94,12 @@ export default function SuperAdminDashboard({
 
   const [actionMessage, setActionMessage] = useState("");
   const [showAddAdmin, setShowAddAdmin] = useState(false);
+  const [pendingPage, setPendingPage] = useState(1);
+  const [historyFilter, setHistoryFilter] = useState<
+    "all" | "pending" | "approved" | "rejected"
+  >("all");
+  const [historyPage, setHistoryPage] = useState(1);
+  const [adminPage, setAdminPage] = useState(1);
   const [newAdminName, setNewAdminName] = useState("");
   const [newAdminEmail, setNewAdminEmail] = useState("");
   const [newAdminPassword, setNewAdminPassword] = useState("");
@@ -324,6 +330,26 @@ export default function SuperAdminDashboard({
     (application) => application.status === "pending"
   );
 
+  const PENDING_PAGE_SIZE = 10;
+
+  const pendingTotalPages = Math.max(
+    1,
+    Math.ceil(pendingApplications.length / PENDING_PAGE_SIZE)
+  );
+
+  const safePendingPage = Math.min(
+    pendingPage,
+    pendingTotalPages
+  );
+
+  const pendingStart =
+    (safePendingPage - 1) * PENDING_PAGE_SIZE;
+
+  const paginatedPendingApplications =
+    pendingApplications.slice(
+      pendingStart,
+      pendingStart + PENDING_PAGE_SIZE
+    );
   const approvedApplications = writerApplications.filter(
     (application) => application.status === "approved"
   ).length;
@@ -332,10 +358,91 @@ export default function SuperAdminDashboard({
     (application) => application.status === "rejected"
   ).length;
 
+  const HISTORY_PAGE_SIZE = 10;
+
+  const filteredWriterApplications =
+    historyFilter === "all"
+      ? writerApplications
+      : writerApplications.filter(
+          (application) =>
+            application.status === historyFilter
+        );
+
+  const sortedWriterApplications = [
+    ...filteredWriterApplications,
+  ].sort((a, b) => {
+    const order = {
+      pending: 0,
+      approved: 1,
+      rejected: 2,
+    };
+
+    return (
+      (order[a.status as keyof typeof order] ?? 99) -
+      (order[b.status as keyof typeof order] ?? 99)
+    );
+  });
+
+  const historyTotalPages = Math.max(
+    1,
+    Math.ceil(
+      sortedWriterApplications.length /
+        HISTORY_PAGE_SIZE
+    )
+  );
+
+  const safeHistoryPage = Math.min(
+    historyPage,
+    historyTotalPages
+  );
+
+  const historyStart =
+    (safeHistoryPage - 1) * HISTORY_PAGE_SIZE;
+
+  const paginatedWriterApplications =
+    sortedWriterApplications.slice(
+      historyStart,
+      historyStart + HISTORY_PAGE_SIZE
+    );
+
+  function changeHistoryFilter(
+    value: "all" | "pending" | "approved" | "rejected"
+  ) {
+    setHistoryFilter(value);
+    setHistoryPage(1);
+  }
   const adminAccounts = admins.filter(
     (user) => user.role === "admin"
   );
 
+  const ADMIN_PAGE_SIZE = 10;
+
+  const adminTotalPages = Math.max(
+    1,
+    Math.ceil(adminAccounts.length / ADMIN_PAGE_SIZE)
+  );
+
+  const adminSafePage = Math.min(
+    Math.max(1, adminPage),
+    adminTotalPages
+  );
+
+  const adminPageStart =
+    (adminSafePage - 1) * ADMIN_PAGE_SIZE;
+
+  const paginatedAdminAccounts = adminAccounts.slice(
+    adminPageStart,
+    adminPageStart + ADMIN_PAGE_SIZE
+  );
+
+  function changeAdminPage(nextPage: number) {
+    setAdminPage(
+      Math.min(
+        Math.max(1, nextPage),
+        adminTotalPages
+      )
+    );
+  }
   const card = {
     border: "1px solid rgba(70,91,76,.14)",
     borderRadius: "22px",
@@ -402,67 +509,159 @@ export default function SuperAdminDashboard({
         aria-label="Index Superadmin"
         style={{
           ...card,
-          padding: "12px 14px",
+          padding: "10px 12px",
           marginBottom: "16px",
           display: "flex",
-          gap: "8px",
+          gap: "6px",
           flexWrap: "wrap",
           alignItems: "center",
+          background: "rgba(255,253,247,.90)",
         }}
       >
-        <strong style={{ fontSize: "12px", marginRight: "4px" }}>
+        <strong
+          style={{
+            fontSize: "10px",
+            marginRight: "5px",
+            color: "#31553d",
+            letterSpacing: ".06em",
+            whiteSpace: "nowrap",
+          }}
+        >
           INDEX SUPERADMIN
         </strong>
-        <a href="#ringkasan" style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px", fontWeight: 700 }}><strong style={{ fontWeight: 800 }}>01 Ringkasan</strong></a>
-        <span style={{ opacity: .35 }}>·</span>
-        <a href="#pendaftar" style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px", fontWeight: 700 }}><strong style={{ fontWeight: 800 }}>02 Pendaftar</strong></a>
-        <span style={{ opacity: .35 }}>·</span>
-        <a href="#kelola-admin" style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px", fontWeight: 700 }}>
-  03 Kelola Admin
-</a>
 
-<span style={{ opacity: .35 }}>·</span>
+        <a href="#ringkasan" className="superIndexButton">
+          <span className="superIndexNumber">01</span>
+          <span>Ringkasan</span>
+        </a>
 
-<Link
-  href="/admin/superadmin/role-manager"
-  style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px", fontWeight: 700 }}
->
-  <strong style={{ fontWeight: 800 }}>04 Role Manager</strong>
-</Link>
+        <a href="#pendaftar" className="superIndexButton">
+          <span className="superIndexNumber">02</span>
+          <span>Pendaftar</span>
+        </a>
 
-<span style={{ opacity: .35 }}>·</span>
+        <a href="#kelola-admin" className="superIndexButton">
+          <span className="superIndexNumber">03</span>
+          <span>Kelola Admin</span>
+        </a>
 
-<Link
-  href="/admin/superadmin/user-manager"
-  style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px", fontWeight: 700 }}
->
-  <strong style={{ fontWeight: 800 }}>05 User Manager</strong>
-</Link>
+        <Link
+          href="/admin/superadmin/role-manager"
+          className="superIndexButton"
+        >
+          <span className="superIndexNumber">04</span>
+          <span>Role Manager</span>
+        </Link>
 
-<span style={{ opacity: .35 }}>·</span>
+        <Link
+          href="/admin/superadmin/user-manager"
+          className="superIndexButton"
+        >
+          <span className="superIndexNumber">05</span>
+          <span>User Manager</span>
+        </Link>
 
-<Link
-  href="/admin/superadmin/content-manager"
-  style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px", fontWeight: 700 }}
->
-  <strong style={{ fontWeight: 800 }}>06 Content Manager</strong>
-</Link>
+        <Link
+          href="/admin/superadmin/content-manager"
+          className="superIndexButton"
+        >
+          <span className="superIndexNumber">06</span>
+          <span>Content Manager</span>
+        </Link>
 
-<span style={{ opacity: .35 }}>·</span>
+        <a href="#permohonan" className="superIndexButton">
+          <span className="superIndexNumber">07</span>
+          <span>Riwayat Permohonan</span>
+        </a>
 
-<a href="#permohonan" style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px", fontWeight: 700 }}>
-  07 Riwayat Permohonan
-</a>
+        <Link
+          href="/admin/superadmin/messages"
+          className="superIndexButton"
+        >
+          <span className="superIndexNumber">08</span>
+          <span>Pesan Masuk</span>
+        </Link>
 
-<span style={{ opacity: .35 }}>·</span>
+        <Link
+          href="/admin/superadmin/ruang-tanya"
+          className="superIndexButton superIndexInteraction"
+        >
+          <span className="superIndexNumber">09</span>
+          <span>Ruang Tanya</span>
+        </Link>
 
-<Link
-  href="/admin/superadmin/messages"
-  style={{ textDecoration: "none", color: "#465b4c", fontSize: "12px", fontWeight: 700 }}
->
-  <strong style={{ fontWeight: 800 }}>08 Pesan Masuk</strong>
-</Link>
+        <Link
+          href="/admin/superadmin/ruang-cerita"
+          className="superIndexButton superIndexInteraction"
+        >
+          <span className="superIndexNumber">10</span>
+          <span>Ruang Cerita</span>
+        </Link>
       </nav>
+
+      <style>{`
+        .superIndexButton {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          min-height: 30px;
+          padding: 0 10px;
+          border: 1px solid rgba(73, 103, 78, .14);
+          border-radius: 999px;
+          background: rgba(241, 246, 235, .92);
+          color: #3f5d47;
+          text-decoration: none;
+          font-size: 9px;
+          font-weight: 800;
+          white-space: nowrap;
+          box-shadow: 0 3px 10px rgba(55, 78, 59, .035);
+          transition:
+            background .15s ease,
+            border-color .15s ease,
+            transform .15s ease;
+        }
+
+        .superIndexButton:hover {
+          transform: translateY(-1px);
+          border-color: rgba(112, 139, 102, .32);
+          background: #e4eedc;
+          color: #284a35;
+        }
+
+        .superIndexNumber {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-width: 23px;
+          height: 20px;
+          padding: 0 5px;
+          border: 1px solid rgba(178, 139, 65, .18);
+          border-radius: 999px;
+          background: #f8edcf;
+          color: #826426;
+          font-size: 8px;
+          font-weight: 900;
+        }
+
+        .superIndexInteraction {
+          background: rgba(229, 239, 222, .96);
+          border-color: rgba(91, 126, 91, .20);
+        }
+
+        @media (max-width: 700px) {
+          .superIndexButton {
+            min-height: 29px;
+            padding: 0 8px;
+            font-size: 8px;
+          }
+
+          .superIndexNumber {
+            min-width: 21px;
+            height: 19px;
+            font-size: 7px;
+          }
+        }
+      `}</style>
 
       <div
         id="ringkasan"
@@ -568,6 +767,7 @@ export default function SuperAdminDashboard({
             Belum ada pendaftar Penulis yang menunggu persetujuan.
           </p>
         ) : (
+          <>
           <div style={{ overflowX: "auto" }}>
             <table
               style={{
@@ -603,10 +803,10 @@ export default function SuperAdminDashboard({
               </thead>
 
               <tbody>
-                {pendingApplications.map((application, index) => (
+                {paginatedPendingApplications.map((application, index) => (
                   <tr key={application.id}>
                     <td style={{ padding: "12px 10px", borderBottom: "1px solid rgba(70,91,76,.08)", opacity: .6 }}>
-                      {String(index + 1).padStart(2, "0")}
+                      {String(pendingStart + index + 1).padStart(2, "0")}
                     </td>
                     <td style={{ padding: "12px 10px", borderBottom: "1px solid rgba(70,91,76,.08)" }}>
                       <strong>{application.display_name}</strong>
@@ -674,6 +874,60 @@ export default function SuperAdminDashboard({
               </tbody>
             </table>
           </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: "6px",
+              paddingTop: "14px",
+            }}
+          >
+            {Array.from(
+              { length: pendingTotalPages },
+              (_, index) => index + 1
+            ).map((pageNumber) => (
+              <button
+                key={pageNumber}
+                type="button"
+                onClick={() => setPendingPage(pageNumber)}
+                aria-current={
+                  pageNumber === safePendingPage
+                    ? "page"
+                    : undefined
+                }
+                style={{
+                  width: "30px",
+                  height: "30px",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: 0,
+                  borderRadius: "8px",
+                  border:
+                    pageNumber === safePendingPage
+                      ? "1px solid #78936b"
+                      : "1px solid rgba(76,105,80,.18)",
+                  background:
+                    pageNumber === safePendingPage
+                      ? "#78936b"
+                      : "#fffdf8",
+                  color:
+                    pageNumber === safePendingPage
+                      ? "#fff"
+                      : "#526b56",
+                  fontFamily: "inherit",
+                  fontSize: "10px",
+                  fontWeight: 800,
+                  cursor: "pointer",
+                }}
+              >
+                {pageNumber}
+              </button>
+            ))}
+          </div>
+        </>
         )}
       </section>
 
@@ -898,7 +1152,7 @@ export default function SuperAdminDashboard({
               </thead>
 
               <tbody>
-                {adminAccounts.map((user, index) => (
+                {paginatedAdminAccounts.map((user, index) => (
                   <tr key={user.user_id}>
                     <td
                       style={{
@@ -907,7 +1161,7 @@ export default function SuperAdminDashboard({
                         opacity: .6,
                       }}
                     >
-                      {String(index + 1).padStart(2, "0")}
+                      {String(adminPageStart + index + 1).padStart(2, "0")}
                     </td>
                     <td
                       style={{
@@ -1113,6 +1367,54 @@ export default function SuperAdminDashboard({
           </Link>
         </div>
 
+        <div
+          style={{
+            display: "flex",
+            gap: "7px",
+            flexWrap: "wrap",
+            marginBottom: "14px",
+          }}
+        >
+          {[
+            ["all", "Semua", writerApplications.length],
+            ["pending", "Pending", pendingApplications.length],
+            ["approved", "Approved", approvedApplications],
+            ["rejected", "Declined", rejectedApplications],
+          ].map(([value, label, count]) => {
+            const active = historyFilter === value;
+
+            return (
+              <button
+                key={String(value)}
+                type="button"
+                onClick={() =>
+                  changeHistoryFilter(
+                    value as
+                      | "all"
+                      | "pending"
+                      | "approved"
+                      | "rejected"
+                  )
+                }
+                style={{
+                  border: active
+                    ? "1px solid #78936b"
+                    : "1px solid rgba(70,91,76,.16)",
+                  borderRadius: "999px",
+                  padding: "8px 12px",
+                  background: active ? "#78936b" : "#fff",
+                  color: active ? "#fff" : "#526b56",
+                  cursor: "pointer",
+                  fontFamily: "inherit",
+                  fontSize: "11px",
+                  fontWeight: 750,
+                }}
+              >
+                {label} · {count}
+              </button>
+            );
+          })}
+        </div>
         {writerApplications.length === 0 ? (
           <p
             style={{
@@ -1125,6 +1427,7 @@ export default function SuperAdminDashboard({
             Belum ada data permohonan Penulis yang tersimpan.
           </p>
         ) : (
+          <>
           <div style={{ overflowX: "auto" }}>
             <table
               style={{
@@ -1161,10 +1464,10 @@ export default function SuperAdminDashboard({
               </thead>
 
               <tbody>
-                {writerApplications.map((application, index) => (
+                {paginatedWriterApplications.map((application, index) => (
                   <tr key={application.id}>
                     <td style={{ padding: "13px 10px", borderBottom: "1px solid rgba(70,91,76,.08)", opacity: .62 }}>
-                      {String(index + 1).padStart(2, "0")}
+                      {String(historyStart + index + 1).padStart(2, "0")}
                     </td>
                     <td style={{ padding: "13px 10px", borderBottom: "1px solid rgba(70,91,76,.08)" }}>
                       <strong>{application.display_name}</strong>
@@ -1254,6 +1557,60 @@ export default function SuperAdminDashboard({
               </tbody>
             </table>
           </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: "6px",
+              paddingTop: "14px",
+            }}
+          >
+            {Array.from(
+              { length: historyTotalPages },
+              (_, index) => index + 1
+            ).map((pageNumber) => (
+              <button
+                key={pageNumber}
+                type="button"
+                onClick={() => setHistoryPage(pageNumber)}
+                aria-current={
+                  pageNumber === safeHistoryPage
+                    ? "page"
+                    : undefined
+                }
+                style={{
+                  width: "30px",
+                  height: "30px",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: 0,
+                  borderRadius: "8px",
+                  border:
+                    pageNumber === safeHistoryPage
+                      ? "1px solid #78936b"
+                      : "1px solid rgba(76,105,80,.18)",
+                  background:
+                    pageNumber === safeHistoryPage
+                      ? "#78936b"
+                      : "#fffdf8",
+                  color:
+                    pageNumber === safeHistoryPage
+                      ? "#fff"
+                      : "#526b56",
+                  fontFamily: "inherit",
+                  fontSize: "10px",
+                  fontWeight: 800,
+                  cursor: "pointer",
+                }}
+              >
+                {pageNumber}
+              </button>
+            ))}
+          </div>
+        </>
         )}
       </section>
 

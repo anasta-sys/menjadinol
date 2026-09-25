@@ -101,7 +101,7 @@ export default function TentangMenjadiNolPage() {
 
         <div className="tmn-description">
           <p>
-            Menjadi Nol adalah platform digital yang menghadirkan berbagai ruang
+            menjadinol.com adalah platform digital yang menghadirkan berbagai ruang
             untuk menemani perjalanan personal melalui tulisan, pengalaman
             interaktif, dan konten digital. Sebuah tempat untuk berjeda,
             menyelami rasa, memahami makna, dan kembali pada diri.
@@ -114,16 +114,36 @@ export default function TentangMenjadiNolPage() {
           FITUR 
         </div>
 
-        <div className="tmn-space-grid">
+        <div className="tmn-space-grid tmn-feature-cards">
+
           <button
             type="button"
-            className={`tmn-space ${readingOpen ? "is-open" : ""}`}
+            className={`tmn-space tmn-feature-card tmn-feature-read ${readingOpen ? "is-open" : ""}`}
             onClick={() => setReadingOpen((value) => !value)}
             aria-expanded={readingOpen}
             aria-controls="tmn-reading-panel"
           >
-            <span className="tmn-space-icon">
-              <BookIcon />
+            <span className="tmn-feature-decoration tmn-decoration-left" aria-hidden="true">
+              <span className="tmn-deco-stem" />
+              <span className="tmn-deco-leaf tmn-deco-leaf-1" />
+              <span className="tmn-deco-leaf tmn-deco-leaf-2" />
+              <span className="tmn-deco-leaf tmn-deco-leaf-3" />
+            </span>
+
+            <span className="tmn-feature-decoration tmn-decoration-right" aria-hidden="true">
+              <span className="tmn-deco-stem" />
+              <span className="tmn-deco-leaf tmn-deco-leaf-1" />
+              <span className="tmn-deco-leaf tmn-deco-leaf-2" />
+              <span className="tmn-deco-leaf tmn-deco-leaf-3" />
+            </span>
+
+            <span className="tmn-feature-icon tmn-feature-icon-gold tmn-card-logo tmn-card-logo-read">
+              <img
+                src="/menjadi-nol-symbol-transparent.png"
+                alt=""
+                className="tmn-card-logo-image"
+              />
+              <span className="tmn-card-book" aria-hidden="true">B</span>
             </span>
 
             <span className="tmn-space-name">Ruang Baca</span>
@@ -133,17 +153,47 @@ export default function TentangMenjadiNolPage() {
             </span>
 
             <span className="tmn-space-description">
-              Tulisan dan berbagai konten Menjadi Nol.
+              Tulisan dan berbagai konten Menjadi Nol
+              <br />
+              untuk menemani perjalananmu.
             </span>
 
-            <span className="tmn-circle-arrow">
-              <Arrow />
+            <span className="tmn-feature-button tmn-feature-button-gold">
+              Buka Ruang Baca
+              <span aria-hidden="true">&gt;</span>
             </span>
           </button>
 
-          <article className="tmn-space">
-            <span className="tmn-space-icon">
-              <StoryIcon />
+
+          <button
+            type="button"
+            className="tmn-space tmn-feature-card tmn-feature-story"
+            onClick={() => {
+              const launcher = document.querySelector<HTMLButtonElement>(".rc-launch");
+              launcher?.click();
+            }}
+          >
+            <span className="tmn-feature-decoration tmn-decoration-left" aria-hidden="true">
+              <span className="tmn-deco-stem" />
+              <span className="tmn-deco-leaf tmn-deco-leaf-1" />
+              <span className="tmn-deco-leaf tmn-deco-leaf-2" />
+              <span className="tmn-deco-leaf tmn-deco-leaf-3" />
+            </span>
+
+            <span className="tmn-feature-decoration tmn-decoration-right" aria-hidden="true">
+              <span className="tmn-deco-stem" />
+              <span className="tmn-deco-leaf tmn-deco-leaf-1" />
+              <span className="tmn-deco-leaf tmn-deco-leaf-2" />
+              <span className="tmn-deco-leaf tmn-deco-leaf-3" />
+            </span>
+
+            <span className="tmn-feature-icon tmn-feature-icon-green tmn-card-logo tmn-card-logo-story">
+              <img
+                src="/menjadi-nol-symbol-transparent.png"
+                alt=""
+                className="tmn-card-logo-image"
+              />
+              <span className="tmn-card-leaf" aria-hidden="true" />
             </span>
 
             <span className="tmn-space-name">Ruang Cerita</span>
@@ -155,17 +205,48 @@ export default function TentangMenjadiNolPage() {
             <span className="tmn-space-description">
               Ruang personal untuk bercerita
               <br />
-              dan berdialog.
+              dan berdialog bersama pengelola
+              <br />
+              dalam ruang yang aman.
             </span>
 
-            <span className="tmn-space-status">
-              Segera hadir
+            <span className="tmn-feature-button tmn-feature-button-green">
+              Buka Ruang Cerita
+              <span aria-hidden="true">&gt;</span>
             </span>
-          </article>
+          </button>
 
-          <article className="tmn-space">
-            <span className="tmn-space-icon">
-              <AskIcon />
+
+          <button
+            type="button"
+            className="tmn-space tmn-feature-card tmn-feature-ask"
+            onClick={() =>
+              window.dispatchEvent(
+                new Event("menjadinol:open-ruang-tanya")
+              )
+            }
+          >
+            <span className="tmn-feature-decoration tmn-decoration-left" aria-hidden="true">
+              <span className="tmn-deco-stem" />
+              <span className="tmn-deco-leaf tmn-deco-leaf-1" />
+              <span className="tmn-deco-leaf tmn-deco-leaf-2" />
+              <span className="tmn-deco-leaf tmn-deco-leaf-3" />
+            </span>
+
+            <span className="tmn-feature-decoration tmn-decoration-right" aria-hidden="true">
+              <span className="tmn-deco-stem" />
+              <span className="tmn-deco-leaf tmn-deco-leaf-1" />
+              <span className="tmn-deco-leaf tmn-deco-leaf-2" />
+              <span className="tmn-deco-leaf tmn-deco-leaf-3" />
+            </span>
+
+            <span className="tmn-feature-icon tmn-feature-icon-gold tmn-card-logo tmn-card-logo-ask">
+              <img
+                src="/menjadi-nol-symbol-transparent.png"
+                alt=""
+                className="tmn-card-logo-image"
+              />
+              <span className="tmn-card-question" aria-hidden="true">?</span>
             </span>
 
             <span className="tmn-space-name">Ruang Tanya</span>
@@ -180,12 +261,13 @@ export default function TentangMenjadiNolPage() {
               bacaan yang berkaitan.
             </span>
 
-            <span className="tmn-space-status">
-              Sedang dikembangkan
+            <span className="tmn-feature-button tmn-feature-button-gold">
+              Buka Ruang Tanya
+              <span aria-hidden="true">&gt;</span>
             </span>
-          </article>
-        </div>
+          </button>
 
+        </div>
         <div
           id="tmn-reading-panel"
           className={`tmn-reading-panel ${readingOpen ? "is-open" : ""}`}

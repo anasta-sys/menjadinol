@@ -369,7 +369,7 @@ export function EntryContent({
 
       <div className="entry-time-meta">
   <span>
-    Ditulis oleh{" "}
+    Ditulis oleh{"\u00A0"}
     <strong>
       {entry.author_name ||
         "Penulis belum tercatat"}

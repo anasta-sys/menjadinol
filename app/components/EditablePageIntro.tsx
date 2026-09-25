@@ -209,7 +209,7 @@ export default async function EditablePageIntro({
               style={{
                 color: "#536653",
                 fontWeight: 700,
-                marginLeft: "4px",
+                marginLeft: "6px",
               }}
             >
               {authorName ||

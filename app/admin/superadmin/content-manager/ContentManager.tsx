@@ -1,6 +1,7 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
+import styles from "./ContentManager.module.css";
 
 type SectionItem = {
   slug: string;
@@ -9,30 +10,69 @@ type SectionItem = {
   folderCount: number;
 };
 
-function LeafIcon({ slug }: { slug: string }) {
+function SectionIcon({ slug }: { slug: string }) {
   const common = {
-    width: 82,
-    height: 82,
-    viewBox: "0 0 96 96",
+    width: 42,
+    height: 42,
+    viewBox: "0 0 48 48",
+    fill: "none",
     "aria-hidden": true,
   } as const;
 
   if (slug === "tentang") {
-    return <svg {...common}><path d="M21 76C19 45 38 20 76 12c1 37-19 61-55 64Z" fill="#3f843e"/><path d="M23 76c12-23 27-39 46-54" fill="none" stroke="#dcebd6" strokeWidth="2.3" strokeLinecap="round"/></svg>;
+    return (
+      <svg {...common}>
+        <path d="M8 10.5c6.2-2 11.5-.7 16 3.7v25c-4.5-4.4-9.8-5.7-16-3.7v-25Z" stroke="currentColor" strokeWidth="2"/>
+        <path d="M40 10.5c-6.2-2-11.5-.7-16 3.7v25c4.5-4.4 9.8-5.7 16-3.7v-25Z" stroke="currentColor" strokeWidth="2"/>
+      </svg>
+    );
   }
+
   if (slug === "perjalanan") {
-    return <svg {...common}><path d="M29 78c10-25 23-43 43-58" fill="none" stroke="#356f38" strokeWidth="3" strokeLinecap="round"/><ellipse cx="36" cy="57" rx="9" ry="17" transform="rotate(-28 36 57)" fill="#4d9145"/><ellipse cx="52" cy="42" rx="9" ry="17" transform="rotate(34 52 42)" fill="#397c39"/><ellipse cx="66" cy="28" rx="8" ry="15" transform="rotate(40 66 28)" fill="#5b9847"/><ellipse cx="57" cy="61" rx="8" ry="15" transform="rotate(62 57 61)" fill="#44833d"/></svg>;
+    return (
+      <svg {...common}>
+        <path d="M7 37 18 19l6 8 5-7 12 17H7Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
+        <path d="M12 38c7-10 13-7 17-13 3-4 5-8 8-12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      </svg>
+    );
   }
+
   if (slug === "ruang-belajar") {
-    return <svg {...common}><path d="M48 79V39" stroke="#356f38" strokeWidth="3" strokeLinecap="round"/><path d="M48 42C25 42 20 27 24 17c15 0 24 7 24 25Z" fill="#659d4c"/><path d="M48 42c23 0 28-15 24-25-15 0-24 7-24 25Z" fill="#3d7e3b"/><path d="M48 49c-18 0-25-10-25-20 15 0 22 6 25 20Z" fill="#4e8d42" opacity=".8"/></svg>;
+    return (
+      <svg {...common}>
+        <path d="M8 12c6-2 11.5-.5 16 4v24c-4.5-4.5-10-6-16-4V12Z" stroke="currentColor" strokeWidth="2"/>
+        <path d="M40 12c-6-2-11.5-.5-16 4v24c4.5-4.5 10-6 16-4V12Z" stroke="currentColor" strokeWidth="2"/>
+        <path d="M24 7v5M18 9l2 4M30 9l-2 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      </svg>
+    );
   }
+
   if (slug === "ruang-jeda") {
-    return <svg {...common}><path d="M49 82C34 64 24 47 21 23c26-8 48 4 54 26-10 20-17 28-26 33Z" fill="#3d823d"/><path d="M27 29c10 8 17 16 22 27M39 20c4 12 7 24 8 37M58 23c-2 12-5 22-10 32" fill="none" stroke="#dbead5" strokeWidth="2.2" strokeLinecap="round"/><path d="M22 45c8-3 16-3 24 0M28 59c7-2 13-1 19 2" fill="none" stroke="#dbead5" strokeWidth="2.2" strokeLinecap="round"/></svg>;
+    return (
+      <svg {...common}>
+        <ellipse cx="24" cy="34" rx="15" ry="4" stroke="currentColor" strokeWidth="1.7"/>
+        <ellipse cx="24" cy="29" rx="11" ry="5" stroke="currentColor" strokeWidth="1.7"/>
+        <ellipse cx="24" cy="23" rx="8" ry="5" stroke="currentColor" strokeWidth="1.7"/>
+        <ellipse cx="24" cy="16" rx="5" ry="4" stroke="currentColor" strokeWidth="1.7"/>
+      </svg>
+    );
   }
+
   if (slug === "artikel") {
-    return <svg {...common}><path d="M26 76 69 20" stroke="#356f38" strokeWidth="3" strokeLinecap="round"/><circle cx="33" cy="65" r="13" fill="#5b8d64"/><circle cx="45" cy="51" r="13" fill="#739b75"/><circle cx="58" cy="36" r="13" fill="#4f8257"/><circle cx="65" cy="61" r="12" fill="#87a982"/></svg>;
+    return (
+      <svg {...common}>
+        <path d="M11 37c10-2 20-10 27-28-14 3-24 11-27 28Z" stroke="currentColor" strokeWidth="2"/>
+        <path d="M13 35c8-8 14-13 23-22" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      </svg>
+    );
   }
-  return <svg {...common}><path d="M26 79c8-25 21-45 44-62" fill="none" stroke="#356f38" strokeWidth="3" strokeLinecap="round"/><path d="M35 63c-13-2-18-10-17-20 12 1 19 7 17 20Z" fill="#4d8745"/><path d="M45 50c-5-13 1-22 10-27 5 12 1 21-10 27Z" fill="#39783b"/><path d="M52 57c12-5 22-2 28 6-11 7-21 5-28-6Z" fill="#679852"/><path d="M58 37c8-10 17-11 26-6-6 11-15 14-26 6Z" fill="#4b843f"/></svg>;
+
+  return (
+    <svg {...common}>
+      <rect x="7" y="12" width="34" height="25" rx="3" stroke="currentColor" strokeWidth="2"/>
+      <path d="m9 15 15 12 15-12" stroke="currentColor" strokeWidth="2"/>
+    </svg>
+  );
 }
 
 export default function ContentManager({
@@ -40,63 +80,94 @@ export default function ContentManager({
 }: {
   sections: SectionItem[];
 }) {
+  const descriptions: Record<string, string> = {
+    tentang: "Identitas, filosofi, dan dasar perjalanan Menjadi Nol.",
+    perjalanan: "Tahapan perjalanan dan ruang pendampingan.",
+    "ruang-belajar": "Materi, pengetahuan, dan pembelajaran batin.",
+    "ruang-jeda": "Ruang untuk berhenti, bernapas, dan menyadari.",
+    artikel: "Tulisan, cerita, refleksi, dan pemaknaan.",
+    kontak: "Informasi dan ruang untuk terhubung.",
+  };
+
   return (
-    <main style={{ maxWidth: "1450px", margin: "0 auto", padding: "28px 18px 70px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", gap: 16, alignItems: "flex-start", flexWrap: "wrap", marginBottom: 24 }}>
+    <main className={styles.page}>
+      <header className={styles.hero}>
         <div>
-          <p style={{ margin: 0, opacity: .55, fontSize: 12, letterSpacing: ".14em", textTransform: "uppercase" }}>
-            menjadi nol
+          <p className={styles.eyebrow}>
+            MENJADI NOL
+            <span className={styles.eyebrowLine} />
+            CONTENT MANAGER
           </p>
-          <h1 style={{ margin: "7px 0 5px", fontSize: 32 }}>Content Manager</h1>
-          <p style={{ margin: 0, opacity: .65 }}>
-            Konten dipisahkan per bagian agar tetap rapi saat jumlah tulisan bertambah.
+
+          <h1 className={styles.title}>Content Manager</h1>
+
+          <p className={styles.intro}>
+            Kelola ruang, tulisan, dan materi Menjadi Nol dalam satu tempat
+            yang tenang dan terstruktur.
           </p>
         </div>
 
-        <Link href="/admin/superadmin" style={{
-          textDecoration: "none", color: "#fff", padding: "10px 16px",
-          borderRadius: 999, background: "#17663f", border: "1px solid #17663f", fontWeight: 800
-        }}>
+        <Link href="/admin/superadmin" className={styles.back}>
           ← Super Admin
         </Link>
-      </div>
+      </header>
 
-      <section style={{
-        border: "1px solid rgba(70,91,76,.14)", borderRadius: 22,
-        background: "rgba(255,255,255,.82)", padding: 20,
-        boxShadow: "0 14px 40px rgba(60,70,62,.06)"
-      }}>
-        <p style={{ margin: 0, fontSize: 11, letterSpacing: ".12em", textTransform: "uppercase", opacity: .52 }}>
-          FOLDER KONTEN
-        </p>
-        <h2 style={{ margin: "6px 0 18px", fontSize: 20 }}>Pilih Bagian</h2>
+      <section>
+        <div className={styles.libraryHead}>
+          <div>
+            <p className={styles.libraryKicker}>RUANG KONTEN</p>
+            <h2 className={styles.libraryTitle}>
+              Pilih bagian yang ingin dikelola
+            </h2>
+          </div>
 
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-          gap: 14
-        }}>
-          {sections.map((section) => (
-            <Link key={section.slug} href={`/admin/superadmin/content-manager/${section.slug}`} style={{
-              textDecoration: "none", color: "inherit", border: "1px solid rgba(70,91,76,.13)",
-              borderRadius: 18, padding: 20, background: "#fff", minHeight: 150,
-              display: "flex", flexDirection: "column", justifyContent: "space-between"
-            }}>
-              <div style={{
-                width: 96, height: 96, borderRadius: "50%",
-                display: "grid", placeItems: "center",
-                background: "rgba(226,239,218,.62)", marginBottom: 10
-              }}>
-                <LeafIcon slug={section.slug} />
-              </div>
-              <div>
-                <strong style={{ fontSize: 17 }}>{section.label}</strong>
-                <div style={{ marginTop: 5, opacity: .58, fontSize: 12 }}>
-                  {section.folderCount} folder
+          <span className={styles.total}>
+            {sections.length} bagian
+          </span>
+        </div>
+
+        <div className={styles.grid}>
+          {sections.map((section, index) => {
+            const green = index % 2 === 1;
+
+            return (
+              <Link
+                key={section.slug}
+                href={`/admin/superadmin/content-manager/${section.slug}`}
+                className={`${styles.card} ${
+                  green ? styles.green : ""
+                }`}
+              >
+                <span className={styles.number}>
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+
+                <div className={styles.icon}>
+                  <SectionIcon slug={section.slug} />
                 </div>
-              </div>
-            </Link>
-          ))}
+
+                <div className={styles.copy}>
+                  <h3 className={styles.cardTitle}>
+                    {section.label}
+                  </h3>
+
+                  <p className={styles.description}>
+                    {descriptions[section.slug]}
+                  </p>
+
+                  <span className={styles.folder}>
+                    <span className={styles.folderIcon}>▣</span>
+                    {section.folderCount} folder
+                  </span>
+                </div>
+
+                <div className={styles.action}>
+                  <span>Kelola {section.label}</span>
+                  <span className={styles.arrow}>›</span>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </section>
     </main>

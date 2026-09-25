@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import UserManager, { type ManagedUser } from "./UserManager";
 
 export const metadata = {
-  title: "User Manager · menjadi nol",
+  title: "User Manager - menjadi nol",
   robots: { index: false, follow: false },
 };
 

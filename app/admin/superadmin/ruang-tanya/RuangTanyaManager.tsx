@@ -1,0 +1,916 @@
+"use client";
+
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
+import "./RuangTanyaManager.css";
+
+export type RuangTanyaSource = {
+  title: string;
+  url: string | null;
+  section: string | null;
+};
+
+export type RuangTanyaMessage = {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  parentMessageId: string | null;
+  regeneratedFromId: string | null;
+  editedAt: string | null;
+  createdAt: string;
+  superseded: boolean;
+  sources: RuangTanyaSource[];
+};
+
+export type RuangTanyaConversation = {
+  id: string;
+  title: string;
+  status: string;
+  ownerUserId: string;
+  ownerType: string;
+  ownerName: string;
+  ownerEmail: string | null;
+  createdAt: string;
+  updatedAt: string;
+  messages: RuangTanyaMessage[];
+};
+
+type UserGroup = {
+  key: string;
+  ownerUserId: string;
+  ownerName: string;
+  ownerEmail: string | null;
+  ownerType: string;
+  conversations: RuangTanyaConversation[];
+  lastActivity: string;
+};
+
+const PER_PAGE = 10;
+
+function formatDate(value: string) {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "-";
+  }
+
+  return new Intl.DateTimeFormat("id-ID", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(date);
+}
+
+function shortDate(value: string) {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "-";
+  }
+
+  return new Intl.DateTimeFormat("id-ID", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(date);
+}
+
+export default function RuangTanyaManager({
+  conversations,
+}: {
+  conversations: RuangTanyaConversation[];
+}) {
+  const users = useMemo<UserGroup[]>(() => {
+    const map = new Map<string, UserGroup>();
+
+    for (const conversation of conversations) {
+      const key =
+        conversation.ownerUserId ||
+        `${conversation.ownerType}:${conversation.ownerName}:${conversation.ownerEmail ?? ""}`;
+
+      const existing = map.get(key);
+
+      if (existing) {
+        existing.conversations.push(conversation);
+
+        if (
+          new Date(conversation.updatedAt).getTime() >
+          new Date(existing.lastActivity).getTime()
+        ) {
+          existing.lastActivity = conversation.updatedAt;
+        }
+      } else {
+        map.set(key, {
+          key,
+          ownerUserId: conversation.ownerUserId,
+          ownerName: conversation.ownerName,
+          ownerEmail: conversation.ownerEmail,
+          ownerType: conversation.ownerType,
+          conversations: [conversation],
+          lastActivity: conversation.updatedAt,
+        });
+      }
+    }
+
+    return Array.from(map.values())
+      .map((user) => ({
+        ...user,
+        conversations: [...user.conversations].sort(
+          (a, b) =>
+            new Date(b.updatedAt).getTime() -
+            new Date(a.updatedAt).getTime()
+        ),
+      }))
+      .sort(
+        (a, b) =>
+          new Date(b.lastActivity).getTime() -
+          new Date(a.lastActivity).getTime()
+      );
+  }, [conversations]);
+
+  const [selectedUserKey, setSelectedUserKey] =
+    useState<string | null>(users[0]?.key ?? null);
+
+  const [selectedConversationId, setSelectedConversationId] =
+    useState<string | null>(null);
+
+  const [page, setPage] = useState(1);
+  const [query, setQuery] = useState("");
+  const [exportOpen, setExportOpen] = useState(false);
+
+  const filteredUsers = useMemo(() => {
+    const keyword = query.trim().toLowerCase();
+
+    if (!keyword) {
+      return users;
+    }
+
+    return users.filter((user) => {
+      const haystack = [
+        user.ownerName,
+        user.ownerEmail ?? "",
+        user.ownerType,
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      return haystack.includes(keyword);
+    });
+  }, [users, query]);
+
+  const selectedUser =
+    users.find((user) => user.key === selectedUserKey) ??
+    filteredUsers[0] ??
+    users[0] ??
+    null;
+
+  const selectedConversation =
+    selectedUser?.conversations.find(
+      (conversation) =>
+        conversation.id === selectedConversationId
+    ) ?? null;
+
+  const totalPages = selectedUser
+    ? Math.max(
+        1,
+        Math.ceil(
+          selectedUser.conversations.length / PER_PAGE
+        )
+      )
+    : 1;
+
+  useEffect(() => {
+    if (page > totalPages) {
+      setPage(totalPages);
+    }
+  }, [page, totalPages]);
+
+  const paginatedConversations = useMemo(() => {
+    if (!selectedUser) {
+      return [];
+    }
+
+    const start = (page - 1) * PER_PAGE;
+
+    return selectedUser.conversations.slice(
+      start,
+      start + PER_PAGE
+    );
+  }, [selectedUser, page]);
+
+  const totalMessages = conversations.reduce(
+    (sum, conversation) =>
+      sum + conversation.messages.length,
+    0
+  );
+
+  const editRetryCount = conversations.reduce(
+    (sum, conversation) =>
+      sum +
+      conversation.messages.filter(
+        (message) =>
+          !!message.editedAt ||
+          !!message.regeneratedFromId
+      ).length,
+    0
+  );
+
+  function chooseUser(key: string) {
+    setSelectedUserKey(key);
+    setSelectedConversationId(null);
+    setPage(1);
+  }
+
+  function openConversation(id: string) {
+    setSelectedConversationId(id);
+  }
+
+  function backToConversationList() {
+    setSelectedConversationId(null);
+  }
+
+  function exportAll(format: "txt" | "docx" | "xlsx") {
+    if (!selectedUser?.ownerUserId) {
+      return;
+    }
+
+    const params = new URLSearchParams({
+      ownerUserId: selectedUser.ownerUserId,
+      format,
+    });
+
+    window.location.href =
+      `/api/admin/ruang-tanya/export?${params.toString()}`;
+
+    setExportOpen(false);
+  }
+
+  function printAll() {
+    if (!selectedUser) {
+      return;
+    }
+
+    const popup = window.open("", "_blank");
+
+    if (!popup) {
+      return;
+    }
+
+    const escapeHtml = (value: string) =>
+      value
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+    const body = selectedUser.conversations
+      .map((conversation, index) => {
+        const messages = conversation.messages
+          .map((message) => {
+            const sender =
+              message.role === "assistant"
+                ? "Ruang Tanya AI"
+                : selectedUser.ownerName;
+
+            const flags = [
+              message.editedAt ? "Diedit" : "",
+              message.regeneratedFromId ? "Retry" : "",
+              message.superseded ? "Jawaban lama" : "",
+            ]
+              .filter(Boolean)
+              .join(" - ");
+
+            const sources =
+              message.sources.length > 0
+                ? `<div class="sources"><strong>Bacaan terkait</strong>${message.sources
+                    .map(
+                      (source) =>
+                        `<div>${escapeHtml(source.title)}${
+                          source.url
+                            ? ` - ${escapeHtml(source.url)}`
+                            : ""
+                        }</div>`
+                    )
+                    .join("")}</div>`
+                : "";
+
+            return `
+              <section class="message">
+                <div class="meta">
+                  <strong>${escapeHtml(sender)}</strong>
+                  <span>${escapeHtml(formatDate(message.createdAt))}</span>
+                </div>
+                ${
+                  flags
+                    ? `<div class="flags">${escapeHtml(flags)}</div>`
+                    : ""
+                }
+                <div class="content">${escapeHtml(message.content).replace(
+                  /\n/g,
+                  "<br>"
+                )}</div>
+                ${sources}
+              </section>
+            `;
+          })
+          .join("");
+
+        return `
+          <article class="conversation">
+            <div class="conversation-number">
+              PERCAKAPAN ${String(index + 1).padStart(2, "0")}
+            </div>
+            <h2>${escapeHtml(conversation.title)}</h2>
+            <div class="conversation-date">
+              ${escapeHtml(formatDate(conversation.createdAt))}
+            </div>
+            ${messages}
+          </article>
+        `;
+      })
+      .join("");
+
+    popup.document.write(`
+      <!doctype html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>Ruang Tanya - ${escapeHtml(selectedUser.ownerName)}</title>
+        <style>
+          @page { margin: 18mm; }
+          * { box-sizing: border-box; }
+          body {
+            margin: 0;
+            color: #304639;
+            font-family: Arial, sans-serif;
+            font-size: 10pt;
+            line-height: 1.45;
+          }
+          header {
+            padding-bottom: 18px;
+            border-bottom: 1px solid #cfc8b4;
+          }
+          .brand {
+            color: #94743d;
+            font-size: 9pt;
+            font-weight: 700;
+            letter-spacing: .15em;
+          }
+          h1 {
+            margin: 5px 0 6px;
+            font-family: Georgia, serif;
+            font-size: 18pt;
+            font-weight: 400;
+          }
+          .summary {
+            color: #66756a;
+            font-size: 9pt;
+          }
+          .conversation {
+            break-before: page;
+            padding-top: 4px;
+          }
+          .conversation:first-of-type {
+            break-before: auto;
+          }
+          .conversation-number {
+            margin-top: 20px;
+            color: #94743d;
+            font-size: 8pt;
+            font-weight: 700;
+            letter-spacing: .12em;
+          }
+          h2 {
+            margin: 5px 0 2px;
+            font-family: Georgia, serif;
+            font-size: 14pt;
+            font-weight: 400;
+          }
+          .conversation-date {
+            margin-bottom: 16px;
+            color: #778078;
+            font-size: 8pt;
+          }
+          .message {
+            margin: 0 0 9px;
+            padding: 8px 10px;
+            border: 1px solid #ded9ca;
+            border-radius: 8px;
+            break-inside: avoid;
+          }
+          .meta {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 7px;
+            font-size: 8pt;
+          }
+          .meta span {
+            color: #777;
+          }
+          .content {
+            white-space: normal;
+          }
+          .flags {
+            margin-bottom: 6px;
+            color: #8a6b37;
+            font-size: 8pt;
+          }
+          .sources {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid #e5e0d4;
+            font-size: 8pt;
+          }
+          .sources strong {
+            display: block;
+            margin-bottom: 3px;
+          }
+        </style>
+      </head>
+      <body>
+        <header>
+          <div class="brand">MENJADI NOL / RUANG TANYA</div>
+          <h1>Arsip Semua Percakapan</h1>
+          <div class="summary">
+            ${escapeHtml(selectedUser.ownerName)}
+            ${selectedUser.ownerEmail ? ` - ${escapeHtml(selectedUser.ownerEmail)}` : ""}
+            - ${selectedUser.conversations.length} percakapan
+          </div>
+        </header>
+        ${body}
+      </body>
+      </html>
+    `);
+
+    popup.document.close();
+
+    setTimeout(() => {
+      popup.focus();
+      popup.print();
+    }, 250);
+
+    setExportOpen(false);
+  }
+  return (
+    <main className="rt-admin-page">
+      <header className="rt-admin-header">
+        <div>
+          <p className="rt-admin-kicker">
+            SUPERADMIN / 09
+          </p>
+
+          <h1>Ruang Tanya</h1>
+
+          <p className="rt-admin-subtitle">
+            Pantau percakapan pengguna dengan Ruang Tanya AI.
+            Seluruh halaman ini bersifat read-only.
+          </p>
+        </div>
+      </header>
+
+      <section className="rt-admin-stats">
+        <article>
+          <span>Pengguna</span>
+          <strong>{users.length}</strong>
+        </article>
+
+        <article>
+          <span>Percakapan</span>
+          <strong>{conversations.length}</strong>
+        </article>
+
+        <article>
+          <span>Pesan</span>
+          <strong>{totalMessages}</strong>
+        </article>
+
+        <article>
+          <span>Edit / Retry</span>
+          <strong>{editRetryCount}</strong>
+        </article>
+      </section>
+
+      <section className="rt-admin-workspace">
+        <aside className="rt-admin-sidebar">
+          <div className="rt-admin-sidebar-head">
+            <div className="rt-admin-sidebar-title">
+              <span>PENGGUNA</span>
+              <strong>{filteredUsers.length}</strong>
+            </div>
+
+            <input
+              type="search"
+              value={query}
+              onChange={(event) =>
+                setQuery(event.target.value)
+              }
+              placeholder="Cari nama atau email..."
+              aria-label="Cari pengguna"
+            />
+          </div>
+
+          <div className="rt-admin-user-list">
+            {filteredUsers.length === 0 ? (
+              <p className="rt-admin-empty">
+                Pengguna tidak ditemukan.
+              </p>
+            ) : (
+              filteredUsers.map((user) => (
+                <button
+                  key={user.key}
+                  type="button"
+                  className={
+                    selectedUser?.key === user.key
+                      ? "rt-admin-user is-active"
+                      : "rt-admin-user"
+                  }
+                  onClick={() => chooseUser(user.key)}
+                >
+                  <span className="rt-admin-user-avatar">
+                    {user.ownerName
+                      .trim()
+                      .slice(0, 1)
+                      .toUpperCase() || "U"}
+                  </span>
+
+                  <span className="rt-admin-user-body">
+                    <strong>{user.ownerName}</strong>
+
+                    <span className="rt-admin-user-email">
+                      {user.ownerEmail ||
+                        user.ownerType}
+                    </span>
+
+                    <span className="rt-admin-user-meta">
+                      {user.conversations.length} percakapan
+                      {" - "}
+                      {shortDate(user.lastActivity)}
+                    </span>
+                  </span>
+                </button>
+              ))
+            )}
+          </div>
+        </aside>
+
+        <section className="rt-admin-main">
+          {!selectedUser ? (
+            <div className="rt-admin-no-thread">
+              <strong>Belum ada pengguna.</strong>
+              <p>
+                Data akan muncul setelah Ruang Tanya
+                digunakan.
+              </p>
+            </div>
+          ) : selectedConversation ? (
+            <>
+              <header className="rt-admin-thread-head">
+                <div className="rt-admin-thread-title">
+                  <button
+                    type="button"
+                    className="rt-admin-back-list"
+                    onClick={backToConversationList}
+                  >
+                    &lt; Daftar Percakapan
+                  </button>
+
+                  <span className="rt-admin-thread-label">
+                    RUANG TANYA / PERCAKAPAN
+                  </span>
+
+                  <h2>{selectedConversation.title}</h2>
+
+                  <p>
+                    {selectedUser.ownerName}
+                    {selectedUser.ownerEmail
+                      ? ` - ${selectedUser.ownerEmail}`
+                      : ""}
+                    {" - "}
+                    {selectedUser.ownerType}
+                  </p>
+                </div>
+
+                <div className="rt-admin-thread-status">
+                  <span>
+                    {selectedConversation.status}
+                  </span>
+
+                  <small>
+                    {formatDate(
+                      selectedConversation.updatedAt
+                    )}
+                  </small>
+                </div>
+              </header>
+
+              <div className="rt-admin-messages">
+                {selectedConversation.messages.length ===
+                0 ? (
+                  <p className="rt-admin-empty">
+                    Belum ada pesan dalam percakapan ini.
+                  </p>
+                ) : (
+                  selectedConversation.messages.map(
+                    (message) => (
+                      <article
+                        key={message.id}
+                        className={
+                          message.role === "user"
+                            ? "rt-admin-message rt-admin-message-user"
+                            : "rt-admin-message rt-admin-message-ai"
+                        }
+                      >
+                        <div className="rt-admin-message-head">
+                          <strong>
+                            {message.role === "user"
+                              ? selectedUser.ownerName
+                              : "Ruang Tanya AI"}
+                          </strong>
+
+                          <time>
+                            {formatDate(
+                              message.createdAt
+                            )}
+                          </time>
+                        </div>
+
+                        <div className="rt-admin-message-content">
+                          {message.content}
+                        </div>
+
+                        {(message.editedAt ||
+                          message.regeneratedFromId ||
+                          message.superseded) && (
+                          <div className="rt-admin-flags">
+                            {message.editedAt && (
+                              <span>Diedit</span>
+                            )}
+
+                            {message.regeneratedFromId && (
+                              <span>Retry</span>
+                            )}
+
+                            {message.superseded && (
+                              <span>Jawaban lama</span>
+                            )}
+                          </div>
+                        )}
+
+                        {message.sources.length > 0 && (
+                          <div className="rt-admin-sources">
+                            <small>
+                              Bacaan terkait
+                            </small>
+
+                            <div>
+                              {message.sources.map(
+                                (source, index) =>
+                                  source.url ? (
+                                    <a
+                                      key={`${message.id}-${index}`}
+                                      href={source.url}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                    >
+                                      {source.title}
+                                    </a>
+                                  ) : (
+                                    <span
+                                      key={`${message.id}-${index}`}
+                                    >
+                                      {source.title}
+                                    </span>
+                                  )
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </article>
+                    )
+                  )
+                )}
+              </div>
+
+              <footer className="rt-admin-readonly">
+                Read-only - isi percakapan tidak dapat
+                diubah dari dashboard Superadmin.
+              </footer>
+            </>
+          ) : (
+            <>
+              <header className="rt-admin-conversation-head">
+                <div>
+                  <span className="rt-admin-thread-label">
+                    PERCAKAPAN PENGGUNA
+                  </span>
+
+                  <h2>
+                    {selectedUser.ownerName}
+                  </h2>
+
+                  <p>
+                    {selectedUser.ownerEmail ||
+                      selectedUser.ownerType}
+                  </p>
+                </div>
+
+                <div className="rt-admin-conversation-actions">
+                  <Link
+  href="/admin/superadmin"
+  className="rt-admin-export-trigger rt-admin-back-super"
+>
+  <span aria-hidden="true">&larr;</span>
+  <span>Back to Superadmin</span>
+</Link>
+
+<div className="rt-admin-export">
+                    <button
+                      type="button"
+                      className="rt-admin-export-trigger"
+                      onClick={() => setExportOpen((open) => !open)}
+                    >
+                      Ekspor Semua
+                      <span aria-hidden="true">v</span>
+                    </button>
+
+                    {exportOpen && (
+                      <div className="rt-admin-export-menu">
+                        <button type="button" onClick={printAll}>
+                          PDF / Cetak
+                          <small>Semua percakapan</small>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => exportAll("docx")}
+                        >
+                          Word
+                          <small>.docx</small>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => exportAll("xlsx")}
+                        >
+                          Excel
+                          <small>.xlsx</small>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => exportAll("txt")}
+                        >
+                          TXT
+                          <small>.txt</small>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                <div className="rt-admin-count-box">
+                  <strong>
+                    {selectedUser.conversations.length}
+                  </strong>
+                  <span>percakapan</span>
+                </div>
+                </div>
+              </header>
+
+              <div className="rt-admin-conversation-area">
+                <div className="rt-admin-conversation-table-head">
+                  <span>Percakapan</span>
+                  <span>Pesan</span>
+                  <span>Aktivitas terakhir</span>
+                  <span></span>
+                </div>
+
+                <div className="rt-admin-conversation-rows">
+                  {paginatedConversations.map(
+                    (conversation, index) => (
+                      <button
+                        key={conversation.id}
+                        type="button"
+                        className="rt-admin-conversation-row"
+                        onClick={() =>
+                          openConversation(
+                            conversation.id
+                          )
+                        }
+                      >
+                        <span className="rt-admin-conversation-number">
+                          {String(
+                            (page - 1) * PER_PAGE +
+                              index +
+                              1
+                          ).padStart(2, "0")}
+                        </span>
+
+                        <span className="rt-admin-conversation-info">
+                          <strong>
+                            {conversation.title}
+                          </strong>
+
+                          <small>
+                            {conversation.status}
+                          </small>
+                        </span>
+
+                        <span className="rt-admin-conversation-message-count">
+                          {conversation.messages.length}
+                        </span>
+
+                        <span className="rt-admin-conversation-date">
+                          {formatDate(
+                            conversation.updatedAt
+                          )}
+                        </span>
+
+                        <span className="rt-admin-open">
+                          Buka
+                        </span>
+                      </button>
+                    )
+                  )}
+                </div>
+
+                <div className="rt-admin-pagination-wrap">
+                  <span className="rt-admin-page-info">
+                    Menampilkan{" "}
+                    {(page - 1) * PER_PAGE + 1}
+                    {" - "}
+                    {Math.min(
+                      page * PER_PAGE,
+                      selectedUser.conversations.length
+                    )}{" "}
+                    dari{" "}
+                    {selectedUser.conversations.length}
+                  </span>
+
+                  {totalPages > 1 && (
+                    <nav
+                      className="rt-admin-pagination"
+                      aria-label="Pagination percakapan"
+                    >
+                      <button
+                        type="button"
+                        disabled={page === 1}
+                        onClick={() =>
+                          setPage((current) =>
+                            Math.max(1, current - 1)
+                          )
+                        }
+                        aria-label="Halaman sebelumnya"
+                      >
+                        &lt;
+                      </button>
+
+                      {Array.from(
+                        { length: totalPages },
+                        (_, index) => index + 1
+                      ).map((pageNumber) => (
+                        <button
+                          key={pageNumber}
+                          type="button"
+                          className={
+                            page === pageNumber
+                              ? "is-active"
+                              : ""
+                          }
+                          onClick={() =>
+                            setPage(pageNumber)
+                          }
+                        >
+                          {pageNumber}
+                        </button>
+                      ))}
+
+                      <button
+                        type="button"
+                        disabled={page === totalPages}
+                        onClick={() =>
+                          setPage((current) =>
+                            Math.min(
+                              totalPages,
+                              current + 1
+                            )
+                          )
+                        }
+                        aria-label="Halaman berikutnya"
+                      >
+                        &gt;
+                      </button>
+                    </nav>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+        </section>
+      </section>
+    </main>
+  );
+}

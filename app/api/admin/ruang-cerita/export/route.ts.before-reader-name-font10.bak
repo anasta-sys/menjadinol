@@ -1,0 +1,410 @@
+import { NextRequest } from "next/server";
+import { createClient as createServiceClient } from "@supabase/supabase-js";
+import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
+import {
+  Document,
+  Packer,
+  Paragraph,
+  TextRun,
+  HeadingLevel,
+} from "docx";
+import { requireAdminOrSuperAdmin } from "@/lib/admin-auth";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+function getServiceClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!url || !serviceKey) {
+    throw new Error("Konfigurasi Supabase server belum lengkap.");
+  }
+
+  return createServiceClient(url, serviceKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  });
+}
+
+function cleanFileName(value: string) {
+  const clean = value
+    .normalize("NFKD")
+    .replace(/[^\w\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .slice(0, 70);
+
+  return clean || "ruang-cerita";
+}
+
+function formatDate(value: string) {
+  return new Intl.DateTimeFormat("id-ID", {
+    dateStyle: "long",
+    timeStyle: "short",
+    timeZone: "Asia/Jakarta",
+  }).format(new Date(value));
+}
+
+type MessageRow = {
+  role: string;
+  content: string;
+  created_at: string;
+};
+
+function buildText(
+  title: string,
+  createdAt: string,
+  messages: MessageRow[]
+) {
+  const parts: string[] = [
+    "MENJADI NOL",
+    "RUANG CERITA",
+    "",
+    title,
+    `Dibuat: ${formatDate(createdAt)}`,
+    "",
+    "========================================",
+    "",
+  ];
+
+  for (const message of messages) {
+    parts.push(
+      message.role === "reader"
+        ? "CERITAMU"
+        : "BALASAN RUANG CERITA"
+    );
+
+    parts.push(formatDate(message.created_at));
+    parts.push("");
+    parts.push(message.content);
+    parts.push("");
+    parts.push("----------------------------------------");
+    parts.push("");
+  }
+
+  return parts.join("\r\n");
+}
+
+function wrapPdfText(
+  text: string,
+  font: Awaited<ReturnType<PDFDocument["embedFont"]>>,
+  fontSize: number,
+  maxWidth: number
+) {
+  const result: string[] = [];
+
+  for (const paragraph of text.split(/\r?\n/)) {
+    if (!paragraph) {
+      result.push("");
+      continue;
+    }
+
+    const words = paragraph.split(/\s+/);
+    let line = "";
+
+    for (const word of words) {
+      const candidate = line ? `${line} ${word}` : word;
+
+      if (
+        font.widthOfTextAtSize(candidate, fontSize) <=
+        maxWidth
+      ) {
+        line = candidate;
+      } else {
+        if (line) {
+          result.push(line);
+        }
+
+        line = word;
+      }
+    }
+
+    if (line) {
+      result.push(line);
+    }
+  }
+
+  return result;
+}
+
+async function createPdf(text: string) {
+  const pdf = await PDFDocument.create();
+
+  const regular = await pdf.embedFont(
+    StandardFonts.Helvetica
+  );
+
+  const bold = await pdf.embedFont(
+    StandardFonts.HelveticaBold
+  );
+
+  const pageWidth = 595.28;
+  const pageHeight = 841.89;
+
+  const margin = 54;
+  const fontSize = 10.5;
+  const lineHeight = 16;
+  const maxWidth = pageWidth - margin * 2;
+
+  let page = pdf.addPage([pageWidth, pageHeight]);
+  let y = pageHeight - margin;
+
+  const lines = wrapPdfText(
+    text,
+    regular,
+    fontSize,
+    maxWidth
+  );
+
+  for (const line of lines) {
+    if (y < margin) {
+      page = pdf.addPage([pageWidth, pageHeight]);
+      y = pageHeight - margin;
+    }
+
+    const isHeading =
+      line === "MENJADI NOL" ||
+      line === "RUANG CERITA" ||
+      line === "CERITAMU" ||
+      line === "BALASAN RUANG CERITA";
+
+    page.drawText(line, {
+      x: margin,
+      y,
+      size: isHeading ? 11 : fontSize,
+      font: isHeading ? bold : regular,
+      color: rgb(0.12, 0.25, 0.18),
+      maxWidth,
+    });
+
+    y -= lineHeight;
+  }
+
+  return pdf.save();
+}
+
+async function createDocx(
+  title: string,
+  createdAt: string,
+  messages: MessageRow[]
+) {
+  const children: Paragraph[] = [
+    new Paragraph({
+      text: "MENJADI NOL",
+      heading: HeadingLevel.TITLE,
+    }),
+
+    new Paragraph({
+      children: [
+        new TextRun({
+          text: "Ruang Cerita",
+          bold: true,
+        }),
+      ],
+    }),
+
+    new Paragraph({
+      text: "",
+    }),
+
+    new Paragraph({
+      text: title,
+      heading: HeadingLevel.HEADING_1,
+    }),
+
+    new Paragraph({
+      text: `Dibuat: ${formatDate(createdAt)}`,
+    }),
+
+    new Paragraph({
+      text: "",
+    }),
+  ];
+
+  for (const message of messages) {
+    children.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text:
+              message.role === "reader"
+                ? "CERITAMU"
+                : "BALASAN RUANG CERITA",
+            bold: true,
+          }),
+        ],
+      })
+    );
+
+    children.push(
+      new Paragraph({
+        text: formatDate(message.created_at),
+      })
+    );
+
+    for (const paragraph of message.content.split(/\r?\n/)) {
+      children.push(
+        new Paragraph({
+          text: paragraph || " ",
+        })
+      );
+    }
+
+    children.push(
+      new Paragraph({
+        text: "",
+      })
+    );
+  }
+
+  const document = new Document({
+    sections: [
+      {
+        children,
+      },
+    ],
+  });
+
+  return Packer.toBuffer(document);
+}
+
+export async function GET(request: NextRequest) {
+  try {
+    await requireAdminOrSuperAdmin();
+
+    const id =
+      request.nextUrl.searchParams.get("id")?.trim() || "";
+
+    const format =
+      request.nextUrl.searchParams
+        .get("format")
+        ?.trim()
+        .toLowerCase() || "txt";
+
+    if (!id) {
+      return Response.json(
+        { error: "ID cerita tidak tersedia." },
+        { status: 400 }
+      );
+    }
+
+    if (!["pdf", "docx", "txt"].includes(format)) {
+      return Response.json(
+        { error: "Format ekspor tidak didukung." },
+        { status: 400 }
+      );
+    }
+
+    const supabase = getServiceClient();
+
+    const {
+      data: conversation,
+      error: conversationError,
+    } = await supabase
+      .from("cerita_conversations")
+      .select("id, title, created_at")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (conversationError) {
+      throw new Error(conversationError.message);
+    }
+
+    if (!conversation) {
+      return Response.json(
+        { error: "Cerita tidak ditemukan." },
+        { status: 404 }
+      );
+    }
+
+    const {
+      data: messages,
+      error: messagesError,
+    } = await supabase
+      .from("cerita_messages")
+      .select("role, content, created_at")
+      .eq("conversation_id", id)
+      .order("created_at", { ascending: true });
+
+    if (messagesError) {
+      throw new Error(messagesError.message);
+    }
+
+    const title =
+      conversation.title?.trim() || "Cerita tanpa judul";
+
+    const rows = (messages ?? []) as MessageRow[];
+
+    const baseName =
+      "ruang-cerita-" + cleanFileName(title);
+
+    if (format === "txt") {
+      const body = buildText(
+        title,
+        conversation.created_at,
+        rows
+      );
+
+      return new Response(body, {
+        headers: {
+          "Content-Type":
+            "text/plain; charset=utf-8",
+          "Content-Disposition":
+            `attachment; filename="${baseName}.txt"`,
+          "Cache-Control": "no-store",
+        },
+      });
+    }
+
+    if (format === "pdf") {
+      const text = buildText(
+        title,
+        conversation.created_at,
+        rows
+      );
+
+      const bytes = await createPdf(text);
+
+      return new Response(Buffer.from(bytes), {
+        headers: {
+          "Content-Type": "application/pdf",
+          "Content-Disposition":
+            `attachment; filename="${baseName}.pdf"`,
+          "Cache-Control": "no-store",
+        },
+      });
+    }
+
+    const bytes = await createDocx(
+      title,
+      conversation.created_at,
+      rows
+    );
+
+    return new Response(bytes, {
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "Content-Disposition":
+          `attachment; filename="${baseName}.docx"`,
+        "Cache-Control": "no-store",
+      },
+    });
+  } catch (error) {
+    console.error("Ruang Cerita export error:", error);
+
+    return Response.json(
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : "Ekspor gagal.",
+      },
+      { status: 500 }
+    );
+  }
+}

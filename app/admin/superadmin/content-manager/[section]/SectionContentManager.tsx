@@ -154,38 +154,275 @@ export default function SectionContentManager({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [query, setQuery] = useState("");
-  const [status, setStatus] = useState("all");
   const [folderId, setFolderId] = useState("all");
   const [preview, setPreview] = useState<ContentEntry | null>(null);
   const [message, setMessage] = useState("");
-  const [page, setPage] = useState(1);
+
+  const [publishedPage, setPublishedPage] = useState(1);
+  const [draftPage, setDraftPage] = useState(1);
+  const [reviewPage, setReviewPage] = useState(1);
+
   const PAGE_SIZE = 10;
 
-  const folderMap = useMemo(() => new Map(folders.map((f) => [f.id, f])), [folders]);
-  const authorMap = useMemo(() => new Map(authors.map((a) => [a.user_id, a])), [authors]);
+  const folderMap = useMemo(
+    () => new Map(folders.map((f) => [f.id, f])),
+    [folders]
+  );
+
+  const authorMap = useMemo(
+    () => new Map(authors.map((a) => [a.user_id, a])),
+    [authors]
+  );
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
+
     return entries.filter((entry) => {
-      if (status !== "all" && entry.status !== status) return false;
       if (folderId !== "all" && entry.folder_id !== folderId) return false;
+
       if (!needle) return true;
-      const owner = entry.author_id ? authorMap.get(entry.author_id) : undefined;
-      return [entry.title, entry.slug, owner?.display_name, owner?.email]
-        .filter(Boolean).join(" ").toLowerCase().includes(needle);
+
+      const owner = entry.author_id
+        ? authorMap.get(entry.author_id)
+        : undefined;
+
+      return [
+        entry.title,
+        entry.slug,
+        owner?.display_name,
+        owner?.email,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase()
+        .includes(needle);
     });
-  }, [entries, status, folderId, query, authorMap]);
+  }, [entries, folderId, query, authorMap]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const safePage = Math.min(page, totalPages);
-  const pageStart = (safePage - 1) * PAGE_SIZE;
-  const paginated = filtered.slice(pageStart, pageStart + PAGE_SIZE);
+  const publishedEntries = filtered.filter(
+    (entry) => entry.status === "published"
+  );
 
-  function changePage(nextPage: number) {
-    const target = Math.min(Math.max(1, nextPage), totalPages);
-    setPage(target);
+  const draftEntries = filtered.filter(
+    (entry) => entry.status === "draft"
+  );
+
+  const reviewEntries = filtered.filter(
+    (entry) => entry.status === "review"
+  );
+
+  function paginate(items: ContentEntry[], requestedPage: number) {
+    const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
+    const safePage = Math.min(Math.max(1, requestedPage), totalPages);
+    const pageStart = (safePage - 1) * PAGE_SIZE;
+
+    return {
+      totalPages,
+      safePage,
+      pageStart,
+      items: items.slice(pageStart, pageStart + PAGE_SIZE),
+    };
   }
 
+  const published = paginate(publishedEntries, publishedPage);
+  const draft = paginate(draftEntries, draftPage);
+  const review = paginate(reviewEntries, reviewPage);
+
+  function resetPages() {
+    setPublishedPage(1);
+    setDraftPage(1);
+    setReviewPage(1);
+  }
+
+  function renderPagination(
+    totalItems: number,
+    totalPages: number,
+    safePage: number,
+    setPage: (page: number) => void,
+    label: string
+  ) {
+    if (totalItems <= PAGE_SIZE) return null;
+
+    const buttonStyle = (active = false) => ({
+      width: 34,
+      minWidth: 34,
+      height: 34,
+      minHeight: 34,
+      padding: 0,
+      borderRadius: 9,
+      border: active
+        ? "1px solid #17663f"
+        : "1px solid #dfe3dc",
+      background: active ? "#17663f" : "#fff",
+      color: active ? "#fff" : "#465b4c",
+      fontWeight: 800,
+      cursor: "pointer",
+    });
+
+    return (
+      <div
+        aria-label={`Navigasi halaman ${label}`}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 6,
+          flexWrap: "wrap",
+          marginTop: 16,
+          paddingTop: 14,
+          borderTop: "1px solid #eef0eb",
+        }}
+      >
+        <button
+          type="button"
+          onClick={() => setPage(Math.max(1, safePage - 1))}
+          disabled={safePage === 1}
+          style={{
+            ...buttonStyle(),
+            cursor: safePage === 1 ? "not-allowed" : "pointer",
+            opacity: safePage === 1 ? .4 : 1,
+          }}
+        >
+          ‹
+        </button>
+
+        {Array.from({ length: totalPages }, (_, index) => index + 1).map(
+          (pageNumber) => (
+            <button
+              key={pageNumber}
+              type="button"
+              onClick={() => setPage(pageNumber)}
+              aria-current={safePage === pageNumber ? "page" : undefined}
+              style={buttonStyle(safePage === pageNumber)}
+            >
+              {pageNumber}
+            </button>
+          )
+        )}
+
+        <button
+          type="button"
+          onClick={() => setPage(Math.min(totalPages, safePage + 1))}
+          disabled={safePage === totalPages}
+          style={{
+            ...buttonStyle(),
+            cursor:
+              safePage === totalPages ? "not-allowed" : "pointer",
+            opacity: safePage === totalPages ? .4 : 1,
+          }}
+        >
+          ›
+        </button>
+      </div>
+    );
+  }
+
+  function renderStatusSection(
+    label: string,
+    items: ContentEntry[],
+    paginated: {
+      totalPages: number;
+      safePage: number;
+      pageStart: number;
+      items: ContentEntry[];
+    },
+    setPage: (page: number) => void,
+    accent: string,
+    softBackground: string
+  ) {
+    return (
+      <section
+        style={{
+          marginTop: 18,
+          border: "1px solid rgba(70,91,76,.12)",
+          borderRadius: 18,
+          overflow: "hidden",
+          background: "#fff",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
+            padding: "14px 16px",
+            background: softBackground,
+            borderBottom: "1px solid rgba(70,91,76,.10)",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+            }}
+          >
+            <span
+              aria-hidden="true"
+              style={{
+                width: 9,
+                height: 9,
+                borderRadius: "50%",
+                background: accent,
+              }}
+            />
+
+            <strong
+              style={{
+                color: "#294b37",
+                fontSize: 13,
+                letterSpacing: ".08em",
+              }}
+            >
+              {label}
+            </strong>
+          </div>
+
+          <span
+            style={{
+              padding: "5px 10px",
+              borderRadius: 999,
+              background: "#fff",
+              border: "1px solid rgba(70,91,76,.10)",
+              color: "#5c6f63",
+              fontSize: 11,
+              fontWeight: 800,
+            }}
+          >
+            {items.length} konten
+          </span>
+        </div>
+
+        {renderStatusSection(
+          "PUBLISHED",
+          publishedEntries,
+          published,
+          setPublishedPage,
+          "#17663f",
+          "#eef7f1"
+        )}
+
+        {renderStatusSection(
+          "DRAFT",
+          draftEntries,
+          draft,
+          setDraftPage,
+          "#a97813",
+          "#fbf5e7"
+        )}
+
+        {renderStatusSection(
+          "REVIEW",
+          reviewEntries,
+          review,
+          setReviewPage,
+          "#526d88",
+          "#f0f4f8"
+        )}
+      </section>
+    );
+  }
   function togglePublish(entry: ContentEntry) {
     const published = entry.status === "published";
     if (!window.confirm(published ? "Tarik tulisan ini menjadi Draft?" : "Publish tulisan ini sekarang?")) return;
@@ -338,137 +575,88 @@ export default function SectionContentManager({
       </div>
 
       <section style={{ border: "1px solid rgba(70,91,76,.14)", borderRadius: 22, background: "#fff", padding: 20 }}>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
-          <input value={query} onChange={(e)=>{ setQuery(e.target.value); setPage(1); }} placeholder="Cari judul / slug / penulis..." style={{ minHeight: 38, minWidth: 250, padding: "0 11px", borderRadius: 10, border: "1px solid #dfe3dc" }}/>
-          <select value={folderId} onChange={(e)=>{ setFolderId(e.target.value); setPage(1); }} style={{ minHeight: 38, padding: "0 10px", borderRadius: 10, border: "1px solid #dfe3dc", background: "#fff" }}>
+        <div
+          style={{
+            display: "flex",
+            gap: 8,
+            flexWrap: "wrap",
+            marginBottom: 16,
+          }}
+        >
+          <input
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              resetPages();
+            }}
+            placeholder="Cari judul / slug / penulis..."
+            style={{
+              minHeight: 42,
+              minWidth: 270,
+              padding: "0 14px",
+              borderRadius: 999,
+              border: "1px solid rgba(72,105,79,.18)",
+              background: "rgba(255,253,247,.96)",
+              color: "#294b37",
+              outline: "none",
+              boxShadow: "0 4px 14px rgba(55,80,60,.04)",
+            }}
+          />
+
+          <select
+            value={folderId}
+            onChange={(e) => {
+              setFolderId(e.target.value);
+              resetPages();
+            }}
+            style={{
+              minHeight: 42,
+              padding: "0 38px 0 14px",
+              borderRadius: 999,
+              border: "1px solid rgba(72,105,79,.18)",
+              background: "rgba(247,249,240,.96)",
+              color: "#294b37",
+              fontWeight: 600,
+              cursor: "pointer",
+              outline: "none",
+              boxShadow: "0 4px 14px rgba(55,80,60,.04)",
+            }}
+          >
             <option value="all">Semua Fitur</option>
-            {folders.map((f)=><option key={f.id} value={f.id}>{f.title}</option>)}
-          </select>
-          <select value={status} onChange={(e)=>{ setStatus(e.target.value); setPage(1); }} style={{ minHeight: 38, padding: "0 10px", borderRadius: 10, border: "1px solid #dfe3dc", background: "#fff" }}>
-            <option value="all">Semua Status</option>
-            <option value="published">Published</option>
-            <option value="draft">Draft</option>
-            <option value="review">Review</option>
+            {folders.map((f) => (
+              <option key={f.id} value={f.id}>
+                {f.title}
+              </option>
+            ))}
           </select>
         </div>
-
         {message && <div style={{ marginBottom: 14, padding: "11px 13px", borderRadius: 12, background: "#f4f7f2", fontSize: 12 }}>{message}</div>}
 
-        <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", minWidth: 1050, borderCollapse: "collapse" }}>
-            <thead><tr style={{ textAlign: "left", borderBottom: "1px solid #e6e8e3" }}>
-              <th style={{ padding: 10 }}>No</th><th style={{ padding: 10 }}>Judul</th>
-              <th style={{ padding: 10 }}>Fitur</th><th style={{ padding: 10 }}>Penulis</th>
-              <th style={{ padding: 10 }}>Status</th><th style={{ padding: 10 }}>Dibuat</th>
-              <th style={{ padding: 10, textAlign: "right" }}>Aksi</th>
-            </tr></thead>
-            <tbody>
-              {paginated.map((entry,i)=>{
-                const owner=entry.author_id ? authorMap.get(entry.author_id) : undefined;
-                return <tr key={entry.id} style={{ borderBottom: "1px solid #eef0eb" }}>
-                  <td style={{ padding: 10 }}>{pageStart+i+1}</td>
-                  <td style={{ padding: 10 }}><strong>{entry.title}</strong><div style={{ opacity:.55,fontSize:11 }}>{entry.slug}</div></td>
-                  <td style={{ padding: 10 }}>{entry.folder_id ? folderMap.get(entry.folder_id)?.title || "—" : "—"}</td>
-                  <td style={{ padding: 10 }}>{owner?.display_name || owner?.email || "Konten lama"}</td>
-                  <td style={{ padding: 10, fontWeight: 800 }}>{entry.status === "published" ? "Published" : entry.status === "review" ? "Review" : "Draft"}</td>
-                  <td style={{ padding: 10 }}>{formatDate(entry.created_at)}</td>
-                  <td style={{ padding: 10, textAlign: "right", whiteSpace:"nowrap" }}>
-                    <button onClick={()=>setPreview(entry)} style={{ marginRight:6 }}>Preview</button>
-                    <button disabled={isPending} onClick={()=>togglePublish(entry)} style={{ marginRight:6 }}>{entry.status==="published" ? "Tarik" : "Publish"}</button>
-                    <button disabled={isPending} onClick={()=>remove(entry)}>Hapus</button>
-                  </td>
-                </tr>
-              })}
-              {!filtered.length && <tr><td colSpan={7} style={{ padding: 28, textAlign:"center", opacity:.58 }}>Belum ada konten.</td></tr>}
-            </tbody>
-          </table>
-        </div>
+        {renderStatusSection(
+          "PUBLISHED",
+          publishedEntries,
+          published,
+          setPublishedPage,
+          "#17663f",
+          "#eef7f1"
+        )}
 
-        {filtered.length > PAGE_SIZE && (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 6,
-              flexWrap: "wrap",
-              marginTop: 18,
-              paddingTop: 16,
-              borderTop: "1px solid #eef0eb",
-            }}
-            aria-label="Navigasi halaman konten"
-          >
-            <button
-              type="button"
-              onClick={() => changePage(safePage - 1)}
-              disabled={safePage === 1}
-              aria-label="Halaman sebelumnya"
-              style={{
-                width: 36,
-                minWidth: 36,
-                height: 36,
-                minHeight: 36,
-                padding: 0,
-                borderRadius: 9,
-                border: "1px solid #dfe3dc",
-                background: "#fff",
-                color: "#465b4c",
-                cursor: safePage === 1 ? "not-allowed" : "pointer",
-                opacity: safePage === 1 ? .42 : 1,
-              }}
-            >
-              ‹
-            </button>
+        {renderStatusSection(
+          "DRAFT",
+          draftEntries,
+          draft,
+          setDraftPage,
+          "#a97813",
+          "#fbf5e7"
+        )}
 
-            {Array.from({ length: totalPages }, (_, index) => index + 1).map((pageNumber) => (
-              <button
-                key={pageNumber}
-                type="button"
-                onClick={() => changePage(pageNumber)}
-                aria-label={`Halaman ${pageNumber}`}
-                aria-current={safePage === pageNumber ? "page" : undefined}
-                style={{
-                  width: 36,
-                  minWidth: 36,
-                  height: 36,
-                  minHeight: 36,
-                  padding: 0,
-                  borderRadius: 9,
-                  border: safePage === pageNumber
-                    ? "1px solid #17663f"
-                    : "1px solid #dfe3dc",
-                  background: safePage === pageNumber ? "#17663f" : "#fff",
-                  color: safePage === pageNumber ? "#fff" : "#465b4c",
-                  fontWeight: 800,
-                  cursor: "pointer",
-                }}
-              >
-                {pageNumber}
-              </button>
-            ))}
-
-            <button
-              type="button"
-              onClick={() => changePage(safePage + 1)}
-              disabled={safePage === totalPages}
-              aria-label="Halaman berikutnya"
-              style={{
-                width: 36,
-                minWidth: 36,
-                height: 36,
-                minHeight: 36,
-                padding: 0,
-                borderRadius: 9,
-                border: "1px solid #dfe3dc",
-                background: "#fff",
-                color: "#465b4c",
-                cursor: safePage === totalPages ? "not-allowed" : "pointer",
-                opacity: safePage === totalPages ? .42 : 1,
-              }}
-            >
-              ›
-            </button>
-          </div>
+        {renderStatusSection(
+          "REVIEW",
+          reviewEntries,
+          review,
+          setReviewPage,
+          "#526d88",
+          "#f0f4f8"
         )}
       </section>
 
@@ -477,7 +665,7 @@ export default function SectionContentManager({
           <div onClick={(e)=>e.stopPropagation()} style={{ maxWidth:900, margin:"30px auto", background:"#fff", borderRadius:20, padding:24 }}>
             <div style={{ display:"flex", justifyContent:"space-between", gap:12 }}>
               <div><h2 style={{ marginTop:0 }}>{preview.title}</h2><p style={{ opacity:.58 }}>{preview.excerpt || "Tanpa excerpt"}</p></div>
-              <button onClick={()=>setPreview(null)}>Tutup</button>
+              <button onClick={()=>setPreview(null)} style={{ minHeight:36, padding:"0 15px", borderRadius:999, border:"1px solid rgba(70,91,76,.18)", background:"#f3f6ee", color:"#365441", fontSize:12, fontWeight:700, cursor:"pointer" }}>Tutup</button>
             </div>
             <hr style={{ border:0, borderTop:"1px solid #eee" }}/>
             <div dangerouslySetInnerHTML={{ __html: safePreviewHtml(preview.body) }} />
