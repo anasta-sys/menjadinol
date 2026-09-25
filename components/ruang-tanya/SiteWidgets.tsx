@@ -1,5 +1,6 @@
-"use client";
+﻿"use client";
 
+import { usePathname } from "next/navigation";
 import RuangTanya from "./RuangTanya";
 import RuangCerita from "../ruang-cerita/RuangCerita";
 
@@ -10,6 +11,16 @@ type SiteWidgetsProps = {
 export default function SiteWidgets({
   accountName = "",
 }: SiteWidgetsProps) {
+  const pathname = usePathname();
+
+  const hideOnAuthPage =
+    pathname === "/reader-login" ||
+    pathname === "/reader-register";
+
+  if (hideOnAuthPage) {
+    return null;
+  }
+
   return (
     <>
       <RuangCerita />
