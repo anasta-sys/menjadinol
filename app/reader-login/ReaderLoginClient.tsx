@@ -114,44 +114,12 @@ export default function ReaderLoginClient() {
         "string"
           ? data.user.user_metadata.name.trim()
           : "";
-
       /*
-       * 2. Cek whitelist reader_users.
-       * Sekalian ambil name bila kolomnya tersedia.
+       * Profil reader diverifikasi oleh SERVER melalui
+       * /api/reader/send-otp.
+       * Browser tidak membaca reader_users secara langsung.
        */
-      const {
-        data: reader,
-        error: readerError,
-      } = await supabase
-        .from("reader_users")
-        .select("user_id,status,full_name")
-        .eq("user_id", data.user.id)
-        .maybeSingle();
-
-     if (readerError) {
-  console.error("READER QUERY ERROR:", readerError);
-
-  throw new Error(
-    `Reader query gagal: ${readerError.message}`
-  );
-}
-
-if (!reader) {
-  throw new Error(
-    "Data reader tidak ditemukan."
-  );
-}
-
-if (reader.status !== "active") {
-  throw new Error(
-    `Status reader bukan active: ${reader.status}`
-  );
-}
-
-      const readerName =
-        typeof reader.full_name === "string"
-          ? reader.full_name.trim()
-          : "";
+      const readerName = "";
 
       setDisplayName(
         readerName ||

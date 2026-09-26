@@ -183,6 +183,30 @@ export async function POST(
     }
 
 
+
+    /*
+     * =====================================
+     * SUPABASE ADMIN CLIENT
+     * =====================================
+     */
+
+    const admin =
+      createAdminClient(
+        supabaseUrl,
+        supabaseServiceRole,
+        {
+          auth: {
+            persistSession: false,
+            autoRefreshToken: false,
+          },
+        }
+      );
+
+
+    
+
+
+
     /*
      * =====================================
      * CEK AKUN READER
@@ -193,8 +217,7 @@ export async function POST(
       data: reader,
       error: readerError,
     } =
-      await supabase
-        .from("reader_users")
+      await admin.from("reader_users")
         .select(
           "user_id,status"
         )
@@ -265,29 +288,7 @@ export async function POST(
       new Date(
         Date.now() +
           10 * 60 * 1000
-      );
-
-
-    /*
-     * =====================================
-     * SUPABASE ADMIN CLIENT
-     * =====================================
-     */
-
-    const admin =
-      createAdminClient(
-        supabaseUrl,
-        supabaseServiceRole,
-        {
-          auth: {
-            persistSession: false,
-            autoRefreshToken: false,
-          },
-        }
-      );
-
-
-    /*
+      );/*
      * =====================================
      * HAPUS OTP LAMA
      * =====================================
