@@ -597,6 +597,14 @@ export default function SuperAdminDashboard({
           <span className="superIndexNumber">10</span>
           <span>Ruang Cerita</span>
         </Link>
+
+        <Link
+          href="/admin/superadmin/system-monitoring"
+          className="superIndexButton"
+        >
+          <span className="superIndexNumber">11</span>
+          <span>Monitoring Sistem</span>
+        </Link>
       </nav>
 
       <style>{`
