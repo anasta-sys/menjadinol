@@ -2155,3 +2155,72 @@
   }
 }
 
+/* =========================================================
+   RUANG CERITA - MOBILE FIT FIX
+   Keep the same outer panel size as Ruang Tanya, while making
+   Ruang Cerita's wider desktop content fit inside phone screens.
+========================================================= */
+@media (max-width: 699px) {
+  .rc-demo-body {
+    overflow-x: hidden !important;
+  }
+
+  .rc-screen {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    padding: 24px 18px 27px !important;
+  }
+
+  .rc-screen-heading,
+  .rc-screen-heading h2 {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .rc-screen-heading h2 {
+    font-size: 29px !important;
+    line-height: 1.06 !important;
+  }
+
+  .rc-story-input {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .rc-private-note,
+  .rc-demo-primary,
+  .rc-demo-secondary,
+  .rc-status-card {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .rc-story-list {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .rc-story-row {
+    min-width: 0 !important;
+    grid-template-columns: minmax(0, 1fr) auto 18px !important;
+  }
+
+  .rc-list-top {
+    align-items: center !important;
+  }
+
+  .rc-list-top h2 {
+    min-width: 0 !important;
+  }
+
+  .rc-letter,
+  .rc-thread-line,
+  .rc-result-screen {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
+
