@@ -1425,21 +1425,18 @@
   text-align: center !important;
 }
 
+
+
 .rc-thread-title::before {
   content: "RUANG CERITA" !important;
-
   display: block !important;
-
   margin-bottom: 8px !important;
-
   color: #9a7425 !important;
-
   font-family: Aptos, "Segoe UI", Arial, sans-serif !important;
   font-size: 8px !important;
   font-weight: 800 !important;
   letter-spacing: .25em !important;
 }
-
 .rc-thread-title::after {
   content: "" !important;
 
@@ -2086,4 +2083,34 @@
   .rc-thread-actions > button {
     width: 100%;
   }
+}
+
+/* RC THREAD READER NAME */
+.rc-thread-title > .rc-thread-reader-name {
+  display: block !important;
+  margin: 0 0 8px !important;
+  color: #9a7425 !important;
+  font-family: Aptos, "Segoe UI", Arial, sans-serif !important;
+  font-size: 8px !important;
+  font-weight: 800 !important;
+  line-height: 1.3 !important;
+  letter-spacing: .25em !important;
+  text-transform: uppercase !important;
+}
+/* FINAL: nama reader menggantikan label statis RUANG CERITA */
+.rc-thread-title::before {
+  content: none !important;
+  display: none !important;
+}
+
+.rc-thread-title > .rc-thread-reader-name {
+  display: block !important;
+  margin: 0 0 8px !important;
+  color: #9a7425 !important;
+  font-family: Aptos, "Segoe UI", Arial, sans-serif !important;
+  font-size: 8px !important;
+  font-weight: 800 !important;
+  line-height: 1.3 !important;
+  letter-spacing: .25em !important;
+  text-transform: uppercase !important;
 }
