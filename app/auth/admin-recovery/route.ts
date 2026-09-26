@@ -11,6 +11,8 @@ import {
   createAdminClient,
 } from "@/lib/supabase/admin";
 
+import { logSystemError } from "@/lib/system-monitoring/logger";
+
 export const dynamic =
   "force-dynamic";
 
@@ -69,6 +71,7 @@ export async function GET(
 
     const {
       data: profile,
+      error: profileError,
     } =
       await admin
         .from("admin_users")
@@ -80,6 +83,21 @@ export async function GET(
           data.user.id
         )
         .maybeSingle();
+
+    if (profileError) {
+      await logSystemError({
+        severity: "error",
+        module: "admin",
+        action: "recovery-role-lookup",
+        errorCode: profileError.code || "ROLE_LOOKUP_FAILED",
+        technicalMessage: profileError.message,
+        userMessage: "Role Admin gagal diperiksa.",
+        userId: data.user.id,
+        userEmail: data.user.email ?? null,
+        userType: "admin",
+        requestPath: "/auth/admin-recovery",
+      });
+    }
 
     if (
       !profile ||
@@ -102,7 +120,20 @@ export async function GET(
         requestUrl.origin
       )
     );
-  } catch {
+  } catch (error) {
+    await logSystemError({
+            severity: "error",
+            module: "admin",
+            action: "recovery-unhandled",
+            errorCode: "RECOVERY_UNHANDLED",
+            technicalMessage: error instanceof Error ? error.message : String(error),
+            userMessage: "Pemulihan akun mengalami gangguan.",
+            userId: null,
+            userEmail: null,
+            userType: "admin",
+            requestPath: "/auth/admin-recovery",
+          });
+
     return NextResponse.redirect(
       new URL(
         "/admin-forgot-password?error=recovery_failed",

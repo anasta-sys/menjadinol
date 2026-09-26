@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
+import { logSystemError } from "@/lib/system-monitoring/logger";
+
 export const dynamic = "force-dynamic";
 
 function json(body: Record<string, unknown>, status = 200) {
@@ -102,6 +104,19 @@ export async function POST(request: NextRequest) {
         "RESEND_API_KEY atau OTP_FROM_EMAIL belum tersedia."
       );
 
+      await logSystemError({
+        severity: "critical",
+        module: "writer",
+        action: "forgot-password-config",
+        errorCode: "RECOVERY_EMAIL_CONFIG_MISSING",
+        technicalMessage: "RESEND_API_KEY atau OTP_FROM_EMAIL belum tersedia.",
+        userMessage: "Layanan pemulihan password tidak tersedia.",
+        userId: null,
+        userEmail: email,
+        userType: "writer",
+        requestPath: "/api/writer/forgot-password",
+      });
+
       return json(
         { error: "Layanan email sedang tidak tersedia." },
         500
@@ -193,6 +208,19 @@ export async function POST(request: NextRequest) {
         resendError
       );
 
+      await logSystemError({
+        severity: "error",
+        module: "writer",
+        action: "forgot-password-email",
+        errorCode: "RECOVERY_EMAIL_SEND_FAILED",
+        technicalMessage: `Resend gagal dengan status ${resendResponse.status}`,
+        userMessage: "Email pemulihan password gagal dikirim.",
+        userId: null,
+        userEmail: email,
+        userType: "writer",
+        requestPath: "/api/writer/forgot-password",
+      });
+
       return json(
         { error: "Email reset belum dapat dikirim." },
         500
@@ -204,6 +232,19 @@ export async function POST(request: NextRequest) {
     console.error("Writer forgot password gagal:", error);
 
     // Tetap generik agar email enumeration tidak terjadi.
+    await logSystemError({
+        severity: "error",
+        module: "writer",
+        action: "forgot-password-unhandled",
+        errorCode: "RECOVERY_UNHANDLED",
+        technicalMessage: error instanceof Error ? error.message : String(error),
+        userMessage: "Pemulihan password mengalami gangguan.",
+        userId: null,
+        userEmail: email,
+        userType: "writer",
+        requestPath: "/api/writer/forgot-password",
+      });
+
     return json({ ok: true });
   }
 }

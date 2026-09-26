@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
+import { logSystemError } from "@/lib/system-monitoring/logger";
+
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
@@ -61,6 +63,21 @@ export async function GET(request: NextRequest) {
         .eq("user_id", data.user.id)
         .maybeSingle();
 
+    if (profileError) {
+      await logSystemError({
+        severity: "error",
+        module: "writer",
+        action: "recovery-role-lookup",
+        errorCode: profileError.code || "ROLE_LOOKUP_FAILED",
+        technicalMessage: profileError.message,
+        userMessage: "Role akun gagal diperiksa.",
+        userId: data.user.id,
+        userEmail: data.user.email ?? null,
+        userType: "writer",
+        requestPath: "/auth/writer-recovery",
+      });
+    }
+
     if (
       profileError ||
       !profile ||
@@ -95,6 +112,19 @@ export async function GET(request: NextRequest) {
       "Writer recovery gagal:",
       error
     );
+
+    await logSystemError({
+            severity: "error",
+            module: "writer",
+            action: "recovery-unhandled",
+            errorCode: "RECOVERY_UNHANDLED",
+            technicalMessage: error instanceof Error ? error.message : String(error),
+            userMessage: "Pemulihan akun mengalami gangguan.",
+            userId: null,
+            userEmail: null,
+            userType: "writer",
+            requestPath: "/auth/writer-recovery",
+          });
 
     const errorUrl = new URL(
       "/writer-forgot-password",

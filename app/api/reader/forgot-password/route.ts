@@ -5,6 +5,8 @@ import {
 
 import { createAdminClient } from "@/lib/supabase/admin";
 
+import { logSystemError } from "@/lib/system-monitoring/logger";
+
 export const dynamic = "force-dynamic";
 
 function json(
@@ -116,6 +118,19 @@ export async function POST(
       console.error(
         "RESEND_API_KEY atau OTP_FROM_EMAIL belum tersedia."
       );
+
+      await logSystemError({
+        severity: "critical",
+        module: "reader",
+        action: "forgot-password-config",
+        errorCode: "RECOVERY_EMAIL_CONFIG_MISSING",
+        technicalMessage: "RESEND_API_KEY atau OTP_FROM_EMAIL belum tersedia.",
+        userMessage: "Layanan pemulihan password tidak tersedia.",
+        userId: null,
+        userEmail: email,
+        userType: "reader",
+        requestPath: "/api/reader/forgot-password",
+      });
 
       return json(
         {
@@ -239,6 +254,19 @@ export async function POST(
         resendError
       );
 
+      await logSystemError({
+        severity: "error",
+        module: "reader",
+        action: "forgot-password-email",
+        errorCode: "RECOVERY_EMAIL_SEND_FAILED",
+        technicalMessage: `Resend gagal dengan status ${resendResponse.status}`,
+        userMessage: "Email pemulihan password gagal dikirim.",
+        userId: null,
+        userEmail: email,
+        userType: "reader",
+        requestPath: "/api/reader/forgot-password",
+      });
+
       return json(
         {
           error:
@@ -256,6 +284,19 @@ export async function POST(
       "Forgot password gagal:",
       error
     );
+
+    await logSystemError({
+        severity: "error",
+        module: "reader",
+        action: "forgot-password-unhandled",
+        errorCode: "RECOVERY_UNHANDLED",
+        technicalMessage: error instanceof Error ? error.message : String(error),
+        userMessage: "Pemulihan password mengalami gangguan.",
+        userId: null,
+        userEmail: email,
+        userType: "reader",
+        requestPath: "/api/reader/forgot-password",
+      });
 
     return json({
       ok: true,

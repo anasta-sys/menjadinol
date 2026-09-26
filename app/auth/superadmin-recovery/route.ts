@@ -11,6 +11,8 @@ import {
   createAdminClient,
 } from "@/lib/supabase/admin";
 
+import { logSystemError } from "@/lib/system-monitoring/logger";
+
 export const dynamic =
   "force-dynamic";
 
@@ -118,6 +120,21 @@ export async function GET(
         )
         .maybeSingle();
 
+    if (profileError) {
+      await logSystemError({
+        severity: "error",
+        module: "superadmin",
+        action: "recovery-role-lookup",
+        errorCode: profileError.code || "ROLE_LOOKUP_FAILED",
+        technicalMessage: profileError.message,
+        userMessage: "Role akun gagal diperiksa.",
+        userId: data.user.id,
+        userEmail: data.user.email ?? null,
+        userType: "superadmin",
+        requestPath: "/auth/superadmin-recovery",
+      });
+    }
+
     if (
       profileError ||
       !profile ||
@@ -162,6 +179,19 @@ export async function GET(
       "Superadmin recovery gagal:",
       error
     );
+
+    await logSystemError({
+            severity: "error",
+            module: "superadmin",
+            action: "recovery-unhandled",
+            errorCode: "RECOVERY_UNHANDLED",
+            technicalMessage: error instanceof Error ? error.message : String(error),
+            userMessage: "Pemulihan akun mengalami gangguan.",
+            userId: null,
+            userEmail: null,
+            userType: "superadmin",
+            requestPath: "/auth/superadmin-recovery",
+          });
 
     const errorUrl =
       new URL(

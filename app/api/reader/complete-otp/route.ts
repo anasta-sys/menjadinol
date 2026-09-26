@@ -21,6 +21,8 @@ import {
   READER_PASSWORD_COOKIE,
 } from "@/lib/reader-access";
 
+import { logSystemError } from "@/lib/system-monitoring/logger";
+
 function hashOtp(
   userId: string,
   otp: string
@@ -264,6 +266,19 @@ export async function POST(
         readerError
       );
 
+      await logSystemError({
+        severity: "error",
+        module: "reader",
+        action: "complete-otp-reader-lookup",
+        errorCode: readerError.code || "READER_LOOKUP_FAILED",
+        technicalMessage: readerError.message,
+        userMessage: "Profil pembaca gagal diperiksa.",
+        userId: userId,
+        userEmail: email,
+        userType: "reader",
+        requestPath: "/api/reader/complete-otp",
+      });
+
       return NextResponse.json(
         {
           error:
@@ -317,6 +332,19 @@ export async function POST(
         "OTP lookup error:",
         otpLookupError
       );
+
+      await logSystemError({
+        severity: "error",
+        module: "reader",
+        action: "complete-otp-lookup",
+        errorCode: otpLookupError.code || "OTP_LOOKUP_FAILED",
+        technicalMessage: otpLookupError.message,
+        userMessage: "OTP pembaca gagal diperiksa.",
+        userId: userId,
+        userEmail: email,
+        userType: "reader",
+        requestPath: "/api/reader/complete-otp",
+      });
 
       return NextResponse.json(
         {
@@ -382,6 +410,19 @@ export async function POST(
         otpUseError
       );
 
+      await logSystemError({
+        severity: "error",
+        module: "reader",
+        action: "complete-otp-mark-used",
+        errorCode: otpUseError.code || "OTP_MARK_USED_FAILED",
+        technicalMessage: otpUseError.message,
+        userMessage: "OTP pembaca gagal diselesaikan.",
+        userId: userId,
+        userEmail: email,
+        userType: "reader",
+        requestPath: "/api/reader/complete-otp",
+      });
+
       return NextResponse.json(
         {
           error:
@@ -444,6 +485,19 @@ export async function POST(
         sessionError
       );
 
+      await logSystemError({
+        severity: "error",
+        module: "reader",
+        action: "complete-otp-session",
+        errorCode: sessionError.code || "READER_SESSION_FAILED",
+        technicalMessage: sessionError.message,
+        userMessage: "Sesi pembaca gagal dibuat.",
+        userId: userId,
+        userEmail: email,
+        userType: "reader",
+        requestPath: "/api/reader/complete-otp",
+      });
+
       return NextResponse.json(
         {
           error:
@@ -495,6 +549,19 @@ export async function POST(
         "Reader login history insert error:",
         historyError
       );
+
+      await logSystemError({
+        severity: "warning",
+        module: "reader",
+        action: "login-history-insert",
+        errorCode: historyError.code || "LOGIN_HISTORY_FAILED",
+        technicalMessage: historyError.message,
+        userMessage: "Riwayat login pembaca gagal dicatat.",
+        userId: userId,
+        userEmail: email,
+        userType: "reader",
+        requestPath: "/api/reader/complete-otp",
+      });
     }
 
     /*
@@ -530,6 +597,19 @@ export async function POST(
       "complete reader OTP failed:",
       error
     );
+
+    await logSystemError({
+        severity: "error",
+        module: "reader",
+        action: "complete-otp-unhandled",
+        errorCode: "READER_COMPLETE_OTP_UNHANDLED",
+        technicalMessage: error instanceof Error ? error.message : String(error),
+        userMessage: "Verifikasi OTP pembaca mengalami gangguan.",
+        userId: null,
+        userEmail: null,
+        userType: "reader",
+        requestPath: "/api/reader/complete-otp",
+      });
 
     return NextResponse.json(
       {

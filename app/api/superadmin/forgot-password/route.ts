@@ -7,6 +7,8 @@ import {
   createAdminClient,
 } from "@/lib/supabase/admin";
 
+import { logSystemError } from "@/lib/system-monitoring/logger";
+
 export const dynamic =
   "force-dynamic";
 
@@ -181,6 +183,19 @@ export async function POST(
         "RESEND_API_KEY atau OTP_FROM_EMAIL belum tersedia."
       );
 
+      await logSystemError({
+        severity: "critical",
+        module: "superadmin",
+        action: "forgot-password-config",
+        errorCode: "RECOVERY_EMAIL_CONFIG_MISSING",
+        technicalMessage: "RESEND_API_KEY atau OTP_FROM_EMAIL belum tersedia.",
+        userMessage: "Layanan pemulihan password tidak tersedia.",
+        userId: null,
+        userEmail: email,
+        userType: "superadmin",
+        requestPath: "/api/superadmin/forgot-password",
+      });
+
       return json(
         {
           error:
@@ -306,6 +321,19 @@ export async function POST(
         errorText
       );
 
+      await logSystemError({
+        severity: "error",
+        module: "superadmin",
+        action: "forgot-password-email",
+        errorCode: "RECOVERY_EMAIL_SEND_FAILED",
+        technicalMessage: `Resend gagal dengan status ${response.status}`,
+        userMessage: "Email pemulihan password gagal dikirim.",
+        userId: null,
+        userEmail: email,
+        userType: "superadmin",
+        requestPath: "/api/superadmin/forgot-password",
+      });
+
       return json(
         {
           error:
@@ -323,6 +351,19 @@ export async function POST(
       "Superadmin forgot password gagal:",
       error
     );
+
+    await logSystemError({
+        severity: "error",
+        module: "superadmin",
+        action: "forgot-password-unhandled",
+        errorCode: "RECOVERY_UNHANDLED",
+        technicalMessage: error instanceof Error ? error.message : String(error),
+        userMessage: "Pemulihan password mengalami gangguan.",
+        userId: null,
+        userEmail: email,
+        userType: "superadmin",
+        requestPath: "/api/superadmin/forgot-password",
+      });
 
     return json({
       ok: true,

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
+import { logSystemError } from "@/lib/system-monitoring/logger";
+
 type RequestedAccess = "writer" | "admin";
 
 function cleanString(value: unknown, max: number) {
@@ -55,6 +57,19 @@ export async function POST(request: Request) {
 
     if (usersError) {
       console.error("writer-register auth lookup:", usersError);
+
+await logSystemError({
+        severity: "error",
+        module: "writer",
+        action: "auth-lookup",
+        errorCode: usersError.code || "AUTH_LOOKUP_FAILED",
+        technicalMessage: usersError.message,
+        userMessage: "Akun pendaftar gagal diperiksa.",
+        userId: null,
+        userEmail: email,
+        userType: "writer",
+        requestPath: "/api/writer-register",
+      });
 
       return NextResponse.json(
         { error: "Akun belum berhasil diperiksa." },
@@ -144,7 +159,20 @@ export async function POST(request: Request) {
             updateError
           );
 
-          return NextResponse.json(
+        await logSystemError({
+            severity: "error",
+            module: "writer",
+            action: "update-pending-auth",
+            errorCode: updateError.code || "AUTH_UPDATE_FAILED",
+            technicalMessage: updateError.message,
+            userMessage: "Akun pending gagal diperbarui.",
+            userId: userId,
+            userEmail: email,
+            userType: "writer",
+            requestPath: "/api/writer-register",
+          });
+
+      return NextResponse.json(
             { error: "Akun pending belum berhasil diperbarui." },
             { status: 500 }
           );
@@ -178,6 +206,19 @@ export async function POST(request: Request) {
         existingAdminError
       );
 
+await logSystemError({
+        severity: "error",
+        module: "writer",
+        action: "admin-role-lookup",
+        errorCode: existingAdminError.code || "ADMIN_LOOKUP_FAILED",
+        technicalMessage: existingAdminError.message,
+        userMessage: "Status akses akun gagal diperiksa.",
+        userId: userId,
+        userEmail: email,
+        userType: "writer",
+        requestPath: "/api/writer-register",
+      });
+
       return NextResponse.json(
         { error: "Status akses akun belum berhasil diperiksa." },
         { status: 500 }
@@ -209,6 +250,19 @@ export async function POST(request: Request) {
         "writer-register application lookup:",
         applicationLookupError
       );
+
+await logSystemError({
+        severity: "error",
+        module: "writer",
+        action: "application-lookup",
+        errorCode: applicationLookupError.code || "APPLICATION_LOOKUP_FAILED",
+        technicalMessage: applicationLookupError.message,
+        userMessage: "Permohonan gagal diperiksa.",
+        userId: userId,
+        userEmail: email,
+        userType: "writer",
+        requestPath: "/api/writer-register",
+      });
 
       return NextResponse.json(
         { error: "Permohonan belum berhasil diperiksa." },
@@ -282,6 +336,19 @@ export async function POST(request: Request) {
         await admin.auth.admin.deleteUser(userId);
       }
 
+await logSystemError({
+        severity: "error",
+        module: "writer",
+        action: "application-save",
+        errorCode: saveError.code || "APPLICATION_SAVE_FAILED",
+        technicalMessage: saveError.message,
+        userMessage: "Permohonan gagal disimpan.",
+        userId: userId,
+        userEmail: email,
+        userType: "writer",
+        requestPath: "/api/writer-register",
+      });
+
       return NextResponse.json(
         {
           error:
@@ -298,6 +365,19 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error("writer-register route:", error);
+
+    await logSystemError({
+            severity: "error",
+            module: "writer",
+            action: "register-unhandled",
+            errorCode: "WRITER_REGISTER_UNHANDLED",
+            technicalMessage: error instanceof Error ? error.message : String(error),
+            userMessage: "Permohonan akses mengalami gangguan.",
+            userId: null,
+            userEmail: null,
+            userType: "writer",
+            requestPath: "/api/writer-register",
+          });
 
     return NextResponse.json(
       { error: "Permohonan belum berhasil diproses." },

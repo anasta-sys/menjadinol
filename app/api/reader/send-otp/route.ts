@@ -39,6 +39,8 @@ function hashOtp(
 }
 
 
+import { logSystemError } from "@/lib/system-monitoring/logger";
+
 export async function POST(
   request: NextRequest
 ) {
@@ -105,6 +107,19 @@ export async function POST(
         "Missing OTP env:",
         missingEnv
       );
+
+      await logSystemError({
+        severity: "critical",
+        module: "reader",
+        action: "send-otp-config",
+        errorCode: "OTP_ENV_MISSING",
+        technicalMessage: `Missing env: ${missingEnv.join(", ")}`,
+        userMessage: "Konfigurasi OTP pembaca tidak lengkap.",
+        userId: null,
+        userEmail: null,
+        userType: "reader",
+        requestPath: "/api/reader/send-otp",
+      });
 
       return NextResponse.json(
         {
@@ -226,18 +241,37 @@ export async function POST(
           userId
         )
         .maybeSingle();
-
-
     if (readerError) {
       console.error(
         "Reader lookup error:",
         readerError
       );
 
+      await logSystemError({
+        severity: "error",
+        module: "reader",
+        action: "send-otp-reader-lookup",
+        errorCode:
+          readerError.code ||
+          "READER_LOOKUP_FAILED",
+        technicalMessage:
+          readerError.message,
+        userMessage:
+          "Terjadi gangguan saat memeriksa akun pembaca.",
+        userId,
+        userEmail: email,
+        userType: "reader",
+        requestPath:
+          "/api/reader/send-otp",
+        metadata: {
+          source: "reader-login",
+        },
+      });
+
       return NextResponse.json(
         {
           error:
-            `Profil pembaca gagal diperiksa: ${readerError.message}`,
+            "Terjadi gangguan saat memeriksa akun. Silakan coba lagi.",
         },
         {
           status: 500,
@@ -375,6 +409,19 @@ export async function POST(
         }
       );
 
+      await logSystemError({
+        severity: "error",
+        module: "reader",
+        action: "send-otp-insert",
+        errorCode: insertError.code || "OTP_INSERT_FAILED",
+        technicalMessage: insertError.message,
+        userMessage: "OTP pembaca gagal dibuat.",
+        userId: userId,
+        userEmail: email,
+        userType: "reader",
+        requestPath: "/api/reader/send-otp",
+      });
+
       return NextResponse.json(
         {
           error:
@@ -480,6 +527,19 @@ export async function POST(
         emailError
       );
 
+      await logSystemError({
+        severity: "error",
+        module: "reader",
+        action: "send-otp-email",
+        errorCode: "OTP_EMAIL_FAILED",
+        technicalMessage: emailError.message,
+        userMessage: "Email OTP pembaca gagal dikirim.",
+        userId: userId,
+        userEmail: email,
+        userType: "reader",
+        requestPath: "/api/reader/send-otp",
+      });
+
       return NextResponse.json(
         {
           error:
@@ -538,6 +598,18 @@ export async function POST(
       error
     );
 
+    await logSystemError({
+        severity: "error",
+        module: "reader",
+        action: "send-otp-unhandled",
+        errorCode: "READER_SEND_OTP_UNHANDLED",
+        technicalMessage: error instanceof Error ? error.message : String(error),
+        userMessage: "Terjadi gangguan saat mengirim OTP pembaca.",
+        userId: null,
+        userEmail: null,
+        userType: "reader",
+        requestPath: "/api/reader/send-otp",
+      });
 
     return NextResponse.json(
       {

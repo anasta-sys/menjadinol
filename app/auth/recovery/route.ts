@@ -5,6 +5,8 @@ import {
 
 import { createClient } from "@/lib/supabase/server";
 
+import { logSystemError } from "@/lib/system-monitoring/logger";
+
 export const dynamic = "force-dynamic";
 
 export async function GET(
@@ -85,6 +87,19 @@ export async function GET(
       "Recovery gagal:",
       error
     );
+
+    await logSystemError({
+            severity: "error",
+            module: "reader",
+            action: "recovery-unhandled",
+            errorCode: "RECOVERY_UNHANDLED",
+            technicalMessage: error instanceof Error ? error.message : String(error),
+            userMessage: "Pemulihan akun mengalami gangguan.",
+            userId: null,
+            userEmail: null,
+            userType: "reader",
+            requestPath: "/auth/recovery",
+          });
 
     const errorUrl =
       new URL(
