@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+﻿import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -74,25 +74,39 @@ export default async function PublicEntryPage({
 }) {
   const supabase = await createClient();
 
-  let isAdmin = false;
+  let adminSession: Awaited<ReturnType<typeof requireAdminSession>> | null = null;
 
   try {
-    const adminSession = await requireAdminSession();
-    isAdmin = adminSession.isAdmin;
+    adminSession = await requireAdminSession();
   } catch {
-    isAdmin = false;
+    adminSession = null;
   }
 
-  const { data: entry, error: entryError } = await supabase
+  const entryDb = adminSession
+    ? createAdminClient()
+    : supabase;
+
+  const { data: entry, error: entryError } = await entryDb
     .from("content_folder_entries")
     .select(
       "id,folder_id,title,slug,excerpt,body,table_data,attachment_path,attachment_name,attachment_mime,attachment_size,status,created_at,updated_at,writer_location,author_id"
     )
     .eq("slug", slug)
-    .eq("status", "published")
     .maybeSingle<Entry>();
 
   if (entryError || !entry) {
+    notFound();
+  }
+
+  const isAdmin = Boolean(adminSession?.isAdmin);
+
+  const isWriterOwner =
+    adminSession?.role === "writer" &&
+    entry.author_id === adminSession.userId;
+
+  const canManageEntry = isAdmin || isWriterOwner;
+
+  if (entry.status !== "published" && !canManageEntry) {
     notFound();
   }
 
@@ -190,7 +204,7 @@ export default async function PublicEntryPage({
             &larr; Kembali ke {folder.title}
           </Link>
 
-          <EntryContent entry={publicEntry} isAdmin={isAdmin} />
+          <EntryContent entry={publicEntry} isAdmin={canManageEntry} />
 
           <Link
             href={parentPath(section, folder.slug)}
@@ -204,6 +218,7 @@ export default async function PublicEntryPage({
     </main>
   );
 }
+
 
 
 
