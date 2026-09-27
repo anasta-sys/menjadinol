@@ -1,4 +1,6 @@
-﻿import PublicEntryPage from "@/app/components/PublicEntryPage";
+﻿import FolderPublicPage from "@/app/components/FolderPublicPage";
+
+export const dynamic = "force-dynamic";
 
 export default async function Page({
   params,
@@ -8,8 +10,8 @@ export default async function Page({
   const { slug } = await params;
 
   return (
-    <PublicEntryPage
-      section="cerita-makna"
+    <FolderPublicPage
+      section="artikel"
       slug={slug}
     />
   );

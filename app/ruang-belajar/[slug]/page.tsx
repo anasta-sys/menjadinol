@@ -1,13 +1,18 @@
-import { redirect } from "next/navigation";
+﻿import FolderPublicPage from "@/app/components/FolderPublicPage";
+
+export const dynamic = "force-dynamic";
 
 export default async function Page({
   params,
 }: {
-  params: Promise<{ slug:string }>;
+  params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
 
-  redirect(
-    `/ruang-belajar/tema/${encodeURIComponent(slug)}`
+  return (
+    <FolderPublicPage
+      section="ruang-belajar"
+      slug={slug}
+    />
   );
 }

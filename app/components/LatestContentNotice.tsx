@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
 type LatestEntry = {
@@ -10,6 +10,7 @@ type LatestEntry = {
 
 type ContentFolder = {
   section: string;
+  slug: string;
 };
 
 function publicSection(section: string) {
@@ -36,7 +37,7 @@ export default async function LatestContentNotice() {
 
   const { data: folder, error: folderError } = await supabase
     .from("content_folders")
-    .select("section")
+    .select("section,slug")
     .eq("id", latestEntry.folder_id)
     .eq("is_published", true)
     .maybeSingle<ContentFolder>();
@@ -46,7 +47,10 @@ export default async function LatestContentNotice() {
   }
 
   const section = publicSection(folder.section);
-  const href = `/${section}/${encodeURIComponent(latestEntry.slug)}`;
+  const href =
+    folder.section === "ruang-belajar"
+      ? `/ruang-belajar/${encodeURIComponent(folder.slug)}/${encodeURIComponent(latestEntry.slug)}`
+      : `/${section}/${encodeURIComponent(latestEntry.slug)}`;
 
   return (
     <Link
@@ -70,3 +74,6 @@ export default async function LatestContentNotice() {
     </Link>
   );
 }
+
+
+

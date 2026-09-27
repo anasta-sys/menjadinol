@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import SectionFolderAdminActions from "@/app/components/SectionFolderAdminActions";
 
@@ -228,6 +228,7 @@ export default async function SectionFolders({
     </section>
   );
 }
+
 
 
 

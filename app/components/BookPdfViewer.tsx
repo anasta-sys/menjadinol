@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
   forwardRef,
@@ -146,8 +146,13 @@ export default function BookPdfViewer({
 
         if (!active) return;
 
+        const renderedPages: PdfPage[] = [];
+
+
         for (
+
           let pageNumber = 1;
+
           pageNumber <= pdfDocument.numPages;
           pageNumber += 1
         ) {
@@ -185,14 +190,7 @@ export default function BookPdfViewer({
 
           const imageUrl = URL.createObjectURL(blob);
           objectUrlsRef.current.push(imageUrl);
-
-          if (active) {
-            setPages((previous) => [
-              ...previous,
-              { pageNumber, imageUrl },
-            ]);
-            setLoading(false);
-          }
+          renderedPages.push({ pageNumber, imageUrl });
 
           page.cleanup?.();
 
@@ -202,6 +200,7 @@ export default function BookPdfViewer({
         }
 
         if (active) {
+          setPages(renderedPages);
           setRenderDone(true);
           setLoading(false);
         }
@@ -588,3 +587,5 @@ export default function BookPdfViewer({
     </section>
   );
 }
+
+

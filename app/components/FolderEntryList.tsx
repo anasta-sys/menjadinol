@@ -33,26 +33,10 @@ type Entry = {
 
 function formatWib(value: string | null | undefined) {
   if (!value) return "";
-
   const date = new Date(value);
-
-  const tanggal = new Intl.DateTimeFormat("id-ID", {
-    timeZone: "Asia/Jakarta",
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  }).format(date);
-
-  const jam = new Intl.DateTimeFormat("id-ID", {
-    timeZone: "Asia/Jakarta",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  })
-    .format(date)
-    .replace(":", ".");
-
-  return `${tanggal} · ${jam} WIB`;
+  const tanggal = new Intl.DateTimeFormat("id-ID", { timeZone: "Asia/Jakarta", day: "2-digit", month: "long", year: "numeric" }).format(date);
+  const jam = new Intl.DateTimeFormat("id-ID", { timeZone: "Asia/Jakarta", hour: "2-digit", minute: "2-digit", hour12: false }).format(date).replace(":", ".");
+  return `${tanggal} - ${jam} WIB`;
 }
 
 function formatBytes(value: number | null | undefined) {
@@ -375,16 +359,12 @@ export function EntryContent({
         "Penulis belum tercatat"}
     </strong>
 
-    {entry.created_at
-      ? ` · ${formatWib(
-          entry.created_at
-        )}`
-      : ""}
+    {entry.created_at && (<><span>&nbsp;&middot;&nbsp;</span>{formatWib(entry.created_at)}</>)}
   </span>
 
   {entry.writer_location && (
     <span>
-      📍 {entry.writer_location}
+      Lokasi: {entry.writer_location}
     </span>
   )}
 
@@ -487,7 +467,7 @@ export function EntryContent({
           TABEL
          ============================== */}
 
-      {headers.length > 0 && (
+      {headers.length > 0 && !isPdf && (
         <div className="public-content-table-wrap">
           <table className="public-content-table">
             <thead>
@@ -710,7 +690,7 @@ export default function FolderEntryList({
           className="entry-list-back"
           onClick={() => setSelectedId(null)}
         >
-          ← kembali ke daftar tulisan
+          â† kembali ke daftar tulisan
         </button>
 
         <EntryContent
@@ -762,7 +742,7 @@ export default function FolderEntryList({
 
               <span>
                 {entry.author_name || "Penulis belum tercatat"}
-                {entry.created_at ? ` · ${formatWib(entry.created_at)}` : ""}
+                {entry.created_at && (<><span>&nbsp;&middot;&nbsp;</span>{formatWib(entry.created_at)}</>)}
               </span>
             </span>
 
@@ -770,7 +750,7 @@ export default function FolderEntryList({
               className="entry-index-arrow"
               aria-hidden="true"
             >
-              →
+              &rarr;
             </span>
           </button>
         ))}
@@ -778,6 +758,7 @@ export default function FolderEntryList({
     </section>
   );
 }
+
 
 
 
