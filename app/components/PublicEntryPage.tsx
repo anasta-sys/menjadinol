@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { MATERIAL_BUCKET } from "@/lib/material-attachments";
@@ -37,6 +38,12 @@ function publicSectionMatches(databaseSection: string, publicSection: string) {
   return databaseSection === publicSection;
 }
 
+function parentPath(section: string, folderSlug: string) {
+  if (section === "perjalanan") return `/perjalanan/${folderSlug}`;
+  if (section === "cerita-makna") return `/cerita-makna/${folderSlug}`;
+  if (section === "ruang-belajar") return `/ruang-belajar/${folderSlug}`;
+  return `/${section}/${folderSlug}`;
+}
 function sectionLabel(section: string) {
   switch (section) {
     case "cerita-makna":
@@ -91,7 +98,7 @@ export default async function PublicEntryPage({
 
   const { data: folder, error: folderError } = await supabase
     .from("content_folders")
-    .select("id,section,slug,is_published")
+    .select("id,section,title,slug,is_published")
     .eq("id", entry.folder_id)
     .eq("is_published", true)
     .maybeSingle();
@@ -175,7 +182,23 @@ export default async function PublicEntryPage({
             boxSizing: "border-box",
           }}
         >
+                    <Link
+            href={parentPath(section, folder.slug)}
+            className="back-link"
+            style={{ display: "inline-block", marginBottom: "24px" }}
+          >
+            &larr; Kembali ke {folder.title}
+          </Link>
+
           <EntryContent entry={publicEntry} isAdmin={isAdmin} />
+
+          <Link
+            href={parentPath(section, folder.slug)}
+            className="back-link"
+            style={{ display: "inline-block", marginTop: "32px" }}
+          >
+            &larr; Kembali ke {folder.title}
+          </Link>
         </div>
       </div>
     </main>
