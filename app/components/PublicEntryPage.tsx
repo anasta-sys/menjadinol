@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { MATERIAL_BUCKET } from "@/lib/material-attachments";
+import { requireAdminSession } from "@/lib/admin-auth";
 import { EntryContent } from "@/app/components/FolderEntryList";
 import type { ContentTableData } from "@/app/components/ContentTableBuilder";
 
@@ -65,6 +66,15 @@ export default async function PublicEntryPage({
   folderSlug?: string;
 }) {
   const supabase = await createClient();
+
+  let isAdmin = false;
+
+  try {
+    const adminSession = await requireAdminSession();
+    isAdmin = adminSession.isAdmin;
+  } catch {
+    isAdmin = false;
+  }
 
   const { data: entry, error: entryError } = await supabase
     .from("content_folder_entries")
@@ -165,7 +175,7 @@ export default async function PublicEntryPage({
             boxSizing: "border-box",
           }}
         >
-          <EntryContent entry={publicEntry} isAdmin={false} />
+          <EntryContent entry={publicEntry} isAdmin={isAdmin} />
         </div>
       </div>
     </main>
