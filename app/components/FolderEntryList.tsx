@@ -690,7 +690,7 @@ export default function FolderEntryList({
           className="entry-list-back"
           onClick={() => setSelectedId(null)}
         >
-          â† kembali ke daftar tulisan
+          Kembali ke daftar tulisan
         </button>
 
         <EntryContent
