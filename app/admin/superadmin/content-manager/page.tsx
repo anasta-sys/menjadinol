@@ -27,6 +27,7 @@ export default async function ContentManagerPage() {
 
   const { data: aal } =
     await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+
   if (aal?.currentLevel !== "aal2") redirect("/login");
 
   const currentUserId = claims.claims.sub as string;
@@ -41,26 +42,71 @@ export default async function ContentManagerPage() {
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
   if (!url || !serviceRoleKey) {
     throw new Error("Konfigurasi server Supabase belum lengkap.");
   }
 
   const admin = createAdminClient(url, serviceRoleKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
   });
 
-  const { data: folders, error } = await admin
+  const { data: folders, error: foldersError } = await admin
     .from("content_folders")
     .select("id,section");
 
-  if (error) throw error;
+  if (foldersError) throw foldersError;
 
-  const counts = SECTIONS.map((section) => ({
-    ...section,
-    folderCount: (folders ?? []).filter(
+  const { data: entries, error: entriesError } = await admin
+    .from("content_folder_entries")
+    .select("id,title,status,folder_id")
+    .order("created_at", { ascending: false })
+    .limit(5000);
+
+  if (entriesError) throw entriesError;
+
+  const folderList = folders ?? [];
+  const entryList = entries ?? [];
+
+  const totalFolders = folderList.length;
+  const totalEntries = entryList.length;
+
+  const counts = SECTIONS.map((section) => {
+    const sectionFolders = folderList.filter(
       (folder) => folder.section === section.dbSection
-    ).length,
-  }));
+    );
 
-  return <ContentManager sections={counts} />;
+    const folderIds = new Set(
+      sectionFolders.map((folder) => folder.id)
+    );
+
+    const sectionEntries = entryList
+      .filter((entry) => folderIds.has(entry.folder_id))
+      .map((entry) => ({
+        id: entry.id,
+        title: entry.title,
+        status:
+          entry.status === "published" ||
+          entry.status === "review" ||
+          entry.status === "draft"
+            ? entry.status
+            : "draft",
+      }));
+
+    return {
+      ...section,
+      folderCount: sectionFolders.length,
+      entries: sectionEntries,
+    };
+  });
+  return (
+    <ContentManager
+      sections={counts}
+      totalFolders={totalFolders}
+      totalEntries={totalEntries}
+    />
+  );
 }

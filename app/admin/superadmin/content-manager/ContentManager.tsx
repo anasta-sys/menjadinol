@@ -1,13 +1,22 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import styles from "./ContentManager.module.css";
+
+type EntryStatus = "published" | "draft" | "review";
+
+type SectionEntry = {
+  id: string;
+  title: string;
+  status: EntryStatus;
+};
 
 type SectionItem = {
   slug: string;
   dbSection: string;
   label: string;
   folderCount: number;
+  entries: SectionEntry[];
 };
 
 function SectionIcon({ slug }: { slug: string }) {
@@ -77,8 +86,12 @@ function SectionIcon({ slug }: { slug: string }) {
 
 export default function ContentManager({
   sections,
+  totalFolders,
+  totalEntries,
 }: {
   sections: SectionItem[];
+  totalFolders: number;
+  totalEntries: number;
 }) {
   const descriptions: Record<string, string> = {
     tentang: "Identitas, filosofi, dan dasar perjalanan Menjadi Nol.",
@@ -121,9 +134,37 @@ export default function ContentManager({
             </h2>
           </div>
 
-          <span className={styles.total}>
-            {sections.length} bagian
-          </span>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-end",
+              gap: 8,
+              flexWrap: "wrap",
+            }}
+          >
+            <span className={styles.total}>
+              {sections.length} bagian
+            </span>
+
+            <span className={styles.total}>
+              {totalFolders} folder
+            </span>
+
+            <span className={styles.total}>
+              {totalEntries} tulisan
+            </span>
+
+            <Link
+              href="/admin/superadmin/content-manager/rekap"
+              className={styles.total}
+              style={{ textDecoration: "none" }}
+            >
+              Rekap Semua Konten ›
+            </Link>
+
+
+          </div>
         </div>
 
         <div className={styles.grid}>
@@ -155,10 +196,25 @@ export default function ContentManager({
                     {descriptions[section.slug]}
                   </p>
 
-                  <span className={styles.folder}>
-                    <span className={styles.folderIcon}>▣</span>
-                    {section.folderCount} folder
-                  </span>
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: 8,
+                      flexWrap: "wrap",
+                      marginTop: 12,
+                    }}
+                  >
+                    <span className={styles.folder}>
+                      <span className={styles.folderIcon}>▣</span>
+                      {section.folderCount} folder
+                    </span>
+
+                    <span className={styles.folder}>
+                      {section.entries.length} tulisan
+                    </span>
+                  </div>
+
+
                 </div>
 
                 <div className={styles.action}>

@@ -4,6 +4,7 @@ import {
   publishEntry as publishEntryOriginal,
   unpublishEntry as unpublishEntryOriginal,
   deleteEntry as deleteEntryOriginal,
+  reviewEntry as reviewEntryOriginal,
 } from "../actions";
 
 // Next.js "use server" mengharuskan export berupa async function.
@@ -18,4 +19,8 @@ export async function unpublishEntry(entryId: string) {
 
 export async function deleteEntry(entryId: string) {
   return await deleteEntryOriginal(entryId);
+}
+
+export async function reviewEntry(entryId: string) {
+  return await reviewEntryOriginal(entryId);
 }

@@ -143,6 +143,34 @@ export async function unpublishEntry(entryId: string) {
   return { success: true };
 }
 
+export async function reviewEntry(entryId: string) {
+  if (!entryId) {
+    throw new Error("ID tulisan tidak valid.");
+  }
+
+  const { admin, userId } =
+    await getSecureAdminClient();
+
+  const meta = await getEntryMeta(admin, entryId);
+
+  const { error } = await admin
+    .from("content_folder_entries")
+    .update({
+      status: "review",
+      published_at: null,
+      updated_by: userId,
+    })
+    .eq("id", entryId);
+
+  if (error) {
+    throw new Error(
+      `Gagal mengubah tulisan menjadi Review: ${error.message}`
+    );
+  }
+
+  revalidateAll(meta.section);
+}
+
 export async function deleteEntry(entryId: string) {
   if (!entryId) {
     throw new Error("ID tulisan tidak valid.");

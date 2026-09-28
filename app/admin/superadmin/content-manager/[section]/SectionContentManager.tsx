@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { publishEntry, unpublishEntry, deleteEntry } from "../actions";
+import { publishEntry, unpublishEntry,
+  reviewEntry, deleteEntry } from "../actions";
 
 
 function SectionLeaf({ slug, size = 76 }: { slug: string; size?: number }) {
@@ -158,9 +159,7 @@ export default function SectionContentManager({
   const [preview, setPreview] = useState<ContentEntry | null>(null);
   const [message, setMessage] = useState("");
 
-  const [publishedPage, setPublishedPage] = useState(1);
-  const [draftPage, setDraftPage] = useState(1);
-  const [reviewPage, setReviewPage] = useState(1);
+  const [folderPages, setFolderPages] = useState<Record<string, number>>({});
 
   const PAGE_SIZE = 10;
 
@@ -199,116 +198,179 @@ export default function SectionContentManager({
     });
   }, [entries, folderId, query, authorMap]);
 
-  const publishedEntries = filtered.filter(
-    (entry) => entry.status === "published"
-  );
+  const visibleFolders = useMemo(() => {
+    return folders
+      .map((folder) => ({
+        ...folder,
+        entries: filtered.filter(
+          (entry) => entry.folder_id === folder.id
+        ),
+      }))
+      .filter((folder) => {
+        if (folderId !== "all" && folder.id !== folderId) {
+          return false;
+        }
 
-  const draftEntries = filtered.filter(
-    (entry) => entry.status === "draft"
-  );
+        if (query.trim()) {
+          return folder.entries.length > 0;
+        }
 
-  const reviewEntries = filtered.filter(
-    (entry) => entry.status === "review"
-  );
+        return true;
+      });
+  }, [folders, filtered, folderId, query]);
 
-  function paginate(items: ContentEntry[], requestedPage: number) {
-    const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
-    const safePage = Math.min(Math.max(1, requestedPage), totalPages);
-    const pageStart = (safePage - 1) * PAGE_SIZE;
+  function resetPages() {
+    setFolderPages({});
+  }
+
+  function statusLabel(status: ContentEntry["status"]) {
+    if (status === "published") return "Published";
+    if (status === "review") return "Review";
+    return "Draft";
+  }
+
+  function statusStyle(status: ContentEntry["status"]) {
+    if (status === "published") {
+      return {
+        color: "#17663f",
+        background: "#eef7f1",
+        border: "1px solid rgba(23,102,63,.14)",
+      };
+    }
+
+    if (status === "review") {
+      return {
+        color: "#526d88",
+        background: "#f0f4f8",
+        border: "1px solid rgba(82,109,136,.14)",
+      };
+    }
 
     return {
-      totalPages,
-      safePage,
-      pageStart,
-      items: items.slice(pageStart, pageStart + PAGE_SIZE),
+      color: "#9a6b0b",
+      background: "#fbf5e7",
+      border: "1px solid rgba(169,120,19,.14)",
     };
   }
 
-  const published = paginate(publishedEntries, publishedPage);
-  const draft = paginate(draftEntries, draftPage);
-  const review = paginate(reviewEntries, reviewPage);
-
-  function resetPages() {
-    setPublishedPage(1);
-    setDraftPage(1);
-    setReviewPage(1);
+  function setFolderPage(folderIdValue: string, page: number) {
+    setFolderPages((current) => ({
+      ...current,
+      [folderIdValue]: page,
+    }));
   }
 
-  function renderPagination(
-    totalItems: number,
-    totalPages: number,
-    safePage: number,
-    setPage: (page: number) => void,
-    label: string
+  function renderFolderPagination(
+    folderIdValue: string,
+    totalItems: number
   ) {
-    if (totalItems <= PAGE_SIZE) return null;
+    const totalPages = Math.max(
+      1,
+      Math.ceil(totalItems / PAGE_SIZE)
+    );
 
-    const buttonStyle = (active = false) => ({
-      width: 34,
-      minWidth: 34,
-      height: 34,
-      minHeight: 34,
-      padding: 0,
-      borderRadius: 9,
-      border: active
-        ? "1px solid #17663f"
-        : "1px solid #dfe3dc",
-      background: active ? "#17663f" : "#fff",
-      color: active ? "#fff" : "#465b4c",
-      fontWeight: 800,
-      cursor: "pointer",
-    });
+    if (totalPages <= 1) return null;
+
+    const requested = folderPages[folderIdValue] ?? 1;
+    const safePage = Math.min(
+      Math.max(1, requested),
+      totalPages
+    );
 
     return (
       <div
-        aria-label={`Navigasi halaman ${label}`}
         style={{
           display: "flex",
-          alignItems: "center",
           justifyContent: "center",
+          alignItems: "center",
           gap: 6,
           flexWrap: "wrap",
-          marginTop: 16,
-          paddingTop: 14,
+          padding: "14px 16px",
           borderTop: "1px solid #eef0eb",
         }}
       >
         <button
           type="button"
-          onClick={() => setPage(Math.max(1, safePage - 1))}
           disabled={safePage === 1}
+          onClick={() =>
+            setFolderPage(
+              folderIdValue,
+              Math.max(1, safePage - 1)
+            )
+          }
           style={{
-            ...buttonStyle(),
-            cursor: safePage === 1 ? "not-allowed" : "pointer",
-            opacity: safePage === 1 ? .4 : 1,
+            width: 34,
+            height: 34,
+            borderRadius: 9,
+            border: "1px solid #dfe3dc",
+            background: "#fff",
+            color: "#465b4c",
+            fontWeight: 800,
+            cursor:
+              safePage === 1 ? "not-allowed" : "pointer",
+            opacity: safePage === 1 ? 0.4 : 1,
           }}
         >
           ‹
         </button>
 
-        {Array.from({ length: totalPages }, (_, index) => index + 1).map(
-          (pageNumber) => (
-            <button
-              key={pageNumber}
-              type="button"
-              onClick={() => setPage(pageNumber)}
-              aria-current={safePage === pageNumber ? "page" : undefined}
-              style={buttonStyle(safePage === pageNumber)}
-            >
-              {pageNumber}
-            </button>
-          )
-        )}
+        {Array.from(
+          { length: totalPages },
+          (_, index) => index + 1
+        ).map((pageNumber) => (
+          <button
+            key={pageNumber}
+            type="button"
+            onClick={() =>
+              setFolderPage(folderIdValue, pageNumber)
+            }
+            style={{
+              width: 34,
+              height: 34,
+              borderRadius: 9,
+              border:
+                safePage === pageNumber
+                  ? "1px solid #17663f"
+                  : "1px solid #dfe3dc",
+              background:
+                safePage === pageNumber
+                  ? "#17663f"
+                  : "#fff",
+              color:
+                safePage === pageNumber
+                  ? "#fff"
+                  : "#465b4c",
+              fontWeight: 800,
+              cursor: "pointer",
+            }}
+          >
+            {pageNumber}
+          </button>
+        ))}
 
         <button
           type="button"
-          onClick={() => setPage(Math.min(totalPages, safePage + 1))}
           disabled={safePage === totalPages}
+          onClick={() =>
+            setFolderPage(
+              folderIdValue,
+              Math.min(totalPages, safePage + 1)
+            )
+          }
           style={{
-            ...buttonStyle(),
+            width: 34,
+            height: 34,
+            borderRadius: 9,
+            border: "1px solid #dfe3dc",
+            background: "#fff",
+            color: "#465b4c",
+            fontWeight: 800,
             cursor:
-              safePage === totalPages ? "not-allowed" : "pointer",
-            opacity: safePage === totalPages ? .4 : 1,
+              safePage === totalPages
+                ? "not-allowed"
+                : "pointer",
+            opacity:
+              safePage === totalPages ? 0.4 : 1,
           }}
         >
           ›
@@ -317,21 +379,81 @@ export default function SectionContentManager({
     );
   }
 
-  function renderStatusSection(
-    label: string,
-    items: ContentEntry[],
-    paginated: {
-      totalPages: number;
-      safePage: number;
-      pageStart: number;
-      items: ContentEntry[];
-    },
-    setPage: (page: number) => void,
-    accent: string,
-    softBackground: string
+  function changeStatus(
+    entry: ContentEntry,
+    nextStatus: "draft" | "review" | "published"
   ) {
+    if (entry.status === nextStatus || isPending) return;
+
+    const nextLabel =
+      nextStatus === "published"
+        ? "Published"
+        : nextStatus === "review"
+          ? "Review"
+          : "Draft";
+
+    if (
+      !window.confirm(
+        `Ubah status tulisan "${entry.title}" menjadi ${nextLabel}?`
+      )
+    ) {
+      return;
+    }
+
+    setMessage("");
+
+    startTransition(async () => {
+      try {
+        if (nextStatus === "published") {
+          await publishEntry(entry.id);
+        } else if (nextStatus === "review") {
+          await reviewEntry(entry.id);
+        } else {
+          await unpublishEntry(entry.id);
+        }
+
+        setMessage(
+          `"${entry.title}" berhasil diubah menjadi ${nextLabel}.`
+        );
+
+        router.refresh();
+      } catch (e) {
+        setMessage(
+          e instanceof Error
+            ? e.message
+            : "Gagal mengubah status tulisan."
+        );
+      }
+    });
+  }
+
+  function renderFolderSection(folder: ContentFolder) {
+    const items = filtered.filter(
+      (entry) => entry.folder_id === folder.id
+    );
+
+    const totalPages = Math.max(
+      1,
+      Math.ceil(items.length / PAGE_SIZE)
+    );
+
+    const requestedPage = folderPages[folder.id] ?? 1;
+
+    const safePage = Math.min(
+      Math.max(1, requestedPage),
+      totalPages
+    );
+
+    const pageStart = (safePage - 1) * PAGE_SIZE;
+
+    const pageItems = items.slice(
+      pageStart,
+      pageStart + PAGE_SIZE
+    );
+
     return (
       <section
+        key={folder.id}
         style={{
           marginTop: 18,
           border: "1px solid rgba(70,91,76,.12)",
@@ -343,41 +465,22 @@ export default function SectionContentManager({
         <div
           style={{
             display: "flex",
-            alignItems: "center",
             justifyContent: "space-between",
+            alignItems: "center",
             gap: 12,
-            padding: "14px 16px",
-            background: softBackground,
+            padding: "15px 16px",
+            background: "#f4f7f2",
             borderBottom: "1px solid rgba(70,91,76,.10)",
           }}
         >
-          <div
+          <strong
             style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
+              color: "#294b37",
+              fontSize: 14,
             }}
           >
-            <span
-              aria-hidden="true"
-              style={{
-                width: 9,
-                height: 9,
-                borderRadius: "50%",
-                background: accent,
-              }}
-            />
-
-            <strong
-              style={{
-                color: "#294b37",
-                fontSize: 13,
-                letterSpacing: ".08em",
-              }}
-            >
-              {label}
-            </strong>
-          </div>
+            {folder.title}
+          </strong>
 
           <span
             style={{
@@ -388,57 +491,332 @@ export default function SectionContentManager({
               color: "#5c6f63",
               fontSize: 11,
               fontWeight: 800,
+              whiteSpace: "nowrap",
             }}
           >
             {items.length} konten
           </span>
         </div>
 
-        {renderStatusSection(
-          "PUBLISHED",
-          publishedEntries,
-          published,
-          setPublishedPage,
-          "#17663f",
-          "#eef7f1"
-        )}
+        {items.length === 0 ? (
+          <div
+            style={{
+              padding: "22px 16px",
+              textAlign: "center",
+              opacity: 0.55,
+              fontSize: 13,
+            }}
+          >
+            Belum ada tulisan dalam fitur ini.
+          </div>
+        ) : (
+          <>
+            <div style={{ overflowX: "auto" }}>
+              <table
+                style={{
+                  width: "100%",
+                  minWidth: 940,
+                  borderCollapse: "collapse",
+                }}
+              >
+                <thead>
+                  <tr>
+                    <th
+                      style={{
+                        width: 54,
+                        padding: "11px 14px",
+                        textAlign: "left",
+                        borderBottom: "1px solid #eef0eb",
+                        fontSize: 11,
+                        opacity: 0.58,
+                      }}
+                    >
+                      No.
+                    </th>
 
-        {renderStatusSection(
-          "DRAFT",
-          draftEntries,
-          draft,
-          setDraftPage,
-          "#a97813",
-          "#fbf5e7"
-        )}
+                    <th
+                      style={{
+                        padding: "11px 14px",
+                        textAlign: "left",
+                        borderBottom: "1px solid #eef0eb",
+                        fontSize: 11,
+                        opacity: 0.58,
+                      }}
+                    >
+                      Judul
+                    </th>
 
-        {renderStatusSection(
-          "REVIEW",
-          reviewEntries,
-          review,
-          setReviewPage,
-          "#526d88",
-          "#f0f4f8"
+                    <th
+                      style={{
+                        width: 120,
+                        padding: "11px 14px",
+                        textAlign: "left",
+                        borderBottom: "1px solid #eef0eb",
+                        fontSize: 11,
+                        opacity: 0.58,
+                      }}
+                    >
+                      Status
+                    </th>
+
+                    <th
+                      style={{
+                        width: 470,
+                        padding: "11px 14px",
+                        textAlign: "left",
+                        borderBottom: "1px solid #eef0eb",
+                        fontSize: 11,
+                        opacity: 0.58,
+                      }}
+                    >
+                      Aksi
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {pageItems.map((entry, index) => {
+                    const activeStatusStyle =
+                      statusStyle(entry.status);
+
+                    return (
+                      <tr key={entry.id}>
+                        <td
+                          style={{
+                            padding: "13px 14px",
+                            borderBottom:
+                              "1px solid #f1f2ee",
+                            verticalAlign: "top",
+                            fontSize: 12,
+                            opacity: 0.6,
+                          }}
+                        >
+                          {pageStart + index + 1}
+                        </td>
+
+                        <td
+                          style={{
+                            padding: "13px 14px",
+                            borderBottom:
+                              "1px solid #f1f2ee",
+                            verticalAlign: "top",
+                          }}
+                        >
+                          <strong
+                            style={{
+                              display: "block",
+                              color: "#294b37",
+                              fontSize: 13,
+                            }}
+                          >
+                            {entry.title}
+                          </strong>
+
+                          <span
+                            style={{
+                              display: "block",
+                              marginTop: 4,
+                              opacity: 0.48,
+                              fontSize: 11,
+                            }}
+                          >
+                            {entry.slug}
+                          </span>
+                        </td>
+
+                        <td
+                          style={{
+                            padding: "13px 14px",
+                            borderBottom:
+                              "1px solid #f1f2ee",
+                            verticalAlign: "top",
+                          }}
+                        >
+                          <span
+                            style={{
+                              display: "inline-flex",
+                              padding: "5px 9px",
+                              borderRadius: 999,
+                              fontSize: 11,
+                              fontWeight: 800,
+                              ...activeStatusStyle,
+                            }}
+                          >
+                            {statusLabel(entry.status)}
+                          </span>
+                        </td>
+
+                        <td
+                          style={{
+                            padding: "10px 14px",
+                            borderBottom:
+                              "1px solid #f1f2ee",
+                            verticalAlign: "top",
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: "flex",
+                              gap: 6,
+                              flexWrap: "wrap",
+                            }}
+                          >
+                            <button
+                              type="button"
+                              onClick={() => setPreview(entry)}
+                              disabled={isPending}
+                              style={{
+                                minHeight: 34,
+                                padding: "0 10px",
+                                borderRadius: 9,
+                                border:
+                                  "1px solid rgba(70,91,76,.18)",
+                                background: "#fff",
+                                color: "#365441",
+                                fontSize: 11,
+                                fontWeight: 700,
+                                cursor: "pointer",
+                              }}
+                            >
+                              Preview
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                changeStatus(entry, "draft")
+                              }
+                              disabled={
+                                isPending ||
+                                entry.status === "draft"
+                              }
+                              style={{
+                                minHeight: 34,
+                                padding: "0 10px",
+                                borderRadius: 9,
+                                border:
+                                  "1px solid rgba(169,120,19,.18)",
+                                background: "#fbf5e7",
+                                color: "#8c620e",
+                                fontSize: 11,
+                                fontWeight: 700,
+                                cursor:
+                                  entry.status === "draft"
+                                    ? "not-allowed"
+                                    : "pointer",
+                                opacity:
+                                  entry.status === "draft"
+                                    ? 0.42
+                                    : 1,
+                              }}
+                            >
+                              Draft
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                changeStatus(entry, "review")
+                              }
+                              disabled={
+                                isPending ||
+                                entry.status === "review"
+                              }
+                              style={{
+                                minHeight: 34,
+                                padding: "0 10px",
+                                borderRadius: 9,
+                                border:
+                                  "1px solid rgba(82,109,136,.18)",
+                                background: "#f0f4f8",
+                                color: "#526d88",
+                                fontSize: 11,
+                                fontWeight: 700,
+                                cursor:
+                                  entry.status === "review"
+                                    ? "not-allowed"
+                                    : "pointer",
+                                opacity:
+                                  entry.status === "review"
+                                    ? 0.42
+                                    : 1,
+                              }}
+                            >
+                              Review
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                changeStatus(
+                                  entry,
+                                  "published"
+                                )
+                              }
+                              disabled={
+                                isPending ||
+                                entry.status === "published"
+                              }
+                              style={{
+                                minHeight: 34,
+                                padding: "0 10px",
+                                borderRadius: 9,
+                                border:
+                                  "1px solid rgba(23,102,63,.18)",
+                                background: "#eef7f1",
+                                color: "#17663f",
+                                fontSize: 11,
+                                fontWeight: 700,
+                                cursor:
+                                  entry.status === "published"
+                                    ? "not-allowed"
+                                    : "pointer",
+                                opacity:
+                                  entry.status === "published"
+                                    ? 0.42
+                                    : 1,
+                              }}
+                            >
+                              Publish
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => remove(entry)}
+                              disabled={isPending}
+                              style={{
+                                minHeight: 34,
+                                padding: "0 10px",
+                                borderRadius: 9,
+                                border:
+                                  "1px solid rgba(145,54,54,.16)",
+                                background: "#fff7f7",
+                                color: "#8b3030",
+                                fontSize: 11,
+                                fontWeight: 700,
+                                cursor: "pointer",
+                              }}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {renderFolderPagination(
+              folder.id,
+              items.length
+            )}
+          </>
         )}
       </section>
     );
   }
-  function togglePublish(entry: ContentEntry) {
-    const published = entry.status === "published";
-    if (!window.confirm(published ? "Tarik tulisan ini menjadi Draft?" : "Publish tulisan ini sekarang?")) return;
-    setMessage("");
-    startTransition(async () => {
-      try {
-        if (published) await unpublishEntry(entry.id);
-        else await publishEntry(entry.id);
-        setMessage(published ? `“${entry.title}” ditarik menjadi Draft.` : `“${entry.title}” berhasil dipublish.`);
-        router.refresh();
-      } catch (e) {
-        setMessage(e instanceof Error ? e.message : "Tindakan publikasi gagal.");
-      }
-    });
-  }
-
   function remove(entry: ContentEntry) {
     const owner = entry.author_id ? authorMap.get(entry.author_id) : undefined;
     const authorName = owner?.display_name || owner?.email || (entry.author_id ? "Admin" : "Konten lama");
@@ -632,31 +1010,24 @@ export default function SectionContentManager({
         </div>
         {message && <div style={{ marginBottom: 14, padding: "11px 13px", borderRadius: 12, background: "#f4f7f2", fontSize: 12 }}>{message}</div>}
 
-        {renderStatusSection(
-          "PUBLISHED",
-          publishedEntries,
-          published,
-          setPublishedPage,
-          "#17663f",
-          "#eef7f1"
-        )}
-
-        {renderStatusSection(
-          "DRAFT",
-          draftEntries,
-          draft,
-          setDraftPage,
-          "#a97813",
-          "#fbf5e7"
-        )}
-
-        {renderStatusSection(
-          "REVIEW",
-          reviewEntries,
-          review,
-          setReviewPage,
-          "#526d88",
-          "#f0f4f8"
+        {visibleFolders.length === 0 ? (
+          <div
+            style={{
+              marginTop: 18,
+              padding: 28,
+              textAlign: "center",
+              borderRadius: 16,
+              background: "#f7f8f4",
+              color: "#657168",
+              fontSize: 13,
+            }}
+          >
+            Tidak ada konten yang sesuai dengan pencarian.
+          </div>
+        ) : (
+          visibleFolders.map((folder) =>
+            renderFolderSection(folder)
+          )
         )}
       </section>
 
