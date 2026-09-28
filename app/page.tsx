@@ -132,7 +132,7 @@ export default function Home() {
                 className="mn-secondary"
                 href="/tentang-menjadi-nol"
               >
-                Tentang Kami
+                Tentang Kami&nbsp; <span aria-hidden="true">&gt;</span>
               </Link>
               <LatestContentNotice />
             </div>
