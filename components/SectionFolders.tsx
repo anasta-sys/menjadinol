@@ -24,7 +24,7 @@ function sectionPath(section: Section) {
   }
 
   if (section === "ruang-belajar") {
-    return "/ruang-belajar/tema";
+    return "/ruang-belajar";
   }
 
   return `/${section}/folder`;
@@ -33,19 +33,19 @@ function sectionPath(section: Section) {
 function sectionIcon(section: Section) {
   switch (section) {
     case "tentang":
-      return "🦋";
+      return "ðŸ¦‹";
     case "layanan":
-      return "🪷";
+      return "ðŸª·";
     case "ruang-belajar":
       return "☘️";
     case "ruang-jeda":
-      return "🌸";
+      return "ðŸŒ¸";
     case "artikel":
       return "✨";
     case "kontak":
-      return "💌";
+      return "ðŸ’Œ";
     default:
-      return "🌿";
+      return "ðŸŒ¿";
   }
 }
 
@@ -151,3 +151,4 @@ export default async function SectionFolders({
     </section>
   );
 }
+
