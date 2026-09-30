@@ -186,6 +186,25 @@ export async function POST(
       !userId ||
       !email
     ) {
+      await logSystemError({
+        severity: "warning",
+        module: "reader",
+        action: "send-otp-session",
+        errorCode: "READER_SESSION_NOT_FOUND",
+        technicalMessage:
+          claimsError?.message ||
+          "Supabase session claims tidak ditemukan.",
+        userMessage:
+          "Sesi login pembaca tidak ditemukan.",
+        userId: userId ?? null,
+        userEmail: email ?? null,
+        userType: "reader",
+        requestPath: "/api/reader/send-otp",
+        metadata: {
+          source: "reader-login",
+        },
+      });
+
       return NextResponse.json(
         {
           error:

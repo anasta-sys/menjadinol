@@ -202,6 +202,25 @@ export async function POST(
       !userId ||
       !email
     ) {
+      await logSystemError({
+        severity: "warning",
+        module: "reader",
+        action: "complete-otp-session-missing",
+        errorCode: "READER_SESSION_NOT_FOUND",
+        technicalMessage:
+          claimsError?.message ||
+          "Supabase session claims tidak ditemukan saat verifikasi OTP.",
+        userMessage:
+          "Sesi login pembaca tidak ditemukan.",
+        userId: userId ?? null,
+        userEmail: email ?? null,
+        userType: "reader",
+        requestPath: "/api/reader/complete-otp",
+        metadata: {
+          source: "reader-login",
+        },
+      });
+
       return NextResponse.json(
         {
           error:
