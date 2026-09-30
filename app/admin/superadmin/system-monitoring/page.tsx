@@ -250,59 +250,114 @@ export default async function SystemMonitoringPage({
 
   const admin = getAdminClient();
 
-  const { data, error } = await admin
-    .from("system_error_logs")
-    .select(
-      "id,created_at,severity,module,action,error_code,technical_message,user_message,user_email,user_type,request_path,status,read_at,resolved_at"
-    )
-    .order("created_at", { ascending: false })
-    .limit(100);
-
-  if (error) {
-    console.error("[SYSTEM MONITORING] Gagal membaca log:", error.message);
-  }
-
-  const logs = (data ?? []) as SystemLog[];
-
-  const statusPriority: Record<LogStatus, number> = {
-    new: 0,
-    read: 1,
-    resolved: 2,
-  };
-
-  const sortedLogs = [...logs].sort((a, b) => {
-    const statusDifference =
-      statusPriority[a.status] - statusPriority[b.status];
-
-    if (statusDifference !== 0) {
-      return statusDifference;
-    }
-
-    return (
-      new Date(b.created_at).getTime() -
-      new Date(a.created_at).getTime()
-    );
-  });
+  const LOG_COLUMNS =
+    "id,created_at,severity,module,action,error_code,technical_message,user_message,user_email,user_type,request_path,status,read_at,resolved_at";
 
   const PAGE_SIZE = 10;
+
+  async function countLogs(
+    column?: "severity" | "status",
+    value?: string
+  ) {
+    let query = admin
+      .from("system_error_logs")
+      .select("id", { count: "exact", head: true });
+
+    if (column && value) {
+      query = query.eq(column, value);
+    }
+
+    const { count, error } = await query;
+
+    if (error) {
+      console.error(
+        "[SYSTEM MONITORING] Gagal menghitung log:",
+        error.message
+      );
+      return 0;
+    }
+
+    return count ?? 0;
+  }
+
+  const [
+    totalCount,
+    criticalCount,
+    errorCount,
+    warningCount,
+    newCount,
+    readCount,
+    resolvedCount,
+  ] = await Promise.all([
+    countLogs(),
+    countLogs("severity", "critical"),
+    countLogs("severity", "error"),
+    countLogs("severity", "warning"),
+    countLogs("status", "new"),
+    countLogs("status", "read"),
+    countLogs("status", "resolved"),
+  ]);
+
   const totalPages = Math.max(
     1,
-    Math.ceil(sortedLogs.length / PAGE_SIZE)
-  );
-  const currentPage = Math.min(page, totalPages);
-  const pageStart = (currentPage - 1) * PAGE_SIZE;
-  const pageLogs = sortedLogs.slice(
-    pageStart,
-    pageStart + PAGE_SIZE
+    Math.ceil(totalCount / PAGE_SIZE)
   );
 
-  const totalCount = logs.length;
-  const criticalCount = logs.filter((item) => item.severity === "critical").length;
-  const errorCount = logs.filter((item) => item.severity === "error").length;
-  const warningCount = logs.filter((item) => item.severity === "warning").length;
-  const newCount = logs.filter((item) => item.status === "new").length;
-  const readCount = logs.filter((item) => item.status === "read").length;
-  const resolvedCount = logs.filter((item) => item.status === "resolved").length;
+  const currentPage = Math.min(page, totalPages);
+  const pageStart = (currentPage - 1) * PAGE_SIZE;
+  const pageEnd = pageStart + PAGE_SIZE;
+
+  const statusGroups: Array<{
+    status: LogStatus;
+    count: number;
+  }> = [
+    { status: "new", count: newCount },
+    { status: "read", count: readCount },
+    { status: "resolved", count: resolvedCount },
+  ];
+
+  let groupStart = 0;
+  let error: { message: string } | null = null;
+  const pageLogs: SystemLog[] = [];
+
+  for (const group of statusGroups) {
+    const groupEnd = groupStart + group.count;
+
+    const overlapStart = Math.max(pageStart, groupStart);
+    const overlapEnd = Math.min(pageEnd, groupEnd);
+
+    if (overlapStart < overlapEnd) {
+      const rangeFrom = overlapStart - groupStart;
+      const rangeTo = overlapEnd - groupStart - 1;
+
+      const { data, error: groupError } = await admin
+        .from("system_error_logs")
+        .select(LOG_COLUMNS)
+        .eq("status", group.status)
+        .order("created_at", { ascending: false })
+        .range(rangeFrom, rangeTo);
+
+      if (groupError) {
+        console.error(
+          `[SYSTEM MONITORING] Gagal membaca log ${group.status}:`,
+          groupError.message
+        );
+
+        error = { message: groupError.message };
+        break;
+      }
+
+      pageLogs.push(...((data ?? []) as SystemLog[]));
+    }
+
+    groupStart = groupEnd;
+
+    if (pageLogs.length >= PAGE_SIZE) {
+      break;
+    }
+  }
+
+  const logs = pageLogs;
 
   const cards = [
     ["Total", totalCount],
