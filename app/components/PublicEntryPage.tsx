@@ -78,7 +78,8 @@ export default async function PublicEntryPage({
 
   try {
     adminSession = await requireAdminSession();
-  } catch {
+  } catch (error) {
+    console.error("[PublicEntryPage] Admin session gagal:", error);
     adminSession = null;
   }
 
