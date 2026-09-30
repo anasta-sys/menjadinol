@@ -1,0 +1,96 @@
+﻿  async function submitText(raw: string) {
+    const text = raw.trim().slice(0, 2000);
+    if (!text || busy) return;
+
+    const now = messageTime();
+
+    setMsgs((current) => [
+      ...current,
+      {
+        id: makeId(),
+        role: "user",
+        text,
+        time: now,
+      },
+    ]);
+
+    setInput("");
+    setBusy(true);
+
+    try {
+      const response = await fetch("/api/ruang-tanya/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        credentials: "same-origin",
+        cache: "no-store",
+        body: JSON.stringify({
+          message: text,
+          pageUrl: window.location.href,
+          ...(conversationId ? { conversationId } : {}),
+        }),
+      });
+
+      const data: unknown = await response.json().catch(() => ({}));
+      const payload =
+        data && typeof data === "object"
+          ? (data as Record<string, unknown>)
+          : {};
+
+      if (
+        response.ok &&
+        typeof payload.conversationId === "string"
+      ) {
+        setConversationId(payload.conversationId);
+      }
+      const answer =
+        response.ok && typeof payload.answer === "string"
+          ? payload.answer
+          : typeof payload.error === "string"
+            ? payload.error
+            : "Permintaan belum dapat diproses.";
+
+      const dbUserMessageId =
+        response.ok && typeof payload.userMessageId === "string"
+          ? payload.userMessageId
+          : null;
+
+      const dbAssistantMessageId =
+        response.ok && typeof payload.messageId === "string"
+          ? payload.messageId
+          : null;
+
+      const sources: Source[] =
+        response.ok && Array.isArray(payload.sources)
+          ? payload.sources
+              .filter(
+                (source: unknown): source is Source =>
+                  !!source &&
+                  typeof source === "object" &&
+                  typeof (source as Source).title === "string" &&
+                  typeof (source as Source).slug === "string"
+              )
+              .slice(0, 2)
+          : [];
+
+      setMsgs((current) => [
+        ...current,
+        {
+          id: makeId(),
+          role: "assistant",
+          text: answer.slice(0, 6000),
+          time: messageTime(),
+          sources,
+        },
+      ]);
+    } catch {
+      setMsgs((current) => [
+        ...current,
+        {
+          id: makeId(),
+          role: "assistant",
+          text: "Ruang Tanya sedang tidak dapat dihubungi. Coba lagi sebentar.",
+          time: messageTime(),
+        },

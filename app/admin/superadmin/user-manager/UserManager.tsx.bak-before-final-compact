@@ -1,0 +1,826 @@
+"use client";
+
+import Link from "next/link";
+import { useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { deactivateUser, deleteUserPermanently } from "./actions";
+
+export type ManagedUser = {
+  user_id: string;
+  role: string;
+  display_name: string | null;
+  email: string | null;
+  status: "active" | "inactive";
+};
+
+function roleLabel(role: string) {
+  if (role === "superadmin") return "Superadmin";
+  if (role === "admin") return "Admin";
+  if (role === "writer") return "Penulis";
+  return "Pembaca";
+}
+
+export default function UserManager({
+  users,
+  currentUserId,
+}: {
+  users: ManagedUser[];
+  currentUserId: string;
+}) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [search, setSearch] = useState("");
+  const [filterRole, setFilterRole] = useState("all");
+  const [message, setMessage] = useState("");
+
+  const filteredUsers = useMemo(() => {
+    const q = search.trim().toLowerCase();
+
+    return users.filter((user) => {
+      if (filterRole !== "all" && user.role !== filterRole) return false;
+      if (!q) return true;
+
+      return [
+        user.display_name,
+        user.email,
+        roleLabel(user.role),
+        user.status === "active" ? "aktif" : "nonaktif",
+      ]
+        .filter(Boolean)
+        .some((value) => String(value).toLowerCase().includes(q));
+    });
+  }, [users, search, filterRole]);
+
+  const stats = useMemo(() => {
+    return {
+      total: users.length,
+      readers: users.filter((u) => u.role === "reader").length,
+      writers: users.filter((u) => u.role === "writer").length,
+      staff: users.filter(
+        (u) => u.role === "admin" || u.role === "superadmin"
+      ).length,
+    };
+  }, [users]);
+
+  function runDeactivate(user: ManagedUser) {
+    const name = user.display_name || user.email || "User";
+
+    if (
+      !window.confirm(
+        `Nonaktifkan akun ${name}?\n\nUser tidak dapat login. Akun belum dihapus dan tombol Hapus Permanen baru muncul setelah status Nonaktif.`
+      )
+    ) {
+      return;
+    }
+
+    setMessage("");
+
+    startTransition(async () => {
+      try {
+        await deactivateUser(user.user_id);
+        setMessage(`Akun ${name} berhasil dinonaktifkan.`);
+        router.refresh();
+      } catch (error) {
+        setMessage(
+          error instanceof Error
+            ? error.message
+            : "Gagal menonaktifkan akun."
+        );
+      }
+    });
+  }
+
+  function runDelete(user: ManagedUser) {
+    const name = user.display_name || user.email || "User";
+
+    if (
+      !window.confirm(
+        `HAPUS PERMANEN akun ${name}?\n\nTindakan ini tidak dapat dibatalkan. Lanjutkan?`
+      )
+    ) {
+      return;
+    }
+
+    setMessage("");
+
+    startTransition(async () => {
+      try {
+        await deleteUserPermanently(user.user_id);
+        setMessage(`Akun ${name} berhasil dihapus permanen.`);
+        router.refresh();
+      } catch (error) {
+        setMessage(
+          error instanceof Error
+            ? error.message
+            : "Gagal menghapus akun."
+        );
+      }
+    });
+  }
+
+  return (
+    <main className="um-page">
+      <header className="um-heading">
+        <div>
+          <p className="um-eyebrow">MENJADI NOL</p>
+          <h1>User Manager</h1>
+          <p className="um-subtitle">
+            Kelola akun Pembaca, Penulis, Admin, dan Superadmin.
+          </p>
+        </div>
+
+        <Link href="/admin/superadmin" className="um-back">
+          <span aria-hidden="true">&larr;</span>
+          <span>Back to Superadmin</span>
+        </Link>
+      </header>
+
+      <section className="um-stats" aria-label="Ringkasan user">
+        <div className="um-stat um-stat-total">
+          <span className="um-stat-label">TOTAL USER</span>
+          <strong>{stats.total}</strong>
+          <span>Semua akun terdaftar</span>
+        </div>
+
+        <div className="um-stat um-stat-reader">
+          <span className="um-stat-label">PEMBACA</span>
+          <strong>{stats.readers}</strong>
+          <span>Akun pembaca</span>
+        </div>
+
+        <div className="um-stat um-stat-writer">
+          <span className="um-stat-label">PENULIS</span>
+          <strong>{stats.writers}</strong>
+          <span>Akun penulis</span>
+        </div>
+
+        <div className="um-stat um-stat-staff">
+          <span className="um-stat-label">ADMIN</span>
+          <strong>{stats.staff}</strong>
+          <span>Admin dan Superadmin</span>
+        </div>
+      </section>
+
+      <section className="um-panel">
+        <div className="um-panel-head">
+          <div>
+            <p className="um-eyebrow">KELOLA USER</p>
+            <h2>Daftar Semua User</h2>
+            <p>
+              {filteredUsers.length} dari {users.length} akun ditampilkan
+            </p>
+          </div>
+
+          <div className="um-tools">
+            <div className="um-search-wrap">
+              <span className="um-search-mark" aria-hidden="true">
+                O
+              </span>
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Cari nama atau email..."
+                aria-label="Cari user"
+              />
+            </div>
+
+            <select
+              value={filterRole}
+              onChange={(e) => setFilterRole(e.target.value)}
+              aria-label="Filter role"
+            >
+              <option value="all">Semua Role</option>
+              <option value="reader">Pembaca</option>
+              <option value="writer">Penulis</option>
+              <option value="admin">Admin</option>
+              <option value="superadmin">Superadmin</option>
+            </select>
+          </div>
+        </div>
+
+        {message ? <div className="um-message">{message}</div> : null}
+
+        <div className="um-table-wrap">
+          <table className="um-table">
+            <thead>
+              <tr>
+                <th className="um-number">No</th>
+                <th>Nama User</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th className="um-action-head">Aksi</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {filteredUsers.map((user, index) => {
+                const protectedAccount =
+                  user.user_id === currentUserId ||
+                  user.role === "superadmin";
+
+                return (
+                  <tr key={user.user_id}>
+                    <td className="um-number">
+                      <span className="um-row-number">{index + 1}</span>
+                    </td>
+
+                    <td>
+                      <div className="um-user">
+                        <span className="um-avatar">
+                          {(user.display_name || user.email || "U")
+                            .charAt(0)
+                            .toUpperCase()}
+                        </span>
+
+                        <div>
+                          <strong>{user.display_name || "-"}</strong>
+                          {user.user_id === currentUserId ? (
+                            <small>Akun Anda</small>
+                          ) : null}
+                        </div>
+                      </div>
+                    </td>
+
+                    <td className="um-email">{user.email || "-"}</td>
+
+                    <td>
+                      <span className={`um-role um-role-${user.role}`}>
+                        {roleLabel(user.role)}
+                      </span>
+                    </td>
+
+                    <td>
+                      <span
+                        className={
+                          user.status === "active"
+                            ? "um-status um-status-active"
+                            : "um-status um-status-inactive"
+                        }
+                      >
+                        <span className="um-dot" />
+                        {user.status === "active" ? "Aktif" : "Nonaktif"}
+                      </span>
+                    </td>
+
+                    <td className="um-actions">
+                      {protectedAccount ? (
+                        <span className="um-protected">Dilindungi</span>
+                      ) : user.status === "active" ? (
+                        <button
+                          type="button"
+                          className="um-action um-deactivate"
+                          disabled={isPending}
+                          onClick={() => runDeactivate(user)}
+                        >
+                          Nonaktifkan
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          className="um-action um-delete"
+                          disabled={isPending}
+                          onClick={() => runDelete(user)}
+                        >
+                          Hapus Permanen
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+
+              {filteredUsers.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="um-empty">
+                    User tidak ditemukan.
+                  </td>
+                </tr>
+              ) : null}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <style>{`
+        .um-page {
+          width: min(1460px, calc(100% - 36px));
+          margin: 0 auto;
+          padding: 30px 0 76px;
+          color: #173e2c;
+        }
+
+        .um-heading {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 24px;
+          margin-bottom: 22px;
+        }
+
+        .um-eyebrow {
+          margin: 0 0 7px;
+          color: #78917e;
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: .16em;
+        }
+
+        .um-heading h1 {
+          margin: 0;
+          font-family: Georgia, "Times New Roman", serif;
+          font-size: clamp(30px, 3vw, 42px);
+          line-height: 1.05;
+          font-weight: 500;
+          letter-spacing: -.025em;
+          color: #143d2a;
+        }
+
+        .um-subtitle {
+          margin: 9px 0 0;
+          color: #698071;
+          font-size: 14px;
+        }
+
+        .um-back {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          min-height: 42px;
+          padding: 0 17px;
+          margin-top: 5px;
+          border: 1px solid rgba(157, 124, 57, .28);
+          border-radius: 999px;
+          background: rgba(255, 248, 226, .92);
+          box-shadow: 0 8px 22px rgba(86, 68, 38, .07);
+          color: #735b2d;
+          text-decoration: none;
+          font-size: 12px;
+          font-weight: 800;
+          transition: .18s ease;
+        }
+
+        .um-back:hover {
+          transform: translateY(-1px);
+          background: #fff5d9;
+          border-color: rgba(157, 124, 57, .48);
+        }
+
+        .um-stats {
+          display: grid;
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+          gap: 12px;
+          margin-bottom: 14px;
+        }
+
+        .um-stat {
+          position: relative;
+          min-height: 118px;
+          padding: 17px 19px;
+          overflow: hidden;
+          border: 1px solid rgba(69, 91, 73, .10);
+          border-radius: 20px;
+          box-shadow: 0 12px 32px rgba(50, 73, 54, .06);
+        }
+
+        .um-stat::after {
+          content: "";
+          position: absolute;
+          width: 90px;
+          height: 90px;
+          right: -32px;
+          bottom: -42px;
+          border: 1px solid rgba(54, 82, 59, .08);
+          border-radius: 50%;
+        }
+
+        .um-stat-total {
+          background: rgba(224, 236, 215, .94);
+        }
+
+        .um-stat-reader {
+          background: rgba(226, 238, 239, .94);
+        }
+
+        .um-stat-writer {
+          background: rgba(248, 236, 202, .94);
+        }
+
+        .um-stat-staff {
+          background: rgba(242, 225, 218, .94);
+        }
+
+        .um-stat-label {
+          display: block;
+          margin-bottom: 7px;
+          color: #667c6a;
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: .12em;
+        }
+
+        .um-stat strong {
+          display: block;
+          margin-bottom: 3px;
+          color: #173f2c;
+          font-family: Georgia, "Times New Roman", serif;
+          font-size: 30px;
+          line-height: 1;
+          font-weight: 500;
+        }
+
+        .um-stat > span:last-child {
+          color: #728176;
+          font-size: 11px;
+        }
+
+        .um-panel {
+          overflow: hidden;
+          border: 1px solid rgba(68, 91, 72, .12);
+          border-radius: 24px;
+          background: rgba(255, 253, 247, .94);
+          box-shadow: 0 18px 48px rgba(48, 72, 52, .09);
+          backdrop-filter: blur(12px);
+        }
+
+        .um-panel-head {
+          display: flex;
+          align-items: flex-end;
+          justify-content: space-between;
+          gap: 20px;
+          padding: 21px 22px 18px;
+          border-bottom: 1px solid rgba(70, 91, 76, .09);
+          background: linear-gradient(
+            110deg,
+            rgba(249, 246, 233, .94),
+            rgba(238, 244, 231, .86)
+          );
+        }
+
+        .um-panel-head h2 {
+          margin: 0;
+          color: #153d2a;
+          font-family: Georgia, "Times New Roman", serif;
+          font-size: 22px;
+          font-weight: 500;
+        }
+
+        .um-panel-head > div:first-child > p:last-child {
+          margin: 5px 0 0;
+          color: #849086;
+          font-size: 11px;
+        }
+
+        .um-tools {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .um-search-wrap {
+          position: relative;
+        }
+
+        .um-search-mark {
+          position: absolute;
+          left: 14px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #809083;
+          font-family: Georgia, serif;
+          font-size: 11px;
+          pointer-events: none;
+        }
+
+        .um-search-wrap input,
+        .um-tools select {
+          height: 42px;
+          border: 1px solid rgba(71, 101, 77, .17);
+          border-radius: 999px;
+          background: rgba(255, 255, 251, .96);
+          color: #284c37;
+          outline: none;
+          font: inherit;
+          font-size: 12px;
+          transition: .18s ease;
+        }
+
+        .um-search-wrap input {
+          width: 255px;
+          padding: 0 15px 0 34px;
+        }
+
+        .um-tools select {
+          min-width: 145px;
+          padding: 0 35px 0 15px;
+          font-weight: 700;
+          cursor: pointer;
+        }
+
+        .um-search-wrap input:focus,
+        .um-tools select:focus {
+          border-color: #9bb28e;
+          box-shadow: 0 0 0 3px rgba(120, 151, 107, .10);
+        }
+
+        .um-message {
+          margin: 14px 20px 0;
+          padding: 11px 14px;
+          border: 1px solid rgba(104, 139, 94, .18);
+          border-radius: 13px;
+          background: rgba(224, 237, 216, .66);
+          color: #49664d;
+          font-size: 12px;
+        }
+
+        .um-table-wrap {
+          overflow-x: auto;
+          padding: 8px 14px 16px;
+        }
+
+        .um-table {
+          width: 100%;
+          min-width: 920px;
+          border-collapse: separate;
+          border-spacing: 0 7px;
+        }
+
+        .um-table th {
+          padding: 8px 12px;
+          color: #708177;
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: .08em;
+          text-align: left;
+          text-transform: uppercase;
+        }
+
+        .um-table tbody tr {
+          background: rgba(255, 254, 249, .88);
+          box-shadow: 0 2px 0 rgba(64, 87, 68, .035);
+          transition: .15s ease;
+        }
+
+        .um-table tbody tr:nth-child(even) {
+          background: rgba(238, 245, 232, .72);
+        }
+
+        .um-table tbody tr:hover {
+          background: rgba(229, 240, 221, .88);
+          transform: translateY(-1px);
+        }
+
+        .um-table td {
+          padding: 11px 12px;
+          border-top: 1px solid rgba(65, 91, 70, .07);
+          border-bottom: 1px solid rgba(65, 91, 70, .07);
+          color: #284b37;
+          font-size: 12px;
+          vertical-align: middle;
+        }
+
+        .um-table td:first-child {
+          border-left: 1px solid rgba(65, 91, 70, .07);
+          border-radius: 14px 0 0 14px;
+        }
+
+        .um-table td:last-child {
+          border-right: 1px solid rgba(65, 91, 70, .07);
+          border-radius: 0 14px 14px 0;
+        }
+
+        .um-number {
+          width: 62px;
+          text-align: center !important;
+        }
+
+        .um-row-number {
+          color: #849488;
+          font-size: 11px;
+        }
+
+        .um-user {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .um-avatar {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          flex: 0 0 34px;
+          width: 34px;
+          height: 34px;
+          border: 1px solid rgba(74, 107, 79, .12);
+          border-radius: 50%;
+          background: #e5efdf;
+          color: #416548;
+          font-family: Georgia, serif;
+          font-size: 14px;
+          font-weight: 700;
+        }
+
+        .um-user strong {
+          display: block;
+          color: #173e2c;
+          font-size: 12px;
+          font-weight: 800;
+        }
+
+        .um-user small {
+          display: block;
+          margin-top: 2px;
+          color: #8a968d;
+          font-size: 9px;
+        }
+
+        .um-email {
+          color: #667b6c !important;
+        }
+
+        .um-role,
+        .um-status,
+        .um-protected {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 28px;
+          padding: 0 10px;
+          border: 1px solid transparent;
+          border-radius: 999px;
+          white-space: nowrap;
+          font-size: 10px;
+          font-weight: 800;
+        }
+
+        .um-role-reader {
+          background: #e7efe1;
+          border-color: #d7e4d1;
+          color: #527153;
+        }
+
+        .um-role-writer {
+          background: #f7edd2;
+          border-color: #eadcaf;
+          color: #80662d;
+        }
+
+        .um-role-admin {
+          background: #e1edf0;
+          border-color: #d0e1e5;
+          color: #496c75;
+        }
+
+        .um-role-superadmin {
+          background: #eee4da;
+          border-color: #e1d1c2;
+          color: #745d49;
+        }
+
+        .um-status {
+          gap: 6px;
+        }
+
+        .um-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: currentColor;
+        }
+
+        .um-status-active {
+          background: #e4eee0;
+          color: #4b754f;
+        }
+
+        .um-status-inactive {
+          background: #f7e8e3;
+          color: #9b5147;
+        }
+
+        .um-actions,
+        .um-action-head {
+          text-align: right !important;
+        }
+
+        .um-protected {
+          background: rgba(235, 240, 229, .78);
+          border-color: rgba(102, 126, 101, .12);
+          color: #718174;
+        }
+
+        .um-action {
+          min-height: 32px;
+          padding: 0 12px;
+          border-radius: 999px;
+          font-family: inherit;
+          font-size: 10px;
+          font-weight: 800;
+          cursor: pointer;
+          transition: .15s ease;
+        }
+
+        .um-action:hover:not(:disabled) {
+          transform: translateY(-1px);
+        }
+
+        .um-action:disabled {
+          cursor: wait;
+          opacity: .55;
+        }
+
+        .um-deactivate {
+          border: 1px solid #e3c77d;
+          background: #f8eac4;
+          color: #795b20;
+        }
+
+        .um-deactivate:hover:not(:disabled) {
+          background: #f3dfaa;
+        }
+
+        .um-delete {
+          border: 1px solid #e8bbb2;
+          background: #fae8e4;
+          color: #9b493f;
+        }
+
+        .um-delete:hover:not(:disabled) {
+          background: #f6ddd7;
+        }
+
+        .um-empty {
+          padding: 35px !important;
+          border: 0 !important;
+          background: transparent !important;
+          color: #829087 !important;
+          text-align: center;
+        }
+
+        @media (max-width: 900px) {
+          .um-stats {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+
+          .um-panel-head {
+            align-items: stretch;
+            flex-direction: column;
+          }
+
+          .um-tools {
+            width: 100%;
+          }
+
+          .um-search-wrap {
+            flex: 1;
+          }
+
+          .um-search-wrap input {
+            width: 100%;
+          }
+        }
+
+        @media (max-width: 620px) {
+          .um-page {
+            width: min(100% - 24px, 1460px);
+            padding-top: 20px;
+          }
+
+          .um-heading {
+            flex-direction: column;
+          }
+
+          .um-back {
+            margin-top: 0;
+          }
+
+          .um-stats {
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+          }
+
+          .um-stat {
+            min-height: 105px;
+            padding: 14px;
+            border-radius: 17px;
+          }
+
+          .um-tools {
+            flex-direction: column;
+          }
+
+          .um-search-wrap,
+          .um-tools select {
+            width: 100%;
+          }
+
+          .um-panel {
+            border-radius: 20px;
+          }
+        }
+      `}</style>
+    </main>
+  );
+}

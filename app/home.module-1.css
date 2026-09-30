@@ -1,0 +1,392 @@
+.home {
+  --green: #075a3b;
+  --green-dark: #063f2d;
+  --text: #172f25;
+  --soft: #708477;
+  width: 100%;
+  min-height: 100vh;
+  background: #faf8f1;
+  color: var(--text);
+  overflow: hidden;
+}
+
+.home * {
+  box-sizing: border-box;
+}
+
+.home a {
+  text-decoration: none;
+}
+
+.shell {
+  width: min(1320px, calc(100% - 80px));
+  margin-inline: auto;
+}
+
+.hero {
+  position: relative;
+  min-height: 545px;
+  overflow: hidden;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(250, 249, 243, 0.78) 0%,
+      rgba(250, 249, 243, 0.40) 34%,
+      rgba(250, 249, 243, 0.08) 66%,
+      rgba(250, 249, 243, 0.02) 100%
+    ),
+    url("/menjadi-nol-nature.png") center center / cover no-repeat;
+}
+
+.heroShade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle at 72% 28%,
+      rgba(255, 244, 190, 0.35),
+      transparent 29%
+    );
+}
+
+.heroGrid {
+  position: relative;
+  z-index: 2;
+  min-height: 545px;
+  display: grid;
+  grid-template-columns: minmax(500px, 1.02fr) minmax(470px, 0.98fr);
+  align-items: center;
+}
+
+.copy {
+  position: relative;
+  z-index: 5;
+  padding: 58px 0 92px;
+}
+
+.eyebrow {
+  margin-bottom: 18px;
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: 0.32em;
+  color: #2c6650;
+  font-weight: 700;
+}
+
+.copy h1 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 400;
+  font-size: clamp(60px, 5.25vw, 88px);
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+  color: #102d22;
+}
+
+.copy h1 span {
+  color: #6c927c;
+}
+
+.copy > p {
+  margin: 22px 0 0;
+  max-width: 610px;
+  font-size: 17px;
+  line-height: 1.7;
+  color: #324c40;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 27px;
+}
+
+.primaryButton,
+.secondaryButton {
+  min-height: 54px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  padding: 0 28px;
+  border-radius: 999px;
+  font-size: 15px;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.primaryButton {
+  background: linear-gradient(90deg, #075b3c, #064d35);
+  color: #fff;
+  border: 1px solid #075239;
+  box-shadow: 0 12px 28px rgba(5, 73, 48, 0.18);
+}
+
+.secondaryButton {
+  background: rgba(255, 255, 255, 0.48);
+  color: #164833;
+  border: 1px solid #17553c;
+  backdrop-filter: blur(5px);
+}
+
+.primaryButton:hover,
+.secondaryButton:hover {
+  transform: translateY(-2px);
+}
+
+.art {
+  position: relative;
+  z-index: 4;
+  min-height: 545px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: -85px;
+  padding-top: 6px;
+}
+
+.art img {
+  display: block;
+  width: min(620px, 50vw);
+  height: auto;
+  object-fit: contain;
+  background: transparent;
+  mix-blend-mode: multiply;
+  filter: drop-shadow(0 12px 18px rgba(58, 90, 67, 0.10));
+}
+
+.quote {
+  position: absolute;
+  right: 18px;
+  top: 92px;
+  z-index: 7;
+  width: 220px;
+  text-align: center;
+  color: #27392e;
+}
+
+.quote p {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-size: 19px;
+  line-height: 1.55;
+}
+
+.quote > span {
+  display: block;
+  width: 58px;
+  height: 1px;
+  margin: 18px auto 0;
+  background: #587c68;
+}
+
+.cardArea {
+  position: relative;
+  z-index: 10;
+  padding-bottom: 60px;
+  background:
+    radial-gradient(circle at 50% 0, rgba(255,255,255,.85), transparent 58%),
+    #faf8f1;
+}
+
+.cards {
+  position: relative;
+  margin-top: -43px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+}
+
+.card {
+  min-height: 225px;
+  padding: 22px 22px 20px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(27, 71, 51, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 18px 45px rgba(32, 64, 47, 0.08);
+  color: #17372a;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 22px 52px rgba(32, 64, 47, 0.13);
+}
+
+.cardIcon {
+  width: 55px;
+  height: 55px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  margin-bottom: 15px;
+  background: #e6eee5;
+  color: #075137;
+  font-size: 24px;
+}
+
+.card:last-child .cardIcon {
+  background: #f7e9dd;
+}
+
+.card h2 {
+  margin: 0 0 9px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 400;
+  font-size: 21px;
+  color: #142f23;
+}
+
+.card p {
+  margin: 0 0 15px;
+  min-height: 45px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #577065;
+}
+
+.card strong {
+  font-size: 13px;
+  color: #075437;
+  font-weight: 700;
+}
+
+.card strong span {
+  margin-left: 6px;
+}
+
+@media (max-width: 1180px) {
+  .shell {
+    width: min(94%, 1180px);
+  }
+
+  .heroGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .art {
+    margin-left: -25px;
+  }
+
+  .art img {
+    width: min(520px, 52vw);
+  }
+
+  .quote {
+    right: 18px;
+    top: 78px;
+  }
+
+  .cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 850px) {
+  .hero {
+    min-height: auto;
+    background-position: 62% center;
+  }
+
+  .heroGrid {
+    min-height: auto;
+    grid-template-columns: 1fr;
+  }
+
+  .copy {
+    text-align: center;
+    padding: 58px 0 20px;
+  }
+
+  .copy h1 {
+    font-size: clamp(49px, 12vw, 70px);
+  }
+
+  .copy > p {
+    margin: 20px auto 0;
+  }
+
+  .actions {
+    justify-content: center;
+  }
+
+  .art {
+    min-height: 360px;
+    margin: -10px 0 0;
+  }
+
+  .art img {
+    width: min(500px, 82vw);
+  }
+
+  .quote {
+    position: relative;
+    top: auto;
+    right: auto;
+    width: auto;
+    margin: -5px auto 78px;
+  }
+
+  .cards {
+    margin-top: -40px;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .shell {
+    width: calc(100% - 30px);
+  }
+
+  .desktopOnly {
+    display: none;
+  }
+
+  .copy {
+    padding-top: 45px;
+  }
+
+  .copy h1 {
+    font-size: 48px;
+  }
+
+  .copy > p {
+    font-size: 15px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+  }
+
+  .art {
+    min-height: 315px;
+  }
+
+  .art img {
+    width: 93%;
+  }
+
+  .quote {
+    margin-bottom: 65px;
+  }
+
+  .cards {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    min-height: auto;
+  }
+}

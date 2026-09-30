@@ -1,0 +1,441 @@
+"use client";
+
+import Link from "next/link";
+
+type SectionItem = {
+  slug: string;
+  dbSection: string;
+  label: string;
+  folderCount: number;
+};
+
+function LeafIcon({ slug }: { slug: string }) {
+  const common = {
+    width: 82,
+    height: 82,
+    viewBox: "0 0 96 96",
+    "aria-hidden": true,
+  } as const;
+
+  if (slug === "tentang") {
+    return <svg {...common}><path d="M21 76C19 45 38 20 76 12c1 37-19 61-55 64Z" fill="#3f843e"/><path d="M23 76c12-23 27-39 46-54" fill="none" stroke="#dcebd6" strokeWidth="2.3" strokeLinecap="round"/></svg>;
+  }
+  if (slug === "perjalanan") {
+    return <svg {...common}><path d="M29 78c10-25 23-43 43-58" fill="none" stroke="#356f38" strokeWidth="3" strokeLinecap="round"/><ellipse cx="36" cy="57" rx="9" ry="17" transform="rotate(-28 36 57)" fill="#4d9145"/><ellipse cx="52" cy="42" rx="9" ry="17" transform="rotate(34 52 42)" fill="#397c39"/><ellipse cx="66" cy="28" rx="8" ry="15" transform="rotate(40 66 28)" fill="#5b9847"/><ellipse cx="57" cy="61" rx="8" ry="15" transform="rotate(62 57 61)" fill="#44833d"/></svg>;
+  }
+  if (slug === "ruang-belajar") {
+    return <svg {...common}><path d="M48 79V39" stroke="#356f38" strokeWidth="3" strokeLinecap="round"/><path d="M48 42C25 42 20 27 24 17c15 0 24 7 24 25Z" fill="#659d4c"/><path d="M48 42c23 0 28-15 24-25-15 0-24 7-24 25Z" fill="#3d7e3b"/><path d="M48 49c-18 0-25-10-25-20 15 0 22 6 25 20Z" fill="#4e8d42" opacity=".8"/></svg>;
+  }
+  if (slug === "ruang-jeda") {
+    return <svg {...common}><path d="M49 82C34 64 24 47 21 23c26-8 48 4 54 26-10 20-17 28-26 33Z" fill="#3d823d"/><path d="M27 29c10 8 17 16 22 27M39 20c4 12 7 24 8 37M58 23c-2 12-5 22-10 32" fill="none" stroke="#dbead5" strokeWidth="2.2" strokeLinecap="round"/><path d="M22 45c8-3 16-3 24 0M28 59c7-2 13-1 19 2" fill="none" stroke="#dbead5" strokeWidth="2.2" strokeLinecap="round"/></svg>;
+  }
+  if (slug === "artikel") {
+    return <svg {...common}><path d="M26 76 69 20" stroke="#356f38" strokeWidth="3" strokeLinecap="round"/><circle cx="33" cy="65" r="13" fill="#5b8d64"/><circle cx="45" cy="51" r="13" fill="#739b75"/><circle cx="58" cy="36" r="13" fill="#4f8257"/><circle cx="65" cy="61" r="12" fill="#87a982"/></svg>;
+  }
+  return <svg {...common}><path d="M26 79c8-25 21-45 44-62" fill="none" stroke="#356f38" strokeWidth="3" strokeLinecap="round"/><path d="M35 63c-13-2-18-10-17-20 12 1 19 7 17 20Z" fill="#4d8745"/><path d="M45 50c-5-13 1-22 10-27 5 12 1 21-10 27Z" fill="#39783b"/><path d="M52 57c12-5 22-2 28 6-11 7-21 5-28-6Z" fill="#679852"/><path d="M58 37c8-10 17-11 26-6-6 11-15 14-26 6Z" fill="#4b843f"/></svg>;
+}
+
+export default function ContentManager({
+  sections,
+}: {
+  sections: SectionItem[];
+}) {
+  return (
+    <main className="contentManagerPage">
+      <div className="contentManagerHero">
+        <div>
+          <p className="contentManagerEyebrow">
+            MENJADI NOL · CONTENT LIBRARY
+          </p>
+
+          <h1>Content Manager</h1>
+
+          <p className="contentManagerIntro">
+            Kelola ruang, tulisan, dan materi Menjadi Nol dalam satu tempat
+            yang tenang dan terstruktur.
+          </p>
+        </div>
+
+        <Link
+          href="/admin/superadmin"
+          className="contentManagerBack"
+        >
+          ← Super Admin
+        </Link>
+      </div>
+
+      <section className="contentManagerLibrary">
+        <div className="contentManagerLibraryHead">
+          <div>
+            <p>RUANG KONTEN</p>
+            <h2>Pilih ruang yang ingin dikelola</h2>
+          </div>
+
+          <span className="contentManagerTotal">
+            {sections.length} bagian
+          </span>
+        </div>
+
+        <div className="contentManagerGrid">
+          {sections.map((section, index) => (
+            <Link
+              key={section.slug}
+              href={`/admin/superadmin/content-manager/${section.slug}`}
+              className="contentManagerCard"
+            >
+              <div className="contentManagerCardTop">
+                <span className="contentManagerNumber">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+
+                <span className="contentManagerFolderCount">
+                  {section.folderCount} folder
+                </span>
+              </div>
+
+              <div className="contentManagerLeaf">
+                <LeafIcon slug={section.slug} />
+              </div>
+
+              <div className="contentManagerCardBottom">
+                <div>
+                  <strong>{section.label}</strong>
+                  <span>
+                    Buka dan kelola konten
+                  </span>
+                </div>
+
+                <span
+                  className="contentManagerArrow"
+                  aria-hidden="true"
+                >
+                  →
+                </span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <style jsx>{`
+        .contentManagerPage {
+          width: 100%;
+          max-width: 1280px;
+          margin: 0 auto;
+          padding: 34px 24px 72px;
+        }
+
+        .contentManagerHero {
+          display: flex;
+          align-items: flex-end;
+          justify-content: space-between;
+          gap: 28px;
+          margin-bottom: 26px;
+          padding: 0 4px;
+        }
+
+        .contentManagerEyebrow {
+          margin: 0 0 8px;
+          color: #718477;
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: .18em;
+        }
+
+        .contentManagerHero h1 {
+          margin: 0;
+          color: #123f31;
+          font-size: clamp(30px, 3vw, 42px);
+          line-height: 1.08;
+          letter-spacing: -.025em;
+        }
+
+        .contentManagerIntro {
+          max-width: 650px;
+          margin: 10px 0 0;
+          color: #667b70;
+          font-size: 14px;
+          line-height: 1.7;
+        }
+
+        .contentManagerBack {
+          flex: 0 0 auto;
+          display: inline-flex;
+          align-items: center;
+          min-height: 40px;
+          padding: 0 17px;
+          border: 1px solid rgba(23, 102, 63, .18);
+          border-radius: 999px;
+          background: rgba(23, 102, 63, .94);
+          box-shadow: 0 8px 22px rgba(31, 83, 55, .12);
+          color: #fff;
+          text-decoration: none;
+          font-size: 12px;
+          font-weight: 800;
+          transition:
+            transform .18s ease,
+            box-shadow .18s ease,
+            background .18s ease;
+        }
+
+        .contentManagerBack:hover {
+          transform: translateY(-2px);
+          background: #125a37;
+          box-shadow: 0 12px 26px rgba(31, 83, 55, .18);
+        }
+
+        .contentManagerLibrary {
+          padding: 24px;
+          border: 1px solid rgba(70, 91, 76, .13);
+          border-radius: 26px;
+          background:
+            linear-gradient(
+              145deg,
+              rgba(255, 255, 255, .88),
+              rgba(251, 252, 247, .72)
+            );
+          box-shadow:
+            0 20px 55px rgba(55, 72, 59, .07),
+            inset 0 1px 0 rgba(255, 255, 255, .75);
+          backdrop-filter: blur(10px);
+        }
+
+        .contentManagerLibraryHead {
+          display: flex;
+          align-items: flex-end;
+          justify-content: space-between;
+          gap: 16px;
+          margin-bottom: 20px;
+        }
+
+        .contentManagerLibraryHead p {
+          margin: 0;
+          color: #7a8c80;
+          font-size: 9px;
+          font-weight: 800;
+          letter-spacing: .16em;
+        }
+
+        .contentManagerLibraryHead h2 {
+          margin: 6px 0 0;
+          color: #183f32;
+          font-size: 19px;
+          font-weight: 750;
+        }
+
+        .contentManagerTotal {
+          display: inline-flex;
+          align-items: center;
+          min-height: 30px;
+          padding: 0 11px;
+          border: 1px solid rgba(121, 145, 107, .14);
+          border-radius: 999px;
+          background: rgba(237, 244, 230, .76);
+          color: #61745e;
+          font-size: 10px;
+          font-weight: 800;
+        }
+
+        .contentManagerGrid {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 14px;
+        }
+
+        .contentManagerCard {
+          position: relative;
+          min-width: 0;
+          min-height: 224px;
+          padding: 16px 17px 17px;
+          overflow: hidden;
+          border: 1px solid rgba(69, 96, 73, .12);
+          border-radius: 20px;
+          background:
+            linear-gradient(
+              150deg,
+              rgba(255, 255, 255, .96),
+              rgba(247, 250, 242, .90)
+            );
+          box-shadow: 0 8px 24px rgba(61, 81, 65, .045);
+          color: inherit;
+          text-decoration: none;
+          transition:
+            transform .2s ease,
+            box-shadow .2s ease,
+            border-color .2s ease;
+        }
+
+        .contentManagerCard::after {
+          content: "";
+          position: absolute;
+          right: -44px;
+          bottom: -55px;
+          width: 145px;
+          height: 145px;
+          border-radius: 50%;
+          background: rgba(218, 233, 207, .25);
+          pointer-events: none;
+        }
+
+        .contentManagerCard:hover {
+          transform: translateY(-4px);
+          border-color: rgba(76, 125, 79, .27);
+          box-shadow: 0 17px 35px rgba(55, 83, 61, .10);
+        }
+
+        .contentManagerCardTop {
+          position: relative;
+          z-index: 1;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 10px;
+        }
+
+        .contentManagerNumber {
+          color: #a38950;
+          font-size: 10px;
+          font-weight: 900;
+          letter-spacing: .10em;
+        }
+
+        .contentManagerFolderCount {
+          display: inline-flex;
+          align-items: center;
+          min-height: 25px;
+          padding: 0 9px;
+          border: 1px solid rgba(109, 139, 99, .12);
+          border-radius: 999px;
+          background: rgba(236, 244, 229, .72);
+          color: #70816c;
+          font-size: 9px;
+          font-weight: 800;
+        }
+
+        .contentManagerLeaf {
+          position: relative;
+          z-index: 1;
+          width: 88px;
+          height: 88px;
+          display: grid;
+          place-items: center;
+          margin: 10px 0 7px;
+          border-radius: 50%;
+          background:
+            radial-gradient(
+              circle at 35% 30%,
+              rgba(240, 248, 233, .98),
+              rgba(221, 237, 210, .72)
+            );
+        }
+
+        .contentManagerLeaf :global(svg) {
+          width: 70px;
+          height: 70px;
+          transition: transform .22s ease;
+        }
+
+        .contentManagerCard:hover
+          .contentManagerLeaf :global(svg) {
+          transform: rotate(-3deg) scale(1.045);
+        }
+
+        .contentManagerCardBottom {
+          position: relative;
+          z-index: 1;
+          display: flex;
+          align-items: flex-end;
+          justify-content: space-between;
+          gap: 14px;
+        }
+
+        .contentManagerCardBottom strong {
+          display: block;
+          color: #173f31;
+          font-size: 16px;
+          line-height: 1.25;
+        }
+
+        .contentManagerCardBottom div > span {
+          display: block;
+          margin-top: 5px;
+          color: #849188;
+          font-size: 10px;
+        }
+
+        .contentManagerArrow {
+          flex: 0 0 auto;
+          width: 30px;
+          height: 30px;
+          display: grid;
+          place-items: center;
+          border: 1px solid rgba(67, 110, 70, .12);
+          border-radius: 50%;
+          background: rgba(238, 245, 232, .82);
+          color: #46724b;
+          font-size: 15px;
+          transition:
+            transform .18s ease,
+            background .18s ease;
+        }
+
+        .contentManagerCard:hover .contentManagerArrow {
+          transform: translateX(2px);
+          background: #e1eed8;
+        }
+
+        @media (max-width: 900px) {
+          .contentManagerPage {
+            padding: 28px 18px 60px;
+          }
+
+          .contentManagerGrid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+        }
+
+        @media (max-width: 620px) {
+          .contentManagerPage {
+            padding: 22px 14px 50px;
+          }
+
+          .contentManagerHero {
+            align-items: flex-start;
+            flex-direction: column;
+            margin-bottom: 20px;
+          }
+
+          .contentManagerHero h1 {
+            font-size: 30px;
+          }
+
+          .contentManagerBack {
+            min-height: 37px;
+          }
+
+          .contentManagerLibrary {
+            padding: 16px;
+            border-radius: 20px;
+          }
+
+          .contentManagerLibraryHead {
+            align-items: flex-start;
+          }
+
+          .contentManagerLibraryHead h2 {
+            font-size: 17px;
+          }
+
+          .contentManagerGrid {
+            grid-template-columns: 1fr;
+            gap: 10px;
+          }
+
+          .contentManagerCard {
+            min-height: 205px;
+          }
+        }
+      `}</style>
+    </main>
+  );
+}

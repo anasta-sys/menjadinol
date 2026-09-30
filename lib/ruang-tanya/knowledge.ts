@@ -32,17 +32,54 @@ function htmlToText(value: string) {
     .trim();
 }
 
+const STOP_WORDS = new Set([
+  "apa", "apakah", "bagaimana", "gimana", "kenapa", "mengapa",
+  "makna", "arti", "artinya", "maksud", "maksudnya", "tentang",
+  "yang", "dan", "atau", "dari", "dalam", "untuk", "dengan",
+  "itu", "ini", "adalah", "menurut", "sebenarnya",
+]);
+
+const SEMANTIC_EXPANSIONS: Record<string, string[]> = {
+  ikhlas: [
+    "ikhlas", "melepas", "melepaskan", "penerimaan", "menerima",
+    "ego", "rasa", "jiwa", "diri", "pulang", "nol",
+  ],
+  syukur: [
+    "syukur", "bersyukur", "rasa", "menerima", "penerimaan",
+    "jiwa", "diri", "nol",
+  ],
+  ego: [
+    "ego", "melepas", "melepaskan", "lapisan", "diri", "jiwa",
+    "rasa", "nol",
+  ],
+  jiwa: [
+    "jiwa", "diri", "rasa", "kesadaran", "ego", "nol",
+  ],
+  marah: [
+    "marah", "kemarahan", "jiwa", "otak", "rasa", "emosi",
+  ],
+  pulang: [
+    "pulang", "diri", "jiwa", "rasa", "melepas", "nol",
+  ],
+  melepas: [
+    "melepas", "melepaskan", "ego", "lapisan", "diri", "nol",
+  ],
+};
+
 function words(value: string) {
-  return Array.from(
-    new Set(
-      value
-        .toLowerCase()
-        .normalize("NFKD")
-        .replace(/[^\p{L}\p{N}\s-]/gu, " ")
-        .split(/\s+/)
-        .filter((word) => word.length >= 3)
-    )
-  );
+  const base = value
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[^\p{L}\p{N}\s-]/gu, " ")
+    .split(/\s+/)
+    .filter((word) => word.length >= 3 && !STOP_WORDS.has(word));
+
+  const expanded = base.flatMap((word) => [
+    word,
+    ...(SEMANTIC_EXPANSIONS[word] || []),
+  ]);
+
+  return Array.from(new Set(expanded));
 }
 
 function relevance(

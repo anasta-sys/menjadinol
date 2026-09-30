@@ -1,0 +1,501 @@
+"use client";
+
+import Link from "next/link";
+
+type SectionItem = {
+  slug: string;
+  dbSection: string;
+  label: string;
+  folderCount: number;
+};
+
+function LeafIcon({ slug }: { slug: string }) {
+  const common = {
+    width: 82,
+    height: 82,
+    viewBox: "0 0 96 96",
+    "aria-hidden": true,
+  } as const;
+
+  if (slug === "tentang") {
+    return <svg {...common}><path d="M21 76C19 45 38 20 76 12c1 37-19 61-55 64Z" fill="#3f843e"/><path d="M23 76c12-23 27-39 46-54" fill="none" stroke="#dcebd6" strokeWidth="2.3" strokeLinecap="round"/></svg>;
+  }
+  if (slug === "perjalanan") {
+    return <svg {...common}><path d="M29 78c10-25 23-43 43-58" fill="none" stroke="#356f38" strokeWidth="3" strokeLinecap="round"/><ellipse cx="36" cy="57" rx="9" ry="17" transform="rotate(-28 36 57)" fill="#4d9145"/><ellipse cx="52" cy="42" rx="9" ry="17" transform="rotate(34 52 42)" fill="#397c39"/><ellipse cx="66" cy="28" rx="8" ry="15" transform="rotate(40 66 28)" fill="#5b9847"/><ellipse cx="57" cy="61" rx="8" ry="15" transform="rotate(62 57 61)" fill="#44833d"/></svg>;
+  }
+  if (slug === "ruang-belajar") {
+    return <svg {...common}><path d="M48 79V39" stroke="#356f38" strokeWidth="3" strokeLinecap="round"/><path d="M48 42C25 42 20 27 24 17c15 0 24 7 24 25Z" fill="#659d4c"/><path d="M48 42c23 0 28-15 24-25-15 0-24 7-24 25Z" fill="#3d7e3b"/><path d="M48 49c-18 0-25-10-25-20 15 0 22 6 25 20Z" fill="#4e8d42" opacity=".8"/></svg>;
+  }
+  if (slug === "ruang-jeda") {
+    return <svg {...common}><path d="M49 82C34 64 24 47 21 23c26-8 48 4 54 26-10 20-17 28-26 33Z" fill="#3d823d"/><path d="M27 29c10 8 17 16 22 27M39 20c4 12 7 24 8 37M58 23c-2 12-5 22-10 32" fill="none" stroke="#dbead5" strokeWidth="2.2" strokeLinecap="round"/><path d="M22 45c8-3 16-3 24 0M28 59c7-2 13-1 19 2" fill="none" stroke="#dbead5" strokeWidth="2.2" strokeLinecap="round"/></svg>;
+  }
+  if (slug === "artikel") {
+    return <svg {...common}><path d="M26 76 69 20" stroke="#356f38" strokeWidth="3" strokeLinecap="round"/><circle cx="33" cy="65" r="13" fill="#5b8d64"/><circle cx="45" cy="51" r="13" fill="#739b75"/><circle cx="58" cy="36" r="13" fill="#4f8257"/><circle cx="65" cy="61" r="12" fill="#87a982"/></svg>;
+  }
+  return <svg {...common}><path d="M26 79c8-25 21-45 44-62" fill="none" stroke="#356f38" strokeWidth="3" strokeLinecap="round"/><path d="M35 63c-13-2-18-10-17-20 12 1 19 7 17 20Z" fill="#4d8745"/><path d="M45 50c-5-13 1-22 10-27 5 12 1 21-10 27Z" fill="#39783b"/><path d="M52 57c12-5 22-2 28 6-11 7-21 5-28-6Z" fill="#679852"/><path d="M58 37c8-10 17-11 26-6-6 11-15 14-26 6Z" fill="#4b843f"/></svg>;
+}
+
+export default function ContentManager({
+  sections,
+}: {
+  sections: SectionItem[];
+}) {
+  const descriptions: Record<string, string> = {
+    tentang: "Identitas, filosofi, dan dasar perjalanan Menjadi Nol.",
+    perjalanan: "Tahapan perjalanan dan ruang pendampingan.",
+    "ruang-belajar": "Materi, pengetahuan, dan pembelajaran batin.",
+    "ruang-jeda": "Ruang untuk berhenti, bernapas, dan menyadari.",
+    artikel: "Tulisan, cerita, refleksi, dan pemaknaan.",
+    kontak: "Informasi dan ruang untuk terhubung.",
+  };
+
+  return (
+    <main className="cmPage">
+      <header className="cmHero">
+        <div className="cmHeroText">
+          <span className="cmKicker">
+            MENJADI NOL
+          </span>
+
+          <h1>Content Manager</h1>
+
+          <p>
+            Kelola setiap ruang, tulisan, dan materi dalam
+            perjalanan Menjadi Nol.
+          </p>
+        </div>
+
+        <Link
+          href="/admin/superadmin"
+          className="cmBack"
+        >
+          <span aria-hidden="true">←</span>
+          Super Admin
+        </Link>
+      </header>
+
+      <div className="cmDivider">
+        <span />
+        <div className="cmDividerLeaf">◆</div>
+        <span />
+      </div>
+
+      <section className="cmContent">
+        <div className="cmSectionHead">
+          <div>
+            <span className="cmSectionKicker">
+              RUANG KONTEN
+            </span>
+            <h2>Pilih bagian yang ingin dikelola</h2>
+          </div>
+
+          <div className="cmSectionCount">
+            {sections.length} bagian
+          </div>
+        </div>
+
+        <div className="cmGrid">
+          {sections.map((section, index) => (
+            <Link
+              key={section.slug}
+              href={`/admin/superadmin/content-manager/${section.slug}`}
+              className="cmCard"
+            >
+              <div className="cmCardAccent" />
+
+              <div className="cmCardHeader">
+                <span className="cmNumber">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+
+                <span className="cmFolder">
+                  {section.folderCount} folder
+                </span>
+              </div>
+
+              <div className="cmCardBody">
+                <div className="cmLeaf">
+                  <LeafIcon slug={section.slug} />
+                </div>
+
+                <div className="cmCardCopy">
+                  <h3>{section.label}</h3>
+
+                  <p>
+                    {descriptions[section.slug] ??
+                      "Kelola konten pada bagian ini."}
+                  </p>
+                </div>
+              </div>
+
+              <div className="cmCardFooter">
+                <span>Kelola konten</span>
+
+                <span
+                  className="cmArrow"
+                  aria-hidden="true"
+                >
+                  →
+                </span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <style jsx>{`
+        .cmPage {
+          width: 100%;
+          max-width: 1240px;
+          margin: 0 auto;
+          padding: 42px 24px 68px;
+        }
+
+        .cmHero {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+          gap: 32px;
+          padding: 0 4px;
+        }
+
+        .cmHeroText {
+          max-width: 720px;
+        }
+
+        .cmKicker,
+        .cmSectionKicker {
+          display: block;
+          color: #8a7441;
+          font-size: 10px;
+          font-weight: 900;
+          letter-spacing: .22em;
+        }
+
+        .cmHero h1 {
+          margin: 8px 0 0;
+          color: #123f31;
+          font-size: clamp(34px, 4vw, 48px);
+          line-height: 1;
+          letter-spacing: -.035em;
+        }
+
+        .cmHero p {
+          max-width: 610px;
+          margin: 13px 0 0;
+          color: #64796e;
+          font-size: 14px;
+          line-height: 1.7;
+        }
+
+        .cmBack {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          min-height: 42px;
+          padding: 0 17px;
+          border: 1px solid rgba(24, 91, 57, .18);
+          border-radius: 999px;
+          background: rgba(255, 255, 255, .58);
+          backdrop-filter: blur(8px);
+          color: #174f37;
+          text-decoration: none;
+          font-size: 12px;
+          font-weight: 800;
+          transition:
+            background .18s ease,
+            transform .18s ease,
+            box-shadow .18s ease;
+        }
+
+        .cmBack:hover {
+          transform: translateY(-2px);
+          background: rgba(255, 255, 255, .90);
+          box-shadow: 0 9px 24px rgba(50, 78, 59, .08);
+        }
+
+        .cmDivider {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          width: 150px;
+          margin: 27px 0 26px 4px;
+        }
+
+        .cmDivider > span {
+          height: 1px;
+          flex: 1;
+          background: rgba(116, 139, 105, .40);
+        }
+
+        .cmDividerLeaf {
+          color: #78936b;
+          font-size: 7px;
+          transform: rotate(45deg);
+        }
+
+        .cmContent {
+          position: relative;
+        }
+
+        .cmSectionHead {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+          gap: 18px;
+          margin-bottom: 17px;
+          padding: 0 3px;
+        }
+
+        .cmSectionHead h2 {
+          margin: 6px 0 0;
+          color: #173e31;
+          font-size: 20px;
+          line-height: 1.25;
+        }
+
+        .cmSectionCount {
+          display: inline-flex;
+          align-items: center;
+          min-height: 30px;
+          padding: 0 11px;
+          border: 1px solid rgba(122, 146, 109, .18);
+          border-radius: 999px;
+          background: rgba(247, 250, 242, .70);
+          color: #657963;
+          font-size: 10px;
+          font-weight: 800;
+          backdrop-filter: blur(8px);
+        }
+
+        .cmGrid {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 15px;
+        }
+
+        .cmCard {
+          position: relative;
+          min-width: 0;
+          min-height: 250px;
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+          padding: 19px 20px 17px;
+          border: 1px solid rgba(66, 94, 71, .13);
+          border-radius: 23px;
+          background:
+            linear-gradient(
+              145deg,
+              rgba(255,255,255,.92) 0%,
+              rgba(252,252,247,.88) 58%,
+              rgba(238,246,231,.83) 100%
+            );
+          box-shadow:
+            0 13px 35px rgba(52, 76, 58, .055),
+            inset 0 1px 0 rgba(255,255,255,.9);
+          color: inherit;
+          text-decoration: none;
+          backdrop-filter: blur(12px);
+          transition:
+            transform .22s ease,
+            border-color .22s ease,
+            box-shadow .22s ease;
+        }
+
+        .cmCard:hover {
+          transform: translateY(-5px);
+          border-color: rgba(70, 119, 73, .30);
+          box-shadow:
+            0 20px 42px rgba(52, 76, 58, .11),
+            inset 0 1px 0 rgba(255,255,255,.9);
+        }
+
+        .cmCardAccent {
+          position: absolute;
+          top: 0;
+          left: 24px;
+          width: 45px;
+          height: 3px;
+          border-radius: 0 0 8px 8px;
+          background: #a68a4b;
+          opacity: .70;
+        }
+
+        .cmCardHeader {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .cmNumber {
+          color: #9a8149;
+          font-size: 10px;
+          font-weight: 900;
+          letter-spacing: .12em;
+        }
+
+        .cmFolder {
+          display: inline-flex;
+          align-items: center;
+          min-height: 27px;
+          padding: 0 10px;
+          border: 1px solid rgba(111, 142, 100, .15);
+          border-radius: 999px;
+          background: rgba(232, 242, 225, .68);
+          color: #61755f;
+          font-size: 9px;
+          font-weight: 850;
+        }
+
+        .cmCardBody {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          gap: 18px;
+          padding: 17px 0 15px;
+        }
+
+        .cmLeaf {
+          flex: 0 0 94px;
+          width: 94px;
+          height: 94px;
+          display: grid;
+          place-items: center;
+          border-radius: 50%;
+          background:
+            radial-gradient(
+              circle at 34% 28%,
+              #f5faef,
+              #e2efd9 72%
+            );
+          box-shadow:
+            inset 0 0 0 1px rgba(92, 133, 83, .05);
+        }
+
+        .cmLeaf :global(svg) {
+          width: 72px;
+          height: 72px;
+          transition: transform .25s ease;
+        }
+
+        .cmCard:hover .cmLeaf :global(svg) {
+          transform: rotate(-4deg) scale(1.055);
+        }
+
+        .cmCardCopy {
+          min-width: 0;
+        }
+
+        .cmCardCopy h3 {
+          margin: 0;
+          color: #173f31;
+          font-size: 18px;
+          line-height: 1.25;
+        }
+
+        .cmCardCopy p {
+          margin: 8px 0 0;
+          color: #718078;
+          font-size: 11px;
+          line-height: 1.55;
+        }
+
+        .cmCardFooter {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 12px;
+          padding-top: 13px;
+          border-top: 1px solid rgba(71, 100, 76, .09);
+          color: #58705e;
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: .025em;
+        }
+
+        .cmArrow {
+          width: 31px;
+          height: 31px;
+          display: grid;
+          place-items: center;
+          border: 1px solid rgba(76, 119, 76, .14);
+          border-radius: 50%;
+          background: rgba(237, 245, 231, .82);
+          color: #397046;
+          font-size: 15px;
+          transition:
+            transform .2s ease,
+            background .2s ease;
+        }
+
+        .cmCard:hover .cmArrow {
+          transform: translateX(3px);
+          background: #dcebd3;
+        }
+
+        @media (max-width: 980px) {
+          .cmGrid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+        }
+
+        @media (max-width: 680px) {
+          .cmPage {
+            padding: 28px 15px 52px;
+          }
+
+          .cmHero {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 18px;
+          }
+
+          .cmHero h1 {
+            font-size: 34px;
+          }
+
+          .cmHero p {
+            font-size: 13px;
+          }
+
+          .cmDivider {
+            margin-top: 22px;
+            margin-bottom: 22px;
+          }
+
+          .cmSectionHead {
+            align-items: flex-start;
+          }
+
+          .cmGrid {
+            grid-template-columns: 1fr;
+          }
+
+          .cmCard {
+            min-height: 220px;
+          }
+        }
+
+        @media (max-width: 390px) {
+          .cmCardBody {
+            gap: 14px;
+          }
+
+          .cmLeaf {
+            flex-basis: 80px;
+            width: 80px;
+            height: 80px;
+          }
+
+          .cmLeaf :global(svg) {
+            width: 62px;
+            height: 62px;
+          }
+        }
+      `}</style>
+    </main>
+  );
+}

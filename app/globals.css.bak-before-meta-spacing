@@ -630,9 +630,15 @@ button,input,textarea,select{font:inherit}
 .proper-login-page{
   min-height:calc(100vh - 82px);
   padding:54px 0;
+
   background:
-    radial-gradient(circle at 25% 30%,rgba(125,148,115,.10),transparent 28%),
-    linear-gradient(120deg,#faf7f1,#f1e9dc);
+    linear-gradient(
+      rgba(248,247,239,.68),
+      rgba(248,247,239,.68)
+    ),
+    url("/menjadi-nol-nature.png") center center / cover no-repeat;
+
+  background-attachment:fixed;
 }
 .proper-login-layout{
   min-height:600px;
@@ -4907,6 +4913,2777 @@ body.reader-copy-protected
 }
 
 /* ===== MENJADI NOL — FINAL HOME (namespaced, safe for existing dashboards) ===== */
-.mn-home{--mn-green:#174d38;--mn-ink:#17352a;--mn-soft:#6f907b;--mn-line:rgba(23,77,56,.13);background:#f8f6ef;color:var(--mn-ink);min-height:100vh}.mn-home *{box-sizing:border-box}.mn-home a{text-decoration:none;color:inherit}.mn-shell{width:min(1480px,92vw);margin-inline:auto}.mn-nav{height:94px;display:flex;align-items:center;gap:28px;position:relative;z-index:5}.mn-brand{display:flex;align-items:center;gap:13px;margin-right:auto}.mn-brand img{width:62px;height:62px;object-fit:contain}.mn-brand strong{display:block;font:500 22px Georgia,serif;letter-spacing:.16em}.mn-brand small{display:block;font-size:11px;letter-spacing:.08em;margin-top:3px;color:#668074}.mn-links{display:flex;align-items:center;gap:26px;font-size:14px}.mn-links a{transition:.2s}.mn-links a:hover{color:#72917e}.mn-login,.mn-primary,.mn-secondary{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:13px 22px}.mn-login,.mn-primary{background:var(--mn-green);color:#fff!important}
-.mn-hero{
-  overflow:hidden;border-radius:0 0 52px 52px;background:radial-gradient(circle at 79% 18%,rgba(255,239,186,.72),transparent 25%),radial-gradient(circle at 92% 75%,rgba(213,232,218,.9),transparent 32%),linear-gradient(135deg,#fff 0%,#eef7f0 49%,#f8eddb 100%)}.mn-hero-grid{min-height:575px;display:grid;grid-template-columns:1.05fr .95fr;align-items:center}.mn-copy{padding:62px 0 88px}.mn-eyebrow{font-size:12px;letter-spacing:.28em;color:#5e846d;font-weight:700}.mn-copy h1{font:500 clamp(52px,6vw,91px)/.98 Georgia,serif;margin:18px 0 23px;letter-spacing:-.025em}.mn-copy h1 em{font-style:normal;color:#789683}.mn-copy p{font-size:19px;line-height:1.7;max-width:620px;color:#486056;margin:0}.mn-actions{display:flex;gap:14px;margin-top:30px}.mn-secondary{border:1px solid var(--mn-green);color:var(--mn-green)!important;background:rgba(255,255,255,.42)}.mn-art{min-height:500px;display:grid;place-items:center;position:relative}.mn-art img{width:min(570px,88%);position:relative;z-index:2;filter:drop-shadow(0 30px 42px rgba(54,83,61,.14))}.mn-glow{position:absolute;width:72%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.95),rgba(232,242,232,.35) 55%,transparent 72%)}.mn-cards{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:-48px;position:relative;z-index:3}.mn-card{background:rgba(255,255,255,.94);border:1px solid var(--mn-line);border-radius:23px;padding:25px;min-height:215px;box-shadow:0 16px 42px rgba(31,66,47,.07);transition:transform .2s,box-shadow .2s}.mn-card:hover{transform:translateY(-4px);box-shadow:0 20px 48px rgba(31,66,47,.11)}.mn-icon{width:54px;height:54px;border-radius:50%;background:#e8f1e9;display:grid;place-items:center;font-size:24px}.mn-card h2{font:500 22px Georgia,serif;margin:18px 0 9px}.mn-card p{font-size:14px;line-height:1.6;color:#60756b;margin:0 0 16px}.mn-card b{font-size:13px;color:#4e765f}.mn-footer{text-align:center;padding:70px 20px 38px;color:#5b7368}.mn-footer p{margin-bottom:12px}.mn-footer small{font-size:12px}.mn-primary,.mn-login,.mn-secondary{transition:transform .2s,opacity .2s}.mn-primary:hover,.mn-login:hover,.mn-secondary:hover{transform:translateY(-1px);opacity:.9}@media(max-width:1050px){.mn-links{gap:15px}.mn-hero-grid{grid-template-columns:1fr 1fr}.mn-cards{grid-template-columns:repeat(3,1fr)}}@media(max-width:820px){.mn-nav{height:80px}.mn-links{display:none}.mn-brand img{width:52px;height:52px}.mn-brand strong{font-size:18px}.mn-hero-grid{grid-template-columns:1fr}.mn-copy{text-align:center;padding:45px 0 25px}.mn-copy p{margin-inline:auto}.mn-actions{justify-content:center}.mn-art{min-height:380px}.mn-art img{width:min(440px,75%)}.mn-cards{grid-template-columns:1fr 1fr;margin-top:22px}}@media(max-width:540px){.mn-shell{width:min(92vw,460px)}.mn-brand small{display:none}.mn-login{padding:10px 15px;font-size:13px}.mn-copy h1{font-size:49px}.mn-copy p{font-size:16px}.mn-actions{flex-direction:column;align-items:stretch}.mn-art{min-height:310px}.mn-cards{grid-template-columns:1fr}.mn-card{min-height:auto}.mn-footer{padding-top:48px}}
+.mn-home{--mn-green:#174d38;--mn-ink:#17352a;--mn-soft:#6f907b;--mn-line:rgba(23,77,56,.13);background:#f8f6ef;color:var(--mn-ink);min-height:100vh}.mn-home *{box-sizing:border-box}.mn-home a{text-decoration:none;color:inherit}.mn-shell{width:min(1480px,92vw);margin-inline:auto}.mn-nav{height:94px;display:flex;align-items:center;gap:28px;position:relative;z-index:5}.mn-brand{display:flex;align-items:center;gap:13px;margin-right:auto}.mn-brand img{width:62px;height:62px;object-fit:contain}.mn-brand strong{display:block;font:500 22px Georgia,serif;letter-spacing:.16em}.mn-brand small{display:block;font-size:11px;letter-spacing:.08em;margin-top:3px;color:#668074}.mn-links{display:flex;align-items:center;gap:26px;font-size:14px}.mn-links a{transition:.2s}.mn-links a:hover{color:#72917e}.mn-login,.mn-primary,.mn-secondary{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:13px 22px}.mn-login,.mn-primary{background:var(--mn-green);color:#fff!important}.mn-hero{overflow:hidden;border-radius:0 0 52px 52px;background:radial-gradient(circle at 79% 18%,rgba(255,239,186,.72),transparent 25%),radial-gradient(circle at 92% 75%,rgba(213,232,218,.9),transparent 32%),linear-gradient(135deg,#fff 0%,#eef7f0 49%,#f8eddb 100%)}.mn-hero-grid{min-height:575px;display:grid;grid-template-columns:1.05fr .95fr;align-items:center}.mn-copy{padding:62px 0 88px}.mn-eyebrow{font-size:12px;letter-spacing:.28em;color:#5e846d;font-weight:700}.mn-copy h1{font:500 clamp(52px,6vw,91px)/.98 Georgia,serif;margin:18px 0 23px;letter-spacing:-.025em}.mn-copy h1 em{font-style:normal;color:#789683}.mn-copy p{font-size:19px;line-height:1.7;max-width:620px;color:#486056;margin:0}.mn-actions{display:flex;gap:14px;margin-top:30px}.mn-secondary{border:1px solid var(--mn-green);color:var(--mn-green)!important;background:rgba(255,255,255,.42)}.mn-art{min-height:500px;display:grid;place-items:center;position:relative}.mn-art img{width:min(570px,88%);position:relative;z-index:2;filter:drop-shadow(0 30px 42px rgba(54,83,61,.14))}.mn-glow{position:absolute;width:72%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.95),rgba(232,242,232,.35) 55%,transparent 72%)}.mn-cards{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:-48px;position:relative;z-index:3}.mn-card{background:rgba(255,255,255,.94);border:1px solid var(--mn-line);border-radius:23px;padding:25px;min-height:215px;box-shadow:0 16px 42px rgba(31,66,47,.07);transition:transform .2s,box-shadow .2s}.mn-card:hover{transform:translateY(-4px);box-shadow:0 20px 48px rgba(31,66,47,.11)}.mn-icon{width:54px;height:54px;border-radius:50%;background:#e8f1e9;display:grid;place-items:center;font-size:24px}.mn-card h2{font:500 22px Georgia,serif;margin:18px 0 9px}.mn-card p{font-size:14px;line-height:1.6;color:#60756b;margin:0 0 16px}.mn-card b{font-size:13px;color:#4e765f}.mn-footer{text-align:center;padding:70px 20px 38px;color:#5b7368}.mn-footer p{margin-bottom:12px}.mn-footer small{font-size:12px}.mn-primary,.mn-login,.mn-secondary{transition:transform .2s,opacity .2s}.mn-primary:hover,.mn-login:hover,.mn-secondary:hover{transform:translateY(-1px);opacity:.9}@media(max-width:1050px){.mn-links{gap:15px}.mn-hero-grid{grid-template-columns:1fr 1fr}.mn-cards{grid-template-columns:repeat(3,1fr)}}@media(max-width:820px){.mn-nav{height:80px}.mn-links{display:none}.mn-brand img{width:52px;height:52px}.mn-brand strong{font-size:18px}.mn-hero-grid{grid-template-columns:1fr}.mn-copy{text-align:center;padding:45px 0 25px}.mn-copy p{margin-inline:auto}.mn-actions{justify-content:center}.mn-art{min-height:380px}.mn-art img{width:min(440px,75%)}.mn-cards{grid-template-columns:1fr 1fr;margin-top:22px}}@media(max-width:540px){.mn-shell{width:min(92vw,460px)}.mn-brand small{display:none}.mn-login{padding:10px 15px;font-size:13px}.mn-copy h1{font-size:49px}.mn-copy p{font-size:16px}.mn-actions{flex-direction:column;align-items:stretch}.mn-art{min-height:310px}.mn-cards{grid-template-columns:1fr}.mn-card{min-height:auto}.mn-footer{padding-top:48px}}
+
+
+/* =========================================================
+   MENJADI NOL — SAFE HOMEPAGE NATURE OVERRIDE
+   ========================================================= */
+.mn-home .mn-hero{
+  position:relative;
+  overflow:hidden;
+  border-radius:0 0 52px 52px;
+  background:
+    linear-gradient(90deg,rgba(248,247,239,.82) 0%,rgba(248,247,239,.52) 38%,rgba(248,247,239,.18) 68%,rgba(248,247,239,.06) 100%),
+    url("/menjadi-nol-nature.png") center center / cover no-repeat !important;
+}
+.mn-home .mn-hero-grid{position:relative;z-index:2}
+.mn-home .mn-hero-overlay{
+  position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 72% 34%,rgba(255,245,205,.24),transparent 34%);
+}
+.mn-home .mn-art{
+  position:relative;z-index:2;min-height:500px;display:grid;place-items:center;
+}
+.mn-home .mn-art img{
+  width:min(570px,88%);height:auto;object-fit:contain;position:relative;z-index:2;
+  filter:drop-shadow(0 26px 40px rgba(39,73,51,.16));
+}
+@media(max-width:820px){.mn-home .mn-hero{background-position:62% center !important}}
+@media(max-width:540px){.mn-home .mn-hero{background-position:66% center !important}}
+
+/* =========================================================
+   MENJADI NOL — FINAL HOMEPAGE MATCH OVERRIDE
+   Aman: hanya class homepage .mn-*
+   ========================================================= */
+
+.mn-home{
+  background:#f8f6ef !important;
+}
+
+/* HERO */
+.mn-home .mn-hero{
+  position:relative !important;
+  min-height:555px !important;
+  overflow:hidden !important;
+  border-radius:0 0 52px 52px !important;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(250,249,243,.68) 0%,
+      rgba(250,249,243,.30) 30%,
+      rgba(250,249,243,.05) 58%,
+      rgba(250,249,243,0) 100%
+    ),
+    url("/menjadi-nol-nature.png") center center / cover no-repeat !important;
+}
+
+/* grid: kiri untuk copy, kanan untuk visual */
+.mn-home .mn-hero-grid{
+  position:relative !important;
+  z-index:2 !important;
+  min-height:555px !important;
+  display:grid !important;
+  grid-template-columns:minmax(500px,.95fr) minmax(520px,1.05fr) !important;
+  align-items:center !important;
+}
+
+/* copy kiri */
+.mn-home .mn-copy{
+  position:relative !important;
+  z-index:5 !important;
+  padding:56px 0 92px !important;
+}
+
+.mn-home .mn-eyebrow{
+  margin:0 0 17px !important;
+  font-size:12px !important;
+  line-height:1 !important;
+  letter-spacing:.31em !important;
+  color:#2b6650 !important;
+  font-weight:700 !important;
+}
+
+.mn-home .mn-copy h1{
+  margin:0 0 22px !important;
+  font-family:Georgia,"Times New Roman",serif !important;
+  font-size:clamp(58px,5.2vw,86px) !important;
+  line-height:.98 !important;
+  font-weight:400 !important;
+  letter-spacing:-.045em !important;
+  color:#102f23 !important;
+}
+
+.mn-home .mn-copy h1 em{
+  font-style:normal !important;
+  color:#6e927d !important;
+}
+
+.mn-home .mn-copy p{
+  margin:0 !important;
+  max-width:610px !important;
+  font-size:17px !important;
+  line-height:1.7 !important;
+  color:#304a3e !important;
+}
+
+.mn-home .mn-actions{
+  display:flex !important;
+  gap:15px !important;
+  margin-top:27px !important;
+}
+
+.mn-home .mn-primary,
+.mn-home .mn-secondary{
+  min-height:52px !important;
+  padding:0 27px !important;
+  border-radius:999px !important;
+}
+
+.mn-home .mn-primary{
+  background:#075a3b !important;
+  color:#fff !important;
+  box-shadow:0 10px 24px rgba(5,74,49,.16) !important;
+}
+
+.mn-home .mn-secondary{
+  border:1px solid #17553c !important;
+  background:rgba(255,255,255,.48) !important;
+  color:#174b35 !important;
+}
+
+/* visual lotus */
+.mn-home .mn-art{
+  position:relative !important;
+  z-index:4 !important;
+  min-height:555px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  overflow:visible !important;
+}
+
+.mn-home .mn-glow{
+  display:none !important;
+}
+
+/*
+  Gambar sumber masih punya putih.
+  multiply membuat putih menyatu ke background alam.
+*/
+.mn-home .mn-art > img{
+  position:relative !important;
+  z-index:3 !important;
+  display:block !important;
+  width:min(610px,49vw) !important;
+  max-width:none !important;
+  height:auto !important;
+  margin-left:-68px !important;
+  object-fit:contain !important;
+  background:transparent !important;
+  mix-blend-mode:multiply !important;
+  filter:drop-shadow(0 12px 18px rgba(46,76,57,.08)) !important;
+}
+
+/* quote kanan, bukan di bawah */
+.mn-home .mn-art blockquote{
+  position:absolute !important;
+  top:82px !important;
+  right:-10px !important;
+  z-index:8 !important;
+  width:220px !important;
+  margin:0 !important;
+  padding:0 !important;
+  text-align:center !important;
+  font-family:Georgia,"Times New Roman",serif !important;
+  font-size:19px !important;
+  line-height:1.55 !important;
+  font-style:italic !important;
+  font-weight:400 !important;
+  color:#27392e !important;
+  background:transparent !important;
+  border:0 !important;
+}
+
+.mn-home .mn-art blockquote::after{
+  content:"" !important;
+  display:block !important;
+  width:58px !important;
+  height:1px !important;
+  margin:17px auto 0 !important;
+  background:#5e806d !important;
+}
+
+/* CARDS */
+.mn-home .mn-cards{
+  position:relative !important;
+  z-index:10 !important;
+  display:grid !important;
+  grid-template-columns:repeat(5,1fr) !important;
+  gap:14px !important;
+  margin-top:-44px !important;
+  padding-bottom:56px !important;
+}
+
+.mn-home .mn-card{
+  min-height:220px !important;
+  padding:22px 22px 20px !important;
+  border-radius:21px !important;
+  background:rgba(255,255,255,.96) !important;
+  border:1px solid rgba(27,71,51,.08) !important;
+  box-shadow:0 16px 38px rgba(32,64,47,.075) !important;
+}
+
+.mn-home .mn-icon{
+  width:55px !important;
+  height:55px !important;
+  display:grid !important;
+  place-items:center !important;
+  border-radius:50% !important;
+  background:#e7efe6 !important;
+  font-size:24px !important;
+}
+
+.mn-home .mn-card:last-child .mn-icon{
+  background:#f7e8dc !important;
+}
+
+.mn-home .mn-card h2{
+  margin:15px 0 8px !important;
+  font-family:Georgia,"Times New Roman",serif !important;
+  font-size:21px !important;
+  font-weight:400 !important;
+  color:#153326 !important;
+}
+
+.mn-home .mn-card p{
+  min-height:44px !important;
+  margin:0 0 14px !important;
+  font-size:13px !important;
+  line-height:1.55 !important;
+  color:#577065 !important;
+}
+
+.mn-home .mn-card b{
+  font-size:13px !important;
+  color:#075437 !important;
+}
+
+/* tablet */
+@media(max-width:1050px){
+  .mn-home .mn-hero-grid{
+    grid-template-columns:1fr 1fr !important;
+  }
+
+  .mn-home .mn-art > img{
+    width:min(520px,52vw) !important;
+    margin-left:-15px !important;
+  }
+
+  .mn-home .mn-cards{
+    grid-template-columns:repeat(3,1fr) !important;
+  }
+}
+
+/* mobile */
+@media(max-width:820px){
+  .mn-home .mn-hero{
+    min-height:auto !important;
+    background-position:62% center !important;
+  }
+
+  .mn-home .mn-hero-grid{
+    min-height:auto !important;
+    grid-template-columns:1fr !important;
+  }
+
+  .mn-home .mn-copy{
+    text-align:center !important;
+    padding:48px 0 25px !important;
+  }
+
+  .mn-home .mn-copy p{
+    margin-inline:auto !important;
+  }
+
+  .mn-home .mn-actions{
+    justify-content:center !important;
+  }
+
+  .mn-home .mn-art{
+    min-height:390px !important;
+  }
+
+  .mn-home .mn-art > img{
+    width:min(500px,82vw) !important;
+    margin-left:0 !important;
+  }
+
+  .mn-home .mn-art blockquote{
+    position:absolute !important;
+    top:22px !important;
+    right:10px !important;
+    width:180px !important;
+    font-size:16px !important;
+  }
+
+  .mn-home .mn-cards{
+    grid-template-columns:repeat(2,1fr) !important;
+    margin-top:-34px !important;
+  }
+}
+
+@media(max-width:540px){
+  .mn-home .mn-copy h1{
+    font-size:48px !important;
+  }
+
+  .mn-home .mn-copy p{
+    font-size:15px !important;
+  }
+
+  .mn-home .mn-actions{
+    flex-direction:column !important;
+  }
+
+  .mn-home .mn-primary,
+  .mn-home .mn-secondary{
+    width:100% !important;
+  }
+
+  .mn-home .mn-art{
+    min-height:330px !important;
+  }
+
+  .mn-home .mn-art blockquote{
+    top:auto !important;
+    right:auto !important;
+    bottom:18px !important;
+    left:50% !important;
+    transform:translateX(-50%) !important;
+    width:220px !important;
+  }
+
+  .mn-home .mn-cards{
+    grid-template-columns:1fr !important;
+    margin-top:18px !important;
+  }
+
+  .mn-home .mn-card{
+    min-height:auto !important;
+  }
+}
+
+
+.mn-home .mn-art{
+  position:relative !important;
+  z-index:4 !important;
+
+  min-height:555px !important;
+
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+
+  overflow:visible !important;
+}
+
+.mn-home .mn-glow{
+  display:none !important;
+}
+
+.mn-home .mn-art > img{
+  position:relative !important;
+  z-index:3 !important;
+
+  display:block !important;
+
+  width:min(610px,49vw) !important;
+  max-width:none !important;
+  height:auto !important;
+
+  margin-left:-68px !important;
+
+  object-fit:contain !important;
+  background:transparent !important;
+
+  filter:
+    drop-shadow(
+      0 12px 18px
+      rgba(46,76,57,.10)
+    ) !important;
+}
+
+/* QUOTE KANAN */
+.mn-home .mn-art blockquote{
+  position:absolute !important;
+
+  top:82px !important;
+  right:-10px !important;
+
+  z-index:8 !important;
+
+  width:220px !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  text-align:center !important;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif !important;
+
+  font-size:19px !important;
+  line-height:1.55 !important;
+
+  font-style:italic !important;
+  font-weight:400 !important;
+
+  color:#27392e !important;
+
+  background:transparent !important;
+  border:0 !important;
+}
+
+.mn-home .mn-art blockquote::after{
+  content:"";
+
+  display:block;
+
+  width:58px;
+  height:1px;
+
+  margin:17px auto 0;
+
+  background:#5e806d;
+}
+
+/* ==========================================================
+   MENJADI NOL — FINAL ESTHETIC HOMEPAGE OVERRIDE
+   Scoped only to homepage .mn-* classes.
+   ========================================================== */
+
+.mn-home{
+  min-height:0 !important;
+  padding-bottom:0 !important;
+  background:#f7f4ec !important;
+}
+
+/* HERO: taller, fuller, and closer to approved reference */
+.mn-home .mn-hero{
+  position:relative !important;
+  min-height:640px !important;
+  height:640px !important;
+  overflow:hidden !important;
+  border-radius:0 0 44px 44px !important;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(248,247,240,.68) 0%,
+      rgba(248,247,240,.28) 30%,
+      rgba(248,247,240,.04) 58%,
+      rgba(248,247,240,0) 100%
+    ),
+    url("/menjadi-nol-nature.png") center 52% / cover no-repeat !important;
+}
+
+.mn-home .mn-hero-overlay{
+  position:absolute !important;
+  inset:0 !important;
+  pointer-events:none !important;
+  background:
+    radial-gradient(circle at 67% 27%, rgba(255,241,182,.24), transparent 26%) !important;
+}
+
+/* wider, larger content */
+.mn-home .mn-shell{
+  width:min(1420px,92vw) !important;
+  margin-inline:auto !important;
+}
+
+.mn-home .mn-hero-grid{
+  position:relative !important;
+  z-index:2 !important;
+  min-height:640px !important;
+  height:640px !important;
+  display:grid !important;
+  grid-template-columns:48% 52% !important;
+  align-items:center !important;
+}
+
+/* LEFT COPY */
+.mn-home .mn-copy{
+  position:relative !important;
+  z-index:5 !important;
+  padding:44px 0 86px !important;
+}
+
+.mn-home .mn-eyebrow{
+  margin:0 0 17px !important;
+  font-size:13px !important;
+  line-height:1 !important;
+  letter-spacing:.34em !important;
+  color:#2f6d54 !important;
+  font-weight:700 !important;
+}
+
+.mn-home .mn-copy h1{
+  margin:0 0 22px !important;
+  max-width:760px !important;
+  font-family:Georgia,"Times New Roman",serif !important;
+  font-size:clamp(64px,5.55vw,94px) !important;
+  line-height:.95 !important;
+  font-weight:400 !important;
+  letter-spacing:-.048em !important;
+  color:#143629 !important;
+}
+
+.mn-home .mn-copy h1 em{
+  font-style:normal !important;
+  color:#789b86 !important;
+}
+
+.mn-home .mn-copy p{
+  max-width:620px !important;
+  margin:0 !important;
+  font-size:18px !important;
+  line-height:1.65 !important;
+  color:#385247 !important;
+}
+
+.mn-home .mn-actions{
+  display:flex !important;
+  align-items:center !important;
+  gap:16px !important;
+  margin-top:28px !important;
+}
+
+.mn-home .mn-primary,
+.mn-home .mn-secondary{
+  min-height:54px !important;
+  padding:0 29px !important;
+  border-radius:999px !important;
+  font-size:15px !important;
+}
+
+.mn-home .mn-primary{
+  background:#075a3b !important;
+  color:#fff !important;
+  box-shadow:0 10px 28px rgba(5,74,49,.15) !important;
+}
+
+.mn-home .mn-secondary{
+  border:1px solid #17553c !important;
+  background:rgba(255,255,255,.52) !important;
+  color:#174b35 !important;
+}
+
+/* RIGHT LOTUS */
+.mn-home .mn-art{
+  position:relative !important;
+  z-index:4 !important;
+  min-height:640px !important;
+  height:640px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  overflow:visible !important;
+}
+
+.mn-home .mn-glow{
+  display:none !important;
+}
+
+.mn-home .mn-art > img{
+  position:relative !important;
+  z-index:3 !important;
+  display:block !important;
+  width:min(620px,46vw) !important;
+  max-width:none !important;
+  height:auto !important;
+  margin-left:-35px !important;
+  margin-top:6px !important;
+  object-fit:contain !important;
+  background:transparent !important;
+  filter:drop-shadow(0 18px 30px rgba(42,74,55,.10)) !important;
+}
+
+/* quote stays up/right */
+.mn-home .mn-art blockquote{
+  position:absolute !important;
+  top:86px !important;
+  right:4px !important;
+  z-index:8 !important;
+  width:235px !important;
+  margin:0 !important;
+  padding:0 !important;
+  text-align:center !important;
+  font-family:Georgia,"Times New Roman",serif !important;
+  font-size:20px !important;
+  line-height:1.5 !important;
+  font-style:italic !important;
+  font-weight:400 !important;
+  color:#273a30 !important;
+  background:transparent !important;
+  border:0 !important;
+}
+
+.mn-home .mn-art blockquote::after{
+  content:"" !important;
+  display:block !important;
+  width:62px !important;
+  height:1px !important;
+  margin:18px auto 0 !important;
+  background:#6c8f7b !important;
+}
+
+/* cards: larger and overlap hero more naturally */
+.mn-home .mn-cards{
+  position:relative !important;
+  z-index:12 !important;
+  display:grid !important;
+  grid-template-columns:repeat(5,1fr) !important;
+  gap:16px !important;
+  margin-top:-64px !important;
+  padding-bottom:36px !important;
+}
+
+.mn-home .mn-card{
+  min-height:235px !important;
+  padding:24px 24px 22px !important;
+  border-radius:22px !important;
+  background:rgba(255,255,255,.96) !important;
+  border:1px solid rgba(29,70,51,.08) !important;
+  box-shadow:0 18px 44px rgba(38,67,51,.08) !important;
+}
+
+.mn-home .mn-icon{
+  width:60px !important;
+  height:60px !important;
+  display:grid !important;
+  place-items:center !important;
+  border-radius:50% !important;
+  margin-bottom:14px !important;
+  background:#e7efe6 !important;
+  font-size:25px !important;
+}
+
+.mn-home .mn-card:last-child .mn-icon{
+  background:#f7e8dc !important;
+}
+
+.mn-home .mn-card h2{
+  margin:0 0 9px !important;
+  font-family:Georgia,"Times New Roman",serif !important;
+  font-size:23px !important;
+  line-height:1.15 !important;
+  font-weight:400 !important;
+  color:#143326 !important;
+}
+
+.mn-home .mn-card p{
+  min-height:50px !important;
+  margin:0 0 15px !important;
+  font-size:14px !important;
+  line-height:1.55 !important;
+  color:#587066 !important;
+}
+
+.mn-home .mn-card b{
+  font-size:13px !important;
+  color:#075437 !important;
+}
+
+/* remove the giant empty cream area before the global footer */
+.mn-home + .site-footer,
+.reader-protected-shell > .site-footer{
+  margin-top:0 !important;
+}
+
+@media(max-width:1100px){
+  .mn-home .mn-hero,
+  .mn-home .mn-hero-grid,
+  .mn-home .mn-art{
+    min-height:600px !important;
+    height:600px !important;
+  }
+
+  .mn-home .mn-copy h1{
+    font-size:clamp(56px,6.4vw,76px) !important;
+  }
+
+  .mn-home .mn-art > img{
+    width:min(520px,49vw) !important;
+    margin-left:-10px !important;
+  }
+
+  .mn-home .mn-cards{
+    grid-template-columns:repeat(3,1fr) !important;
+  }
+}
+
+@media(max-width:820px){
+  .mn-home .mn-hero{
+    height:auto !important;
+    min-height:auto !important;
+    background-position:60% center !important;
+  }
+
+  .mn-home .mn-hero-grid{
+    height:auto !important;
+    min-height:auto !important;
+    grid-template-columns:1fr !important;
+  }
+
+  .mn-home .mn-copy{
+    text-align:center !important;
+    padding:48px 0 20px !important;
+  }
+
+  .mn-home .mn-copy p{
+    margin-inline:auto !important;
+  }
+
+  .mn-home .mn-actions{
+    justify-content:center !important;
+  }
+
+  .mn-home .mn-art{
+    height:auto !important;
+    min-height:440px !important;
+  }
+
+  .mn-home .mn-art > img{
+    width:min(520px,80vw) !important;
+    margin:0 !important;
+  }
+
+  .mn-home .mn-art blockquote{
+    top:28px !important;
+    right:8px !important;
+    width:185px !important;
+    font-size:16px !important;
+  }
+
+  .mn-home .mn-cards{
+    grid-template-columns:repeat(2,1fr) !important;
+    margin-top:20px !important;
+  }
+}
+
+@media(max-width:540px){
+  .mn-home .mn-copy h1{
+    font-size:48px !important;
+  }
+
+  .mn-home .mn-copy p{
+    font-size:15px !important;
+  }
+
+  .mn-home .mn-actions{
+    flex-direction:column !important;
+  }
+
+  .mn-home .mn-primary,
+  .mn-home .mn-secondary{
+    width:100% !important;
+  }
+
+  .mn-home .mn-art{
+    min-height:360px !important;
+  }
+
+  .mn-home .mn-art > img{
+    width:92vw !important;
+  }
+
+  .mn-home .mn-art blockquote{
+    top:auto !important;
+    right:auto !important;
+    bottom:18px !important;
+    left:50% !important;
+    transform:translateX(-50%) !important;
+    width:220px !important;
+  }
+
+  .mn-home .mn-cards{
+    grid-template-columns:1fr !important;
+    margin-top:18px !important;
+  }
+
+  .mn-home .mn-card{
+    min-height:auto !important;
+  }
+}
+
+/* ==========================================================
+   MENJADI NOL — FINAL RESPONSIVE HOMEPAGE
+   Desktop / Laptop / iPad / Tablet / HP
+   ========================================================== */
+
+
+/* ==============================
+   DESKTOP BESAR
+   ============================== */
+
+.mn-home .mn-hero {
+  position: relative !important;
+
+  min-height: 760px !important;
+  height: 760px !important;
+
+  overflow: hidden !important;
+
+  border-radius: 0 0 44px 44px !important;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(248,247,240,.64) 0%,
+      rgba(248,247,240,.26) 30%,
+      rgba(248,247,240,.04) 58%,
+      rgba(248,247,240,0) 100%
+    ),
+    url("/menjadi-nol-nature.png")
+    center 55% / cover no-repeat !important;
+}
+
+
+.mn-home .mn-hero-grid {
+  min-height: 760px !important;
+  height: 760px !important;
+
+  display: grid !important;
+
+  grid-template-columns:
+    48%
+    52% !important;
+
+  align-items: center !important;
+}
+
+
+/* TEKS KIRI */
+
+.mn-home .mn-copy {
+  position: relative !important;
+  z-index: 5 !important;
+
+  padding:
+    70px
+    0
+    120px !important;
+}
+
+
+.mn-home .mn-copy h1 {
+  font-size:
+    clamp(
+      66px,
+      5.7vw,
+      98px
+    ) !important;
+
+  line-height: .96 !important;
+}
+
+
+/* LOTUS */
+
+.mn-home .mn-art {
+  position: relative !important;
+
+  min-height: 760px !important;
+  height: 760px !important;
+
+  display: flex !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+
+.mn-home .mn-art > img {
+  width:
+    min(
+      660px,
+      48vw
+    ) !important;
+
+  max-width: none !important;
+
+  height: auto !important;
+
+  margin-left: -20px !important;
+
+  object-fit: contain !important;
+}
+
+
+/* QUOTE */
+
+.mn-home .mn-art blockquote {
+  top: 105px !important;
+  right: 0 !important;
+
+  width: 240px !important;
+
+  font-size: 20px !important;
+}
+
+
+/* CARD NAIK KE AREA ALAM */
+
+.mn-home .mn-cards {
+  position: relative !important;
+
+  z-index: 10 !important;
+
+  grid-template-columns:
+    repeat(
+      5,
+      1fr
+    ) !important;
+
+  gap: 16px !important;
+
+  margin-top: -90px !important;
+
+  padding-bottom: 42px !important;
+}
+
+
+/* ==============================
+   LAPTOP
+   ============================== */
+
+@media (max-width: 1280px) {
+
+  .mn-home .mn-hero,
+  .mn-home .mn-hero-grid,
+  .mn-home .mn-art {
+    min-height: 700px !important;
+    height: 700px !important;
+  }
+
+
+  .mn-home .mn-art > img {
+    width:
+      min(
+        590px,
+        48vw
+      ) !important;
+  }
+
+
+  .mn-home .mn-cards {
+    margin-top:
+      -78px !important;
+  }
+
+}
+
+
+/* ==============================
+   iPAD LANDSCAPE / TABLET
+   ============================== */
+
+@media (max-width: 1024px) {
+
+  .mn-home .mn-shell {
+    width:
+      min(
+        94vw,
+        980px
+      ) !important;
+  }
+
+
+  .mn-home .mn-hero,
+  .mn-home .mn-hero-grid,
+  .mn-home .mn-art {
+    min-height:
+      680px !important;
+
+    height:
+      680px !important;
+  }
+
+
+  .mn-home .mn-hero-grid {
+    grid-template-columns:
+      50%
+      50% !important;
+  }
+
+
+  .mn-home .mn-copy h1 {
+    font-size:
+      clamp(
+        52px,
+        6.2vw,
+        72px
+      ) !important;
+  }
+
+
+  .mn-home .mn-art > img {
+    width:
+      min(
+        500px,
+        50vw
+      ) !important;
+
+    margin-left:
+      0 !important;
+  }
+
+
+  .mn-home .mn-art blockquote {
+    top:
+      80px !important;
+
+    right:
+      5px !important;
+
+    width:
+      185px !important;
+
+    font-size:
+      16px !important;
+  }
+
+
+  .mn-home .mn-cards {
+    grid-template-columns:
+      repeat(
+        3,
+        1fr
+      ) !important;
+
+    margin-top:
+      -65px !important;
+  }
+
+}
+
+
+/* ==============================
+   iPAD PORTRAIT
+   ============================== */
+
+@media (max-width: 820px) {
+
+  .mn-home .mn-hero {
+    min-height:
+      auto !important;
+
+    height:
+      auto !important;
+
+    background-position:
+      62%
+      center !important;
+  }
+
+
+  .mn-home .mn-hero-grid {
+    min-height:
+      auto !important;
+
+    height:
+      auto !important;
+
+    grid-template-columns:
+      1fr !important;
+  }
+
+
+  .mn-home .mn-copy {
+    text-align:
+      center !important;
+
+    padding:
+      54px
+      0
+      24px !important;
+  }
+
+
+  .mn-home .mn-copy p {
+    margin-inline:
+      auto !important;
+  }
+
+
+  .mn-home .mn-actions {
+    justify-content:
+      center !important;
+  }
+
+
+  .mn-home .mn-art {
+    min-height:
+      500px !important;
+
+    height:
+      auto !important;
+  }
+
+
+  .mn-home .mn-art > img {
+    width:
+      min(
+        560px,
+        82vw
+      ) !important;
+
+    margin:
+      0 !important;
+  }
+
+
+  .mn-home .mn-art blockquote {
+    top:
+      25px !important;
+
+    right:
+      10px !important;
+
+    width:
+      180px !important;
+
+    font-size:
+      16px !important;
+  }
+
+
+  .mn-home .mn-cards {
+    grid-template-columns:
+      repeat(
+        2,
+        1fr
+      ) !important;
+
+    margin-top:
+      20px !important;
+  }
+
+}
+
+
+/* ==============================
+   HP
+   ============================== */
+
+@media (max-width: 560px) {
+
+  .mn-home .mn-shell {
+    width:
+      calc(
+        100% - 28px
+      ) !important;
+  }
+
+
+  .mn-home .mn-hero {
+    background-position:
+      68%
+      center !important;
+  }
+
+
+  .mn-home .mn-copy h1 {
+    font-size:
+      47px !important;
+  }
+
+
+  .mn-home .mn-copy p {
+    font-size:
+      15px !important;
+  }
+
+
+  .mn-home .mn-actions {
+    flex-direction:
+      column !important;
+  }
+
+
+  .mn-home .mn-primary,
+  .mn-home .mn-secondary {
+    width:
+      100% !important;
+  }
+
+
+  .mn-home .mn-art {
+    min-height:
+      390px !important;
+  }
+
+
+  .mn-home .mn-art > img {
+    width:
+      96vw !important;
+  }
+
+
+  .mn-home .mn-art blockquote {
+    top:
+      auto !important;
+
+    right:
+      auto !important;
+
+    left:
+      50% !important;
+
+    bottom:
+      16px !important;
+
+    transform:
+      translateX(-50%) !important;
+
+    width:
+      220px !important;
+  }
+
+
+  .mn-home .mn-cards {
+    grid-template-columns:
+      1fr !important;
+
+    margin-top:
+      18px !important;
+  }
+
+
+  .mn-home .mn-card {
+    min-height:
+      auto !important;
+  }
+
+}
+
+
+/* =========================================================
+   MENJADI NOL — HOME FEATURE CARDS
+   Tempel paling bawah app/globals.css
+   ========================================================= */
+
+.mn-home .mn-cards {
+  gap: 18px;
+}
+
+/* BASE CARD */
+.mn-home .mn-card {
+  position: relative;
+  overflow: hidden;
+
+  min-height: 235px;
+  padding: 28px 25px 24px;
+
+  border-radius: 24px;
+  border: 1px solid rgba(55, 91, 72, 0.08);
+
+  box-shadow:
+    0 16px 40px rgba(55, 78, 65, 0.08);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+/* garis warna kecil di atas */
+.mn-home .mn-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 24px;
+  right: 24px;
+  height: 4px;
+  border-radius: 0 0 10px 10px;
+}
+
+/* 1 — RUANG BELAJAR */
+.mn-home .mn-card:nth-child(1) {
+  background:
+    linear-gradient(145deg, #ffffff 20%, #eef5ec 100%);
+}
+
+.mn-home .mn-card:nth-child(1)::before {
+  background: #8eae8d;
+}
+
+.mn-home .mn-card:nth-child(1) .mn-icon {
+  background: #dfeedd;
+  color: #54795b;
+}
+
+/* 2 — ARTIKEL */
+.mn-home .mn-card:nth-child(2) {
+  background:
+    linear-gradient(145deg, #ffffff 20%, #f5efdf 100%);
+}
+
+.mn-home .mn-card:nth-child(2)::before {
+  background: #c8ad72;
+}
+
+.mn-home .mn-card:nth-child(2) .mn-icon {
+  background: #f2e6c9;
+  color: #8b7040;
+}
+
+/* 3 — PERJALANAN */
+.mn-home .mn-card:nth-child(3) {
+  background:
+    linear-gradient(145deg, #ffffff 20%, #e8f3ec 100%);
+}
+
+.mn-home .mn-card:nth-child(3)::before {
+  background: #79a88a;
+}
+
+.mn-home .mn-card:nth-child(3) .mn-icon {
+  background: #dceee2;
+  color: #507b60;
+}
+
+/* 4 — SINOPSIS */
+.mn-home .mn-card:nth-child(4) {
+  background:
+    linear-gradient(145deg, #ffffff 20%, #eaf1f0 100%);
+}
+
+.mn-home .mn-card:nth-child(4)::before {
+  background: #789b98;
+}
+
+.mn-home .mn-card:nth-child(4) .mn-icon {
+  background: #dce9e7;
+  color: #496f6b;
+}
+
+/* 5 — KONTAK */
+.mn-home .mn-card:nth-child(5) {
+  background:
+    linear-gradient(145deg, #ffffff 20%, #faeee5 100%);
+}
+
+.mn-home .mn-card:nth-child(5)::before {
+  background: #d9a786;
+}
+
+.mn-home .mn-card:nth-child(5) .mn-icon {
+  background: #f8e2d3;
+  color: #a56e50;
+}
+
+/* ICON */
+.mn-home .mn-card .mn-icon {
+  width: 58px;
+  height: 58px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 18px;
+  margin-bottom: 17px;
+
+  font-size: 25px;
+
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.65);
+}
+
+/* TITLE */
+.mn-home .mn-card h2 {
+  margin: 0 0 10px;
+
+  font-size: 23px;
+  line-height: 1.15;
+  color: #173e31;
+}
+
+/* DESCRIPTION */
+.mn-home .mn-card p {
+  margin: 0;
+
+  min-height: 66px;
+
+  font-size: 14px;
+  line-height: 1.6;
+
+  color: #60766a;
+}
+
+/* LINK */
+.mn-home .mn-card b {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  margin-top: 14px;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  color: #678b75;
+}
+
+/* HOVER */
+.mn-home .mn-card:hover {
+  transform: translateY(-7px);
+
+  border-color: rgba(99, 137, 112, 0.18);
+
+  box-shadow:
+    0 22px 48px rgba(54, 79, 65, 0.14);
+}
+
+.mn-home .mn-card:hover b {
+  color: #466f59;
+}
+
+/* TABLET */
+@media (max-width: 1024px) {
+  .mn-home .mn-card {
+    min-height: 220px;
+    padding: 24px 21px;
+  }
+
+  .mn-home .mn-card h2 {
+    font-size: 21px;
+  }
+}
+
+/* HP */
+@media (max-width: 640px) {
+  .mn-home .mn-card {
+    min-height: auto;
+    padding: 22px;
+    border-radius: 20px;
+  }
+
+  .mn-home .mn-card .mn-icon {
+    width: 52px;
+    height: 52px;
+  }
+
+  .mn-home .mn-card p {
+    min-height: auto;
+  }
+}
+
+
+/* =====================================================
+   MENJADI NOL — HOME FEATURE CARDS
+   aman ditempel paling bawah CSS homepage
+===================================================== */
+
+.mn-cards {
+  position: relative;
+  z-index: 5;
+
+  width: min(1320px, calc(100% - 48px));
+  margin: -78px auto 70px;
+
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 18px;
+
+  align-items: stretch;
+}
+
+.mn-card {
+  position: relative;
+
+  min-width: 0;
+  min-height: 285px;
+  padding: 26px 24px 24px;
+
+  display: flex;
+  flex-direction: column;
+
+  text-decoration: none !important;
+  color: #173e31 !important;
+
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(65, 102, 83, 0.10);
+  border-radius: 26px;
+
+  box-shadow:
+    0 18px 45px rgba(48, 72, 60, 0.08),
+    0 3px 12px rgba(48, 72, 60, 0.04);
+
+  overflow: hidden;
+
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+
+.mn-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 5px;
+  background: var(--card-accent);
+  opacity: 0.78;
+}
+
+.mn-card::after {
+  content: "";
+  position: absolute;
+  width: 145px;
+  height: 145px;
+  right: -65px;
+  top: -65px;
+
+  border-radius: 50%;
+  background: var(--card-soft);
+
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.mn-card:hover {
+  transform: translateY(-7px);
+
+  border-color: color-mix(
+    in srgb,
+    var(--card-accent) 32%,
+    transparent
+  );
+
+  box-shadow:
+    0 26px 58px rgba(43, 72, 57, 0.13),
+    0 6px 16px rgba(43, 72, 57, 0.06);
+}
+
+/* ---------- ICON ---------- */
+
+.mn-card-icon {
+  position: relative;
+  z-index: 2;
+
+  width: 72px;
+  height: 72px;
+
+  display: grid;
+  place-items: center;
+
+  margin-bottom: 22px;
+
+  border-radius: 24px;
+  background: var(--card-soft);
+
+  color: var(--card-accent);
+}
+
+.mn-card-icon svg {
+  width: 40px;
+  height: 40px;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------- TEXT ---------- */
+
+.mn-card-content {
+  position: relative;
+  z-index: 2;
+}
+
+.mn-card h2 {
+  margin: 0 0 10px;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 24px;
+  line-height: 1.15;
+  font-weight: 500;
+
+  color: #143c2e;
+}
+
+.mn-card p {
+  margin: 0;
+
+  font-size: 14px;
+  line-height: 1.7;
+
+  color: #61736a;
+}
+
+/* ---------- LINK ---------- */
+
+.mn-card-link {
+  position: relative;
+  z-index: 2;
+
+  margin-top: auto;
+  padding-top: 22px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  color: var(--card-accent);
+}
+
+.mn-card-link span {
+  transition: transform 180ms ease;
+}
+
+.mn-card:hover .mn-card-link span {
+  transform: translateX(5px);
+}
+
+/* =====================================================
+   WARNA MASING-MASING CARD
+===================================================== */
+
+.mn-card-sage {
+  --card-accent: #668b73;
+  --card-soft: #e8f0e9;
+}
+
+.mn-card-cream {
+  --card-accent: #9b8660;
+  --card-soft: #f4eee2;
+}
+
+.mn-card-green {
+  --card-accent: #789c79;
+  --card-soft: #e9f1e5;
+}
+
+.mn-card-blue {
+  --card-accent: #668c8b;
+  --card-soft: #e6f0ef;
+}
+
+.mn-card-peach {
+  --card-accent: #a87e67;
+  --card-soft: #f7e9df;
+}
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+@media (max-width: 1100px) {
+  .mn-cards {
+    width: min(900px, calc(100% - 40px));
+
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    margin-top: -48px;
+    gap: 16px;
+  }
+
+  .mn-card {
+    min-height: 265px;
+  }
+}
+
+/* =====================================================
+   SMALL TABLET
+===================================================== */
+
+@media (max-width: 760px) {
+  .mn-cards {
+    width: min(620px, calc(100% - 30px));
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    margin-top: 28px;
+    margin-bottom: 50px;
+  }
+
+  .mn-card {
+    min-height: 250px;
+    padding: 22px;
+    border-radius: 22px;
+  }
+
+  .mn-card-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
+  }
+
+  .mn-card-icon svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .mn-card h2 {
+    font-size: 22px;
+  }
+}
+
+/* =====================================================
+   HP
+===================================================== */
+
+@media (max-width: 520px) {
+  .mn-cards {
+    width: calc(100% - 28px);
+
+    grid-template-columns: 1fr;
+
+    gap: 14px;
+    margin-top: 24px;
+  }
+
+  .mn-card {
+    min-height: 0;
+    padding: 22px;
+
+    display: grid;
+    grid-template-columns: 58px 1fr;
+    column-gap: 16px;
+    row-gap: 5px;
+
+    align-items: start;
+  }
+
+  .mn-card-icon {
+    width: 58px;
+    height: 58px;
+
+    margin: 0;
+
+    grid-column: 1;
+    grid-row: 1 / span 2;
+
+    border-radius: 18px;
+  }
+
+  .mn-card-icon svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  .mn-card-content {
+    grid-column: 2;
+  }
+
+  .mn-card h2 {
+    font-size: 21px;
+  }
+
+  .mn-card p {
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .mn-card-link {
+    grid-column: 2;
+
+    margin-top: 8px;
+    padding-top: 0;
+  }
+}
+
+/* =========================================================
+   HOME CARDS — CENTER ALIGNMENT
+   ========================================================= */
+
+.mn-home .mn-card {
+  text-align: center !important;
+  align-items: center !important;
+}
+
+.mn-home .mn-card-icon {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.mn-home .mn-card-content {
+  width: 100% !important;
+  text-align: center !important;
+}
+
+.mn-home .mn-card h2 {
+  text-align: center !important;
+}
+
+.mn-home .mn-card p {
+  text-align: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  max-width: 230px !important;
+}
+
+.mn-home .mn-card-link {
+  justify-content: center !important;
+  width: 100% !important;
+  text-align: center !important;
+}
+
+/* HP tetap rapi dan tidak gepeng */
+@media (max-width: 520px) {
+  .mn-home .mn-card {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+
+  .mn-home .mn-card-icon,
+  .mn-home .mn-card-content,
+  .mn-home .mn-card-link {
+    grid-column: auto !important;
+    grid-row: auto !important;
+  }
+}
+
+.mn-copy h1 em {
+  font-style: normal;
+  font-weight: 500 !important;
+}
+
+/* =========================================================
+   MENJADI NOL — SECTION PAGE BACKGROUNDS
+   Tentang | Perjalanan | Ruang Belajar |
+   Sinopsis | Artikel | Kontak
+   ========================================================= */
+
+.mn-section-background {
+  position: fixed;
+
+  left: 0;
+  right: 0;
+  top: 100px;
+  bottom: 0;
+
+  z-index: -1;
+
+  background-size: cover;
+  background-repeat: no-repeat;
+
+  pointer-events: none;
+}
+
+/* halaman utama section dibuat transparan
+   agar image background kelihatan */
+body:has(.mn-section-background) main {
+  background-color: transparent !important;
+}
+
+/* lapisan cream halus supaya tulisan tetap terbaca */
+body:has(.mn-section-background) {
+  background: #f7f3ea;
+}
+
+/* card tetap putih lembut */
+body:has(.mn-section-background) .panel,
+body:has(.mn-section-background) .card,
+body:has(.mn-section-background) .content-card {
+  backdrop-filter: blur(5px);
+}
+
+/* =========================
+   TABLET
+   ========================= */
+
+@media (max-width: 1024px) {
+  .mn-section-background {
+    top: 88px;
+
+    background-position: center center !important;
+  }
+}
+
+/* =========================
+   HP
+   ========================= */
+
+@media (max-width: 700px) {
+  .mn-section-background {
+    top: 76px;
+
+    background-position: center center !important;
+
+    background-size: cover;
+  }
+}
+
+
+/* =========================================================
+   FIX BACKGROUND SECTION PAGE
+   ========================================================= */
+
+.mn-section-background {
+  position: fixed !important;
+  inset: 100px 0 0 0 !important;
+
+  width: 100% !important;
+  min-height: calc(100vh - 100px) !important;
+
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  background-position: center center !important;
+
+  z-index: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Pastikan semua wrapper utama tidak nutup gambar */
+body:has(.mn-section-background),
+body:has(.mn-section-background) > div,
+body:has(.mn-section-background) main,
+body:has(.mn-section-background) section {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Konten tetap di atas background */
+body:has(.mn-section-background) main,
+body:has(.mn-section-background) section {
+  position: relative;
+  z-index: 1;
+}
+
+/* Card/list tetap putih supaya terbaca */
+body:has(.mn-section-background) .card,
+body:has(.mn-section-background) .panel,
+body:has(.mn-section-background) article,
+body:has(.mn-section-background) [class*="card"],
+body:has(.mn-section-background) [class*="panel"] {
+  background: rgba(255, 255, 255, 0.90) !important;
+  backdrop-filter: blur(8px);
+}
+
+/* Header + footer tetap di depan */
+.mn-header {
+  position: relative !important;
+  z-index: 50 !important;
+}
+
+.mn-footer {
+  position: relative !important;
+  z-index: 5 !important;
+}
+
+/* tablet */
+@media (max-width: 1024px) {
+  .mn-section-background {
+    inset: 88px 0 0 0 !important;
+    min-height: calc(100vh - 88px) !important;
+  }
+}
+
+/* hp */
+@media (max-width: 700px) {
+  .mn-section-background {
+    inset: 76px 0 0 0 !important;
+    min-height: calc(100vh - 76px) !important;
+  }
+}
+
+/* =========================================================
+   MENJADI NOL — LEBAR KARTU KONTEN GLOBAL
+   Berlaku untuk seluruh halaman inner
+   ========================================================= */
+
+.inner-page .shell.inner-card {
+  width: min(92%, 980px) !important;
+  max-width: 980px !important;
+  box-sizing: border-box;
+}
+
+/* Isi tetap punya ruang napas yang nyaman */
+.inner-page .inner-card {
+  padding-left: clamp(32px, 5vw, 64px) !important;
+  padding-right: clamp(32px, 5vw, 64px) !important;
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .inner-page .shell.inner-card {
+    width: min(92%, 900px) !important;
+  }
+
+  .inner-page .inner-card {
+    padding-left: 40px !important;
+    padding-right: 40px !important;
+  }
+}
+
+/* HP */
+@media (max-width: 640px) {
+  .inner-page .shell.inner-card {
+    width: calc(100% - 28px) !important;
+    max-width: none !important;
+  }
+
+  .inner-page .inner-card {
+    padding-left: 22px !important;
+    padding-right: 22px !important;
+  }
+}
+
+/* ==========================================================
+   MENJADI NOL — QUOTE / BLOCKQUOTE
+   Berlaku di RichTextEditor dan hasil artikel.
+   ========================================================== */
+
+.jp-rich-content blockquote,
+.article-body blockquote {
+  position: relative;
+  margin: 24px 0;
+  padding: 20px 24px 20px 28px;
+  border-left: 4px solid var(--gold, #b88632);
+  border-radius: 0 16px 16px 0;
+  background:
+    linear-gradient(135deg, rgba(232,236,223,.72), rgba(255,253,248,.92));
+  color: var(--ink, #183b29);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.08em;
+  font-style: italic;
+  line-height: 1.8;
+}
+
+.jp-rich-content blockquote::before,
+.article-body blockquote::before {
+  content: "“";
+  position: absolute;
+  top: 4px;
+  left: 9px;
+  color: var(--gold, #b88632);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 34px;
+  line-height: 1;
+  opacity: .65;
+}
+
+.jp-rich-content blockquote p,
+.article-body blockquote p {
+  margin: 0;
+}
+
+.jp-rich-content blockquote p + p,
+.article-body blockquote p + p {
+  margin-top: 10px;
+}
+
+@media(max-width:560px) {
+  .jp-rich-content blockquote,
+  .article-body blockquote {
+    margin: 20px 0;
+    padding: 17px 18px 17px 24px;
+    font-size: 1.02em;
+  }
+}
+
+/* FIX QUOTE UNTUK PAGE INTRO — Tentang, Perjalanan, dll */
+.inner-lead blockquote {
+  position: relative;
+  margin: 24px 0;
+  padding: 20px 24px 20px 28px;
+  border-left: 4px solid var(--gold, #b88632);
+  border-radius: 0 16px 16px 0;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(232,236,223,.72),
+      rgba(255,253,248,.92)
+    );
+  color: var(--ink, #183b29);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.08em;
+  font-style: italic;
+  line-height: 1.8;
+}
+
+.inner-lead blockquote::before {
+  content: "“";
+  position: absolute;
+  top: 4px;
+  left: 9px;
+  color: var(--gold, #b88632);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 34px;
+  line-height: 1;
+  opacity: .65;
+}
+
+.inner-lead blockquote p {
+  margin: 0;
+}
+
+.inner-lead blockquote p + p {
+  margin-top: 10px;
+}
+
+@media(max-width:560px) {
+  .inner-lead blockquote {
+    margin: 20px 0;
+    padding: 17px 18px 17px 24px;
+    font-size: 1.02em;
+  }
+}
+
+/* ==========================================================
+   MENJADI NOL — FINAL RICH TEXT SELECTION + QUOTE COLORS
+   ========================================================== */
+
+/* Proteksi copy halaman pembaca tetap aktif,
+   tetapi area RichTextEditor milik admin boleh diseleksi. */
+.reader-protected-shell .jp-rich-content,
+.reader-protected-shell .jp-rich-content *,
+body.reader-copy-protected .reader-protected-shell .jp-rich-content,
+body.reader-copy-protected .reader-protected-shell .jp-rich-content * {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+  -webkit-touch-callout: default !important;
+}
+
+.reader-protected-shell .jp-rich-content::selection,
+.reader-protected-shell .jp-rich-content *::selection,
+body.reader-copy-protected .reader-protected-shell .jp-rich-content::selection,
+body.reader-copy-protected .reader-protected-shell .jp-rich-content *::selection {
+  background: Highlight !important;
+  color: HighlightText !important;
+}
+
+/* Default quote = emas. */
+.jp-rich-content blockquote,
+.jp-rich-render blockquote,
+.article-body blockquote,
+.inner-lead blockquote {
+  --quote-line: #b88632;
+  border-left-color: var(--quote-line) !important;
+}
+
+/* Tanda kutip mengikuti warna garis. */
+.jp-rich-content blockquote::before,
+.jp-rich-render blockquote::before,
+.article-body blockquote::before,
+.inner-lead blockquote::before {
+  color: var(--quote-line) !important;
+}
+
+.jp-rich-content blockquote[data-quote-color="gold"],
+.jp-rich-render blockquote[data-quote-color="gold"],
+.article-body blockquote[data-quote-color="gold"],
+.inner-lead blockquote[data-quote-color="gold"] { --quote-line: #b88632; }
+
+.jp-rich-content blockquote[data-quote-color="green"],
+.jp-rich-render blockquote[data-quote-color="green"],
+.article-body blockquote[data-quote-color="green"],
+.inner-lead blockquote[data-quote-color="green"] { --quote-line: #6f865f; }
+
+.jp-rich-content blockquote[data-quote-color="dark-green"],
+.jp-rich-render blockquote[data-quote-color="dark-green"],
+.article-body blockquote[data-quote-color="dark-green"],
+.inner-lead blockquote[data-quote-color="dark-green"] { --quote-line: #183b29; }
+
+.jp-rich-content blockquote[data-quote-color="gray"],
+.jp-rich-render blockquote[data-quote-color="gray"],
+.article-body blockquote[data-quote-color="gray"],
+.inner-lead blockquote[data-quote-color="gray"] { --quote-line: #7a817b; }
+
+.jp-rich-content blockquote[data-quote-color="brown"],
+.jp-rich-render blockquote[data-quote-color="brown"],
+.article-body blockquote[data-quote-color="brown"],
+.inner-lead blockquote[data-quote-color="brown"] { --quote-line: #7a5230; }
+
+.jp-rich-content blockquote[data-quote-color="red"],
+.jp-rich-render blockquote[data-quote-color="red"],
+.article-body blockquote[data-quote-color="red"],
+.inner-lead blockquote[data-quote-color="red"] { --quote-line: #b42318; }
+
+.jp-rich-content blockquote[data-quote-color="blue"],
+.jp-rich-render blockquote[data-quote-color="blue"],
+.article-body blockquote[data-quote-color="blue"],
+.inner-lead blockquote[data-quote-color="blue"] { --quote-line: #175cd3; }
+
+/* ==========================================================
+   MENJADI NOL — FOLDER PUBLIC: WIDER CONTENT + COMPACT QUOTE
+   Khusus halaman isi folder. Tidak mengubah quote page intro.
+   ========================================================== */
+
+@media (min-width: 1100px) {
+  .folder-public-page .shell.inner-card {
+    width: min(1200px, calc(100% - 32px)) !important;
+    max-width: none !important;
+    padding-left: 34px !important;
+    padding-right: 34px !important;
+  }
+
+  .folder-public-page .folder-entry-card-full {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+  }
+}
+
+/* Body folder tetap lebar, tetapi tidak mewarisi ukuran artikel yang terlalu besar. */
+.folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body {
+  width: 100% !important;
+  max-width: none !important;
+  font-size: 16px !important;
+  line-height: 1.75 !important;
+}
+
+/* Quote khusus di dalam folder dibuat lebih ringkas.
+   white-space:normal mencegah whitespace HTML ikut membuat kotak terlalu tinggi. */
+.folder-public-page .folder-entry-body blockquote {
+  width: 100% !important;
+  max-width: none !important;
+  box-sizing: border-box !important;
+  margin: 18px 0 !important;
+  padding: 14px 20px 14px 26px !important;
+  min-height: 0 !important;
+  white-space: normal !important;
+  font-size: 1em !important;
+  line-height: 1.65 !important;
+}
+
+.folder-public-page .folder-entry-body blockquote p {
+  margin: 0 !important;
+  white-space: normal !important;
+}
+
+.folder-public-page .folder-entry-body blockquote p + p {
+  margin-top: 8px !important;
+}
+
+.folder-public-page .folder-entry-body blockquote::before {
+  top: 3px !important;
+  left: 8px !important;
+  font-size: 29px !important;
+}
+
+@media (max-width: 760px) {
+  .folder-public-page .shell.inner-card {
+    width: calc(100% - 20px) !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  .folder-public-page .folder-entry-card-full {
+    padding: 20px 18px !important;
+  }
+
+  .folder-public-page .folder-entry-body blockquote {
+    margin: 16px 0 !important;
+    padding: 13px 16px 13px 23px !important;
+  }
+}
+
+/* ==========================================================
+   MENJADI NOL — ALL PUBLIC CONTENT PAGES: 1200PX
+   Berlaku untuk halaman konten utama lintas section.
+   Home, login, dan admin tidak ikut.
+   Folder public sudah memiliki aturan 1200px tersendiri.
+   ========================================================== */
+@media (min-width: 1100px) {
+  .inner-page .shell.inner-card,
+  .learning-page > .shell,
+  .collection-page > .shell,
+  .article-index > .shell,
+  .article-read > .shell {
+    width: min(1200px, calc(100% - 40px)) !important;
+    max-width: 1200px !important;
+  }
+}
+
+/* ==========================================================
+   MENJADI NOL — FINAL 1200PX UNTUK SEMUA HALAMAN KONTEN
+   Menghapus pembatas internal yang membuat Ruang Belajar
+   dan Artikel masih terlihat sempit.
+   ========================================================== */
+@media (min-width: 1100px) {
+  /* kartu/kerangka halaman konten */
+  .inner-page .shell.inner-card,
+  .learning-page .shell,
+  .collection-page .shell,
+  .article-index .shell,
+  .article-read .shell {
+    width: min(1200px, calc(100% - 40px)) !important;
+    max-width: 1200px !important;
+  }
+
+  /* Ruang Belajar sebelumnya dibatasi 780px */
+  .learning-header,
+  .collection-header {
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  .learning-lead,
+  .collection-header > p:last-child {
+    width: 100% !important;
+    max-width: 1000px !important;
+  }
+
+  /* area grid/list artikel dan ruang belajar memakai lebar penuh */
+  .learning-grid,
+  .collection-content,
+  .article-grid {
+    width: 100% !important;
+    max-width: none !important;
+  }
+}
+
+/* ==========================================================
+   MENJADI NOL — GLOBAL READING LAYOUT
+   Semua isi tulisan publik: bidang tetap lega, area baca nyaman.
+   Quote sengaja tidak diubah.
+   ========================================================== */
+
+@media (min-width: 900px) {
+  /* Area baca tulisan di dalam folder */
+  .folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body {
+    width: min(920px, 100%) !important;
+    max-width: 920px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    font-size: 17px !important;
+    line-height: 1.8 !important;
+  }
+
+  /* Isi artikel publik yang memakai article-body */
+  .article-read .article-body {
+    width: min(920px, 100%) !important;
+    max-width: 920px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    font-size: 17px !important;
+    line-height: 1.8 !important;
+  }
+
+  /* Rich text publik lain yang berada di kartu konten */
+  .inner-page .jp-rich-render:not(.folder-entry-body),
+  .inner-page .jp-rich-content:not(.folder-entry-body) {
+    width: min(920px, 100%);
+    max-width: 920px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Paragraf normal: ritme baca lebih rapi.
+   Tidak menarget blockquote sehingga quote yang sudah bagus tetap utuh. */
+.folder-public-page .folder-entry-body > p,
+.article-read .article-body > p,
+.inner-page .jp-rich-render > p,
+.inner-page .jp-rich-content > p {
+  margin-top: 0;
+  margin-bottom: 1.15em;
+}
+
+/* Heading di dalam isi tulisan diberi ruang yang lebih natural. */
+.folder-public-page .folder-entry-body > h1,
+.folder-public-page .folder-entry-body > h2,
+.folder-public-page .folder-entry-body > h3,
+.article-read .article-body > h1,
+.article-read .article-body > h2,
+.article-read .article-body > h3 {
+  line-height: 1.3;
+  margin-top: 1.55em;
+  margin-bottom: .65em;
+}
+
+/* Mobile tetap memenuhi ruang yang tersedia dan nyaman dibaca. */
+@media (max-width: 899px) {
+  .folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body,
+  .article-read .article-body {
+    width: 100% !important;
+    max-width: none !important;
+    font-size: 16px !important;
+    line-height: 1.75 !important;
+  }
+}
+
+/* ==========================================================
+   MENJADI NOL — WIDE WRITING OVERRIDE
+   Isi tulisan memakai hampir seluruh kartu 1200px.
+   Quote tidak diubah.
+   ========================================================== */
+@media (min-width: 900px) {
+  .folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body,
+  .article-read .article-body,
+  .inner-page .jp-rich-render:not(.folder-entry-body),
+  .inner-page .jp-rich-content:not(.folder-entry-body) {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body,
+  .article-read .article-body {
+    font-size: 17px !important;
+    line-height: 1.8 !important;
+  }
+}
+
+/* ==========================================================
+   MENJADI NOL — PUBLIC RICH TEXT = EDITOR LOOK
+   Hasil save/publish mengikuti flow dan tipografi editor.
+   Quote sengaja tidak diubah.
+   ========================================================== */
+@media (min-width: 900px) {
+  .folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+
+    /* Editor tidak memakai Georgia/article typography sebagai default. */
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif !important;
+    font-size: 16px !important;
+    line-height: 1.65 !important;
+
+    /* Samakan flow dengan contentEditable: jangan pertahankan whitespace source HTML. */
+    white-space: normal !important;
+  }
+
+  .folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body p,
+  .folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body div {
+    max-width: none !important;
+    white-space: normal !important;
+  }
+
+  .folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body p {
+    margin: 0 0 1em !important;
+  }
+
+  /* Inline format dari editor tetap punya prioritas. */
+  .folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body span[style] {
+    max-width: none !important;
+  }
+}
+
+/* Jangan timpa quote yang sudah diset dan sudah tampil benar. */
+.folder-public-page .folder-entry-body blockquote,
+.folder-public-page .folder-entry-body blockquote * {
+  white-space: normal !important;
+}
+
+/* ==========================================================
+   MENJADI NOL — RUANG BELAJAR TRUE 1200PX
+   Paksa wrapper + header + grid Ruang Belajar memakai 1200px.
+   ========================================================== */
+@media (min-width: 1100px) {
+  .learning-page .shell,
+  .learning-page > .shell,
+  .collection-page .shell,
+  .collection-page > .shell {
+    width: min(1200px, calc(100% - 40px)) !important;
+    max-width: 1200px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .learning-page .learning-header,
+  .collection-page .collection-header {
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  .learning-page .learning-grid,
+  .collection-page .collection-content {
+    width: 100% !important;
+    max-width: none !important;
+  }
+}
+
+/* Rich text tables, images, and PDF */
+.jp-rich-content .jp-table-wrap,
+.jp-rich-render .jp-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  margin: 18px 0;
+}
+
+.jp-rich-content table,
+.jp-rich-render table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(255,255,255,.82);
+}
+
+.jp-rich-content th,
+.jp-rich-content td,
+.jp-rich-render th,
+.jp-rich-render td {
+  border: 1px solid rgba(24,59,41,.18);
+  padding: 10px 12px;
+  text-align: left;
+  vertical-align: top;
+  min-width: 110px;
+}
+
+.jp-rich-content th,
+.jp-rich-render th {
+  font-weight: 700;
+  background: rgba(232,236,223,.7);
+}
+
+.jp-rich-media {
+  margin: 22px auto;
+  max-width: 100%;
+  text-align: center;
+}
+
+.jp-rich-media img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+  border-radius: 16px;
+}
+
+.jp-rich-media figcaption {
+  margin-top: 8px;
+  font-size: 13px;
+  opacity: .72;
+}
+
+.jp-rich-file {
+  margin: 16px 0;
+}
+
+.jp-rich-file a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 1px solid rgba(24,59,41,.16);
+  border-radius: 12px;
+  text-decoration: none;
+}
+
+/* ==========================================================
+   MENJADI NOL — RESPONSIVE PUBLIC RICH-TEXT TABLE
+   Portrait: nyaman dengan horizontal scroll.
+   Landscape: tabel fit penuh selebar area artikel.
+   ========================================================== */
+.folder-public-page .folder-entry-body.jp-rich-render {
+  max-width:100%;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.folder-public-page .folder-entry-body.jp-rich-render table {
+  border-collapse:collapse;
+  width:max-content;
+  min-width:100%;
+  max-width:none;
+}
+.folder-public-page .folder-entry-body.jp-rich-render th,
+.folder-public-page .folder-entry-body.jp-rich-render td {
+  box-sizing:border-box;
+  vertical-align:top;
+  overflow-wrap:break-word;
+  word-break:normal;
+}
+@media (orientation:landscape) and (max-width:1366px) {
+  .folder-public-page .folder-entry-body.jp-rich-render {overflow-x:visible;}
+  .folder-public-page .folder-entry-body.jp-rich-render table {
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    table-layout:fixed !important;
+  }
+  .folder-public-page .folder-entry-body.jp-rich-render th,
+  .folder-public-page .folder-entry-body.jp-rich-render td {
+    width:auto !important;
+    min-width:0 !important;
+    max-width:none !important;
+    padding:8px 9px !important;
+    font-size:clamp(11px,1.35vw,15px) !important;
+    line-height:1.4 !important;
+    white-space:normal !important;
+    overflow-wrap:anywhere !important;
+  }
+}
+
+/* ==========================================================
+   MENJADI NOL — LANDSCAPE TABLE: FIT + HORIZONTAL SCROLL
+   Landscape tetap fit sebagai tampilan awal, tetapi wrapper
+   tetap bisa digeser kanan/kiri bila isi kolom membutuhkan ruang.
+   ========================================================== */
+@media (orientation:landscape) and (max-width:1366px) {
+  .folder-public-page .folder-entry-body.jp-rich-render {
+    width:100%;
+    max-width:100%;
+    overflow-x:auto !important;
+    overflow-y:visible;
+    -webkit-overflow-scrolling:touch;
+    touch-action:pan-x pan-y;
+    overscroll-behavior-x:contain;
+  }
+
+  .folder-public-page .folder-entry-body.jp-rich-render table {
+    width:100% !important;
+    min-width:100% !important;
+    max-width:none !important;
+    table-layout:auto !important;
+  }
+
+  .folder-public-page .folder-entry-body.jp-rich-render th,
+  .folder-public-page .folder-entry-body.jp-rich-render td {
+    min-width:clamp(120px,18vw,220px) !important;
+    width:auto !important;
+    max-width:none !important;
+    white-space:normal !important;
+    overflow-wrap:break-word !important;
+    word-break:normal !important;
+  }
+}
+
+/* ==========================================================
+   MENJADI NOL — FINAL PUBLIC READING + MEDIA/TABLE SCROLL
+   1) Teks tetap wrap normal.
+   2) Jarak paragraf/Enter dirapatkan.
+   3) Tabel rich-text dan tabel structured dapat scroll sendiri.
+   ========================================================== */
+
+/* Jangan jadikan seluruh body artikel sebagai area horizontal-scroll. */
+.folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: visible !important;
+  white-space: normal !important;
+}
+
+/* Ritme paragraf publik: rapat seperti editor. */
+.folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body > p,
+.folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body > div {
+  margin-top: 0 !important;
+  margin-bottom: 10px !important;
+  white-space: normal !important;
+  line-height: 1.65 !important;
+}
+
+/* Enter/paragraf kosong dari contentEditable tidak membuat ruang raksasa. */
+.folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body > p:empty,
+.folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body > div:empty,
+.folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body > p:has(> br:only-child),
+.folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body > div:has(> br:only-child) {
+  display: none !important;
+  margin: 0 !important;
+  min-height: 0 !important;
+}
+
+/* Quote tetap mempertahankan desain yang sudah ada. */
+.folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body > blockquote {
+  margin-top: 14px !important;
+  margin-bottom: 14px !important;
+}
+
+/* Tabel yang dibuat DI DALAM rich-text: tabel itu sendiri yang scroll. */
+.folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body > table,
+.folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body figure > table {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y;
+  border-collapse: collapse;
+}
+
+/* Structured table di bawah tulisan. */
+.folder-public-page .public-content-table-wrap {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y;
+  overscroll-behavior-x: contain;
+}
+
+.folder-public-page .public-content-table {
+  width: max-content !important;
+  min-width: max(100%, 980px) !important;
+  max-width: none !important;
+  table-layout: auto !important;
+}
+
+.folder-public-page .public-content-table th,
+.folder-public-page .public-content-table td {
+  min-width: 150px !important;
+  max-width: 280px !important;
+  white-space: normal !important;
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
+}
+
+/* Rich-text table butuh lebar nyata agar swipe kanan-kiri memang tersedia. */
+@media (max-width: 1366px) {
+  .folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body > table,
+  .folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body figure > table {
+    min-width: 980px !important;
+  }
+
+  .folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body > table th,
+  .folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body > table td,
+  .folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body figure > table th,
+  .folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body figure > table td {
+    min-width: 150px !important;
+    white-space: normal !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body > p,
+  .folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body > div {
+    margin-bottom: 8px !important;
+    line-height: 1.6 !important;
+  }
+
+  .folder-public-page .folder-entry-body.jp-rich-render.jp-rich-content.article-body > blockquote {
+    margin-top: 12px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .folder-public-page .public-content-table {
+    min-width: 900px !important;
+  }
+}
+
+
+/* =========================================================
+   MENJADI NOL — BROWSER HORIZONTAL SCROLLBAR
+   ========================================================= */
+
+html,
+body {
+  overflow-x: auto !important;
+}
+
+.folder-public-page,
+.folder-public-page .shell.inner-card,
+.folder-public-page .folder-entry-list,
+.folder-public-page .folder-entry-reader,
+.folder-public-page .folder-entry-card {
+  overflow-x: visible !important;
+}
+
+/* Teks biasa tetap membungkus; hanya media/tabel yang boleh melebar. */
+.folder-public-page .folder-entry-body,
+.folder-public-page .folder-entry-excerpt,
+.folder-public-page h1,
+.folder-public-page h2,
+.folder-public-page p {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}

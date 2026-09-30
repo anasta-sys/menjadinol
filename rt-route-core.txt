@@ -1,0 +1,228 @@
+﻿    } catch {
+      return json(
+        { error: "Request tidak valid." },
+        400
+      );
+    }
+
+    const parsed = ruangTanyaSchema.safeParse(body);
+
+    if (!parsed.success) {
+      return json(
+        { error: "Pertanyaan tidak valid." },
+        400
+      );
+    }
+
+    const message = safeRuangTanyaText(
+      parsed.data.message
+    );
+
+    if (!message) {
+      return json(
+        { error: "Pertanyaan tidak valid." },
+        400
+      );
+    }
+
+    const adminDb = createRuangTanyaAdminDb();
+
+    const requestedConversationId =
+      parsed.data.conversationId ?? null;
+
+    let conversation: { id: string } | null = null;
+
+    if (requestedConversationId) {
+      const {
+        data: existingConversation,
+        error: existingConversationError,
+      } = await adminDb
+        .from("tanya_conversations")
+        .select("id")
+        .eq("id", requestedConversationId)
+        .eq("owner_user_id", reader.userId)
+        .eq("status", "active")
+        .maybeSingle();
+
+      if (
+        existingConversationError ||
+        !existingConversation
+      ) {
+        return json(
+          { error: "Percakapan tidak ditemukan atau bukan milik akun ini." },
+          403
+        );
+      }
+
+      conversation = existingConversation;
+    } else {
+      const title =
+        message.length > 80
+          ? message.slice(0, 77) + "..."
+          : message;
+
+      const {
+        data: newConversation,
+        error: conversationError,
+      } = await adminDb
+        .from("tanya_conversations")
+        .insert({
+          reader_id: reader.readerId,
+          owner_user_id: reader.userId,
+          owner_type: reader.ownerType,
+          title,
+          status: "active",
+        })
+        .select("id")
+        .single();
+
+      if (conversationError || !newConversation) {
+        console.error(
+          "Ruang Tanya conversation:",
+          conversationError
+        );
+
+        return json(
+          { error: "Percakapan belum dapat disimpan." },
+          500
+        );
+      }
+
+      conversation = newConversation;
+    }
+    const {
+      data: userMessage,
+      error: userMessageError,
+    } = await adminDb
+      .from("tanya_messages")
+      .insert({
+        conversation_id: conversation.id,
+        role: "user",
+        content: message,
+      })
+      .select("id")
+      .single();
+
+    if (userMessageError || !userMessage) {
+      console.error(
+        "Ruang Tanya user message:",
+        userMessageError
+      );
+
+      return json(
+        { error: "Pertanyaan belum dapat disimpan." },
+        500
+      );
+    }
+
+    const {
+      data: recentMessages,
+      error: historyError,
+    } = await adminDb
+      .from("tanya_messages")
+      .select("id,role,content,created_at")
+      .eq("conversation_id", conversation.id)
+      .order("created_at", { ascending: false })
+      .limit(7);
+
+    if (historyError) {
+      console.error(
+        "Ruang Tanya history:",
+        historyError
+      );
+    }
+
+    const history: ChatHistoryItem[] =
+      (recentMessages ?? [])
+        .filter((item) => item.id !== userMessage.id)
+        .filter(
+          (item) =>
+            item.role === "user" ||
+            item.role === "assistant"
+        )
+        .slice(0, 6)
+        .reverse()
+        .map((item) => ({
+          role: item.role as "user" | "assistant",
+          content: String(item.content ?? "").slice(0, 1200),
+        }));
+
+    console.log(
+      "RT HISTORY:",
+      history.map((item) => item.role)
+    );
+
+    const knowledge =
+      await findRuangTanyaKnowledge(message);
+
+    const context =
+      buildRuangTanyaContext(knowledge);
+
+    console.log(
+      "RT KNOWLEDGE:",
+      knowledge.map((item) => ({
+        title: item.title,
+        section: item.section,
+        score: item.score,
+      }))
+    );
+
+    const answer =
+      await askQwen(message, context, history);
+
+    const {
+      data: assistantMessage,
+      error: assistantMessageError,
+    } = await adminDb
+      .from("tanya_messages")
+      .insert({
+        conversation_id: conversation.id,
+        role: "assistant",
+        content: answer,
+        parent_message_id: userMessage.id,
+      })
+      .select("id")
+      .single();
+
+    if (
+      assistantMessageError ||
+      !assistantMessage
+    ) {
+      console.error(
+        "Ruang Tanya assistant message:",
+        assistantMessageError
+      );
+
+      return json(
+        { error: "Jawaban belum dapat disimpan." },
+        500
+      );
+    }
+
+    return json({
+      answer,
+      conversationId: conversation.id,
+      userMessageId: userMessage.id,
+      messageId: assistantMessage.id,
+      userName: reader.name,
+      sources: knowledge.map((source) => ({
+        title: source.title,
+        section: source.section,
+        folderTitle: source.folderTitle,
+        slug: source.slug,
+        folderSlug: source.folderSlug,
+      })),
+      mode: "qwen-local",
+    });
+  } catch (error) {
+    console.error("Ruang Tanya:", error);
+
+    return json(
+      {
+        error:
+          "Ruang Tanya belum dapat memproses permintaan.",
+      },
+      500
+    );
+  }
+}
