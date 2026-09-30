@@ -105,6 +105,44 @@ export default function ReaderLoginClient() {
       }
 
       /*
+       * 2. Sinkronkan session browser ke cookie SSR.
+       */
+      if (!data.session) {
+        throw new Error(
+          "Session login pembaca tidak ditemukan."
+        );
+      }
+
+      const syncResponse = await fetch(
+        "/api/reader/sync-session",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "same-origin",
+          cache: "no-store",
+          body: JSON.stringify({
+            access_token:
+              data.session.access_token,
+            refresh_token:
+              data.session.refresh_token,
+          }),
+        }
+      );
+
+      if (!syncResponse.ok) {
+        const syncResult = await syncResponse
+          .json()
+          .catch(() => null);
+
+        throw new Error(
+          syncResult?.error ||
+            "Session login pembaca belum tersinkron ke server."
+        );
+      }
+
+      /*
        * Simpan nama untuk welcome screen.
        * Ini hanya untuk tampilan.
        * Hak akses tetap ditentukan server + cookie reader.
