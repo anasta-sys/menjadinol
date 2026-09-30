@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import ContentTableBuilder, { type ContentTableData } from "@/app/components/ContentTableBuilder";
 import RichTextEditor from "@/app/components/RichTextEditor";
 
@@ -185,117 +184,6 @@ export default function FolderManager({
       body,
       attachmentName: file instanceof File && file.size > 0 ? file.name : undefined,
     });
-  }
-
-  async function handleEntrySubmit(
-    event: React.FormEvent<HTMLFormElement>
-  ) {
-    event.preventDefault();
-
-    const form = event.currentTarget;
-    const submitter =
-      (event.nativeEvent as SubmitEvent).submitter as HTMLButtonElement | null;
-
-    const fd = new FormData(form);
-
-    if (submitter?.name) {
-      fd.set(submitter.name, submitter.value);
-    }
-
-    const file = fd.get("attachment");
-
-    try {
-      if (file instanceof File && file.size > 0) {
-        if (file.size > 12 * 1024 * 1024) {
-          window.alert("Ukuran PDF/JPG/PNG maksimal 12 MB.");
-          return;
-        }
-
-        const allowedTypes = [
-          "application/pdf",
-          "image/jpeg",
-          "image/png",
-        ];
-
-        if (!allowedTypes.includes(file.type)) {
-          window.alert("Hanya PDF, JPG/JPEG, atau PNG yang diizinkan.");
-          return;
-        }
-
-        const folderId = String(fd.get("folder_id") ?? "").trim();
-
-        if (!folderId) {
-          window.alert("Folder materi tidak ditemukan.");
-          return;
-        }
-
-        const permissionResponse = await fetch(
-          "/api/admin/material-upload",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              folderId,
-              fileName: file.name,
-              mime: file.type,
-              size: file.size,
-            }),
-          }
-        );
-
-        const permission = await permissionResponse.json();
-
-        if (!permissionResponse.ok) {
-          throw new Error(
-            permission?.error || "Gagal menyiapkan upload materi."
-          );
-        }
-
-        const supabase = createClient();
-
-        const { error: uploadError } = await supabase.storage
-          .from(permission.bucket)
-          .uploadToSignedUrl(
-            permission.path,
-            permission.token,
-            file,
-            {
-              contentType: file.type,
-            }
-          );
-
-        if (uploadError) {
-          throw new Error(
-            `Upload materi gagal: ${uploadError.message}`
-          );
-        }
-
-        fd.delete("attachment");
-
-        fd.set("uploaded_attachment_path", permission.path);
-        fd.set("uploaded_attachment_name", permission.fileName);
-        fd.set("uploaded_attachment_mime", permission.mime);
-        fd.set("uploaded_attachment_size", String(permission.size));
-      }
-
-      const entryId = String(fd.get("id") ?? "").trim();
-
-      if (entryId) {
-        await updateFolderEntry(fd);
-      } else {
-        await createFolderEntry(fd);
-      }
-    } catch (error) {
-      console.error("Gagal menyimpan materi:", error);
-
-      window.alert(
-        error instanceof Error
-          ? error.message
-          : "Gagal menyimpan materi."
-      );
-    }
   }
 
   return (
@@ -566,7 +454,7 @@ export default function FolderManager({
                     </p>
                   </div>
 
-                  <form onSubmit={handleEntrySubmit} className="proper-admin-form">
+                  <form action={createFolderEntry} className="proper-admin-form">
                     <input type="hidden" name="folder_id" value={folder.id}/>
 
                     <div className="admin-two-col">
@@ -690,11 +578,10 @@ export default function FolderManager({
 
                           {entryEditOpen && (
                             <form
-                              onSubmit={handleEntrySubmit}
+                              action={updateFolderEntry}
                               className="proper-admin-form folder-entry-edit-form"
                             >
                               <input type="hidden" name="id" value={entry.id}/>
-                              <input type="hidden" name="folder_id" value={entry.folder_id}/>
 
                               <div className="admin-two-col">
                                 <label>

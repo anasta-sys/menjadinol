@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 import { requireAdminSession } from "@/lib/admin-auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -103,61 +103,6 @@ async function uploadMaterial(
     name: material.originalName,
     mime: material.mime,
     size: material.size,
-  };
-}
-
-type DirectUploadedMaterial = {
-  path: string;
-  name: string;
-  mime: "application/pdf" | "image/jpeg" | "image/png";
-  size: number;
-};
-
-function getDirectUploadedMaterial(
-  fd: FormData,
-  folderId: string
-): DirectUploadedMaterial | null {
-  const path = clean(fd.get("uploaded_attachment_path"), 500);
-  const name = clean(fd.get("uploaded_attachment_name"), 180);
-  const mime = clean(fd.get("uploaded_attachment_mime"), 100);
-  const size = Number(clean(fd.get("uploaded_attachment_size"), 30));
-
-  const hasAny = Boolean(path || name || mime || size);
-
-  if (!hasAny) return null;
-
-  if (!path || !name || !mime || !Number.isFinite(size) || size <= 0) {
-    throw new Error("Metadata materi hasil upload tidak lengkap.");
-  }
-
-  if (size > 12 * 1024 * 1024) {
-    throw new Error("Ukuran PDF/JPG/PNG maksimal 12 MB.");
-  }
-
-  if (
-    mime !== "application/pdf" &&
-    mime !== "image/jpeg" &&
-    mime !== "image/png"
-  ) {
-    throw new Error("Format materi hasil upload tidak valid.");
-  }
-
-  const safeFolderId = folderId.replace(/[^a-zA-Z0-9-]/g, "");
-
-  if (
-    !safeFolderId ||
-    !path.startsWith(`${safeFolderId}/`) ||
-    path.includes("..") ||
-    path.includes("\\")
-  ) {
-    throw new Error("Lokasi materi hasil upload tidak valid.");
-  }
-
-  return {
-    path,
-    name,
-    mime,
-    size,
   };
 }
 
@@ -455,20 +400,7 @@ const status =
         ? "review"
         : "draft";
 
-  const directUploadedAttachment =
-    getDirectUploadedMaterial(fd, folderId);
-
-  const serverUploadedAttachment =
-    directUploadedAttachment
-      ? null
-      : await uploadMaterial(
-          supabase,
-          folderId,
-          fd.get("attachment")
-        );
-
-  const attachment =
-    directUploadedAttachment ?? serverUploadedAttachment;
+  const attachment = await uploadMaterial(supabase, folderId, fd.get("attachment"));
 
   if (!title || !slug || (!richTextHasContent(body) && !hasTable && !attachment)) {
     if (attachment) await removeMaterial(supabase, attachment.path);
@@ -589,25 +521,12 @@ export async function updateFolderEntry(fd: FormData) {
           : "draft";
 
   const removeAttachment = clean(fd.get("remove_attachment"), 10) === "yes";
-
-  const directUploadedAttachment =
-    getDirectUploadedMaterial(fd, entryMeta.folderId);
-
-  const serverUploadedAttachment =
-    directUploadedAttachment
-      ? null
-      : await uploadMaterial(
-          supabase,
-          entryMeta.folderId,
-          fd.get("attachment")
-        );
-
-  const newAttachment =
-    directUploadedAttachment ?? serverUploadedAttachment;
-
-  const finalAttachmentPath =
-    newAttachment?.path ??
-    (removeAttachment ? null : entryMeta.attachmentPath);
+  const newAttachment = await uploadMaterial(
+    supabase,
+    entryMeta.folderId,
+    fd.get("attachment")
+  );
+  const finalAttachmentPath = newAttachment?.path ?? (removeAttachment ? null : entryMeta.attachmentPath);
 
   if (!title || !slug || (!richTextHasContent(body) && !hasTable && !finalAttachmentPath)) {
     if (newAttachment) await removeMaterial(supabase, newAttachment.path);
