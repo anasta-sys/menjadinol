@@ -87,13 +87,43 @@ export default async function PublicEntryPage({
     ? createAdminClient()
     : supabase;
 
-  const { data: entry, error: entryError } = await entryDb
+  let targetFolderId: string | null = null;
+
+  if (folderSlug) {
+    const { data: targetFolders, error: targetFolderError } =
+      await entryDb
+        .from("content_folders")
+        .select("id,section")
+        .eq("slug", folderSlug);
+
+    if (targetFolderError || !targetFolders) {
+      notFound();
+    }
+
+    const targetFolder = targetFolders.find((item) =>
+      publicSectionMatches(item.section, section)
+    );
+
+    if (!targetFolder) {
+      notFound();
+    }
+
+    targetFolderId = targetFolder.id;
+  }
+
+  let entryQuery = entryDb
     .from("content_folder_entries")
     .select(
       "id,folder_id,title,slug,excerpt,body,table_data,attachment_path,attachment_name,attachment_mime,attachment_size,status,created_at,updated_at,writer_location,author_id"
     )
-    .eq("slug", slug)
-    .maybeSingle<Entry>();
+    .eq("slug", slug);
+
+  if (targetFolderId) {
+    entryQuery = entryQuery.eq("folder_id", targetFolderId);
+  }
+
+  const { data: entry, error: entryError } =
+    await entryQuery.maybeSingle<Entry>();
 
   if (entryError || !entry) {
     notFound();
