@@ -235,8 +235,18 @@ function statusLabel(status: LogStatus) {
   return "Diselesaikan";
 }
 
-export default async function SystemMonitoringPage() {
+export default async function SystemMonitoringPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
   await requireSuperadmin();
+
+  const params = await searchParams;
+  const requestedPage = Number.parseInt(params.page ?? "1", 10);
+  const page = Number.isFinite(requestedPage) && requestedPage > 0
+    ? requestedPage
+    : 1;
 
   const admin = getAdminClient();
 
@@ -253,6 +263,38 @@ export default async function SystemMonitoringPage() {
   }
 
   const logs = (data ?? []) as SystemLog[];
+
+  const statusPriority: Record<LogStatus, number> = {
+    new: 0,
+    read: 1,
+    resolved: 2,
+  };
+
+  const sortedLogs = [...logs].sort((a, b) => {
+    const statusDifference =
+      statusPriority[a.status] - statusPriority[b.status];
+
+    if (statusDifference !== 0) {
+      return statusDifference;
+    }
+
+    return (
+      new Date(b.created_at).getTime() -
+      new Date(a.created_at).getTime()
+    );
+  });
+
+  const PAGE_SIZE = 10;
+  const totalPages = Math.max(
+    1,
+    Math.ceil(sortedLogs.length / PAGE_SIZE)
+  );
+  const currentPage = Math.min(page, totalPages);
+  const pageStart = (currentPage - 1) * PAGE_SIZE;
+  const pageLogs = sortedLogs.slice(
+    pageStart,
+    pageStart + PAGE_SIZE
+  );
 
   const totalCount = logs.length;
   const criticalCount = logs.filter((item) => item.severity === "critical").length;
@@ -425,13 +467,49 @@ export default async function SystemMonitoringPage() {
 
           {logs.length > 0 && (
             <div style={{ display: "grid", gap: 12 }}>
-              {logs.map((log) => {
+              {pageLogs.map((log, index) => {
                 const help = getDiagnosis(log);
 
+                const showResolvedDivider =
+                  log.status === "resolved" &&
+                  (index === 0 ||
+                    pageLogs[index - 1]?.status !== "resolved");
+
                 return (
-                  <details
-                    key={log.id}
-                    style={{
+                  <div key={log.id}>
+                    {showResolvedDivider && (
+                      <div
+                        style={{
+                          margin: "22px 0 12px",
+                          paddingTop: 18,
+                          borderTop: "2px solid #d8dfd4",
+                        }}
+                      >
+                        <div
+                          style={{
+                            fontSize: 12,
+                            fontWeight: 900,
+                            letterSpacing: ".08em",
+                            textTransform: "uppercase",
+                            color: "#78917d",
+                          }}
+                        >
+                          Sudah Diselesaikan
+                        </div>
+                        <div
+                          style={{
+                            marginTop: 4,
+                            fontSize: 12,
+                            color: "#879087",
+                          }}
+                        >
+                          Kejadian di bawah ini sudah selesai ditangani.
+                        </div>
+                      </div>
+                    )}
+
+                    <details
+                      style={{
                       border: "1px solid #e1e8df",
                       borderRadius: 16,
                       overflow: "hidden",
@@ -593,9 +671,64 @@ export default async function SystemMonitoringPage() {
                         </p>
                       )}
                     </div>
-                  </details>
+                    </details>
+                  </div>
                 );
               })}
+
+              {totalPages > 1 && (
+                <nav
+                  aria-label="Halaman Monitoring Sistem"
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    flexWrap: "wrap",
+                    gap: 8,
+                    marginTop: 22,
+                    paddingTop: 18,
+                    borderTop: "1px solid #e1e8df",
+                  }}
+                >
+                  {Array.from(
+                    { length: totalPages },
+                    (_, index) => index + 1
+                  ).map((pageNumber) => {
+                    const active = pageNumber === currentPage;
+
+                    return (
+                      <Link
+                        key={pageNumber}
+                        href={`/admin/superadmin/system-monitoring?page=${pageNumber}`}
+                        aria-current={active ? "page" : undefined}
+                        style={{
+                          minWidth: 36,
+                          height: 36,
+                          padding: "0 10px",
+                          borderRadius: 9,
+                          display: "inline-flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          border: active
+                            ? "1px solid #49674e"
+                            : "1px solid #d8dfd4",
+                          background: active
+                            ? "#49674e"
+                            : "#ffffff",
+                          color: active
+                            ? "#ffffff"
+                            : "#49674e",
+                          fontSize: 13,
+                          fontWeight: 900,
+                          textDecoration: "none",
+                        }}
+                      >
+                        {pageNumber}
+                      </Link>
+                    );
+                  })}
+                </nav>
+              )}
             </div>
           )}
         </section>
