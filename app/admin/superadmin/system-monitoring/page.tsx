@@ -238,7 +238,13 @@ function statusLabel(status: LogStatus) {
 export default async function SystemMonitoringPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{
+    page?: string;
+    status?: string;
+    severity?: string;
+    role?: string;
+    q?: string;
+  }>;
 }) {
   await requireSuperadmin();
 
@@ -248,6 +254,37 @@ export default async function SystemMonitoringPage({
     ? requestedPage
     : 1;
 
+  const allowedStatuses = new Set(["new", "read", "resolved"]);
+  const allowedSeverities = new Set([
+    "critical",
+    "error",
+    "warning",
+    "info",
+  ]);
+  const allowedRoles = new Set([
+    "reader",
+    "writer",
+    "admin",
+    "superadmin",
+    "system",
+  ]);
+
+  const statusFilter = allowedStatuses.has(params.status ?? "")
+    ? params.status!
+    : "";
+
+  const severityFilter = allowedSeverities.has(params.severity ?? "")
+    ? params.severity!
+    : "";
+
+  const roleFilter = allowedRoles.has(params.role ?? "")
+    ? params.role!
+    : "";
+
+  const searchFilter = (params.q ?? "")
+    .trim()
+    .slice(0, 100);
+
   const admin = getAdminClient();
 
   const LOG_COLUMNS =
@@ -255,9 +292,43 @@ export default async function SystemMonitoringPage({
 
   const PAGE_SIZE = 10;
 
+  function applyFilters(query: any) {
+    let filtered = query;
+
+    if (statusFilter) {
+      filtered = filtered.eq("status", statusFilter);
+    }
+
+    if (severityFilter) {
+      filtered = filtered.eq("severity", severityFilter);
+    }
+
+    if (roleFilter === "system") {
+      filtered = filtered.is("user_type", null);
+    } else if (roleFilter) {
+      filtered = filtered.eq("user_type", roleFilter);
+    }
+
+    if (searchFilter) {
+      const safeSearch = searchFilter.replace(/[,%()]/g, " ");
+
+      filtered = filtered.or(
+        [
+          `user_email.ilike.%${safeSearch}%`,
+          `error_code.ilike.%${safeSearch}%`,
+          `module.ilike.%${safeSearch}%`,
+          `action.ilike.%${safeSearch}%`,
+        ].join(",")
+      );
+    }
+
+    return filtered;
+  }
+
   async function countLogs(
     column?: "severity" | "status",
-    value?: string
+    value?: string,
+    useActiveFilters = false
   ) {
     let query = admin
       .from("system_error_logs")
@@ -265,6 +336,10 @@ export default async function SystemMonitoringPage({
 
     if (column && value) {
       query = query.eq(column, value);
+    }
+
+    if (useActiveFilters) {
+      query = applyFilters(query);
     }
 
     const { count, error } = await query;
@@ -298,9 +373,21 @@ export default async function SystemMonitoringPage({
     countLogs("status", "resolved"),
   ]);
 
+  const [
+    filteredTotalCount,
+    filteredNewCount,
+    filteredReadCount,
+    filteredResolvedCount,
+  ] = await Promise.all([
+    countLogs(undefined, undefined, true),
+    countLogs("status", "new", true),
+    countLogs("status", "read", true),
+    countLogs("status", "resolved", true),
+  ]);
+
   const totalPages = Math.max(
     1,
-    Math.ceil(totalCount / PAGE_SIZE)
+    Math.ceil(filteredTotalCount / PAGE_SIZE)
   );
 
   const currentPage = Math.min(page, totalPages);
@@ -311,9 +398,9 @@ export default async function SystemMonitoringPage({
     status: LogStatus;
     count: number;
   }> = [
-    { status: "new", count: newCount },
-    { status: "read", count: readCount },
-    { status: "resolved", count: resolvedCount },
+    { status: "new", count: filteredNewCount },
+    { status: "read", count: filteredReadCount },
+    { status: "resolved", count: filteredResolvedCount },
   ];
 
   let groupStart = 0;
@@ -330,10 +417,35 @@ export default async function SystemMonitoringPage({
       const rangeFrom = overlapStart - groupStart;
       const rangeTo = overlapEnd - groupStart - 1;
 
-      const { data, error: groupError } = await admin
+      let logQuery = admin
         .from("system_error_logs")
         .select(LOG_COLUMNS)
-        .eq("status", group.status)
+        .eq("status", group.status);
+
+      if (severityFilter) {
+        logQuery = logQuery.eq("severity", severityFilter);
+      }
+
+      if (roleFilter === "system") {
+        logQuery = logQuery.is("user_type", null);
+      } else if (roleFilter) {
+        logQuery = logQuery.eq("user_type", roleFilter);
+      }
+
+      if (searchFilter) {
+        const safeSearch = searchFilter.replace(/[,%()]/g, " ");
+
+        logQuery = logQuery.or(
+          [
+            `user_email.ilike.%${safeSearch}%`,
+            `error_code.ilike.%${safeSearch}%`,
+            `module.ilike.%${safeSearch}%`,
+            `action.ilike.%${safeSearch}%`,
+          ].join(",")
+        );
+      }
+
+      const { data, error: groupError } = await logQuery
         .order("created_at", { ascending: false })
         .range(rangeFrom, rangeTo);
 
@@ -358,6 +470,37 @@ export default async function SystemMonitoringPage({
   }
 
   const logs = pageLogs;
+
+  function monitoringPageHref(pageNumber: number) {
+    const query = new URLSearchParams();
+
+    query.set("page", String(pageNumber));
+
+    if (statusFilter) {
+      query.set("status", statusFilter);
+    }
+
+    if (severityFilter) {
+      query.set("severity", severityFilter);
+    }
+
+    if (roleFilter) {
+      query.set("role", roleFilter);
+    }
+
+    if (searchFilter) {
+      query.set("q", searchFilter);
+    }
+
+    return `/admin/superadmin/system-monitoring?${query.toString()}`;
+  }
+
+  const hasActiveFilter = Boolean(
+    statusFilter ||
+      severityFilter ||
+      roleFilter ||
+      searchFilter
+  );
 
   const cards = [
     ["Total", totalCount],
@@ -547,6 +690,207 @@ export default async function SystemMonitoringPage({
             Log berstatus Diselesaikan disimpan sementara dan dibersihkan
             otomatis setelah 30 hari.
           </p>
+
+          <form
+            method="GET"
+            action="/admin/superadmin/system-monitoring"
+            style={{
+              marginBottom: 22,
+              padding: 16,
+              borderRadius: 16,
+              background: "#f7f9f5",
+              border: "1px solid #dfe7dc",
+              display: "grid",
+              gridTemplateColumns:
+                "repeat(auto-fit, minmax(160px, 1fr))",
+              gap: 12,
+              alignItems: "end",
+            }}
+          >
+            <label
+              style={{
+                display: "grid",
+                gap: 6,
+                color: "#49674e",
+                fontSize: 12,
+                fontWeight: 800,
+              }}
+            >
+              Status
+              <select
+                name="status"
+                defaultValue={statusFilter}
+                style={{
+                  width: "100%",
+                  minHeight: 42,
+                  padding: "0 12px",
+                  borderRadius: 10,
+                  border: "1px solid #cfd9cc",
+                  background: "#fff",
+                  color: "#294431",
+                  fontWeight: 700,
+                }}
+              >
+                <option value="">Semua Status</option>
+                <option value="new">Baru</option>
+                <option value="read">Dibaca</option>
+                <option value="resolved">Diselesaikan</option>
+              </select>
+            </label>
+
+            <label
+              style={{
+                display: "grid",
+                gap: 6,
+                color: "#49674e",
+                fontSize: 12,
+                fontWeight: 800,
+              }}
+            >
+              Severity
+              <select
+                name="severity"
+                defaultValue={severityFilter}
+                style={{
+                  width: "100%",
+                  minHeight: 42,
+                  padding: "0 12px",
+                  borderRadius: 10,
+                  border: "1px solid #cfd9cc",
+                  background: "#fff",
+                  color: "#294431",
+                  fontWeight: 700,
+                }}
+              >
+                <option value="">Semua Severity</option>
+                <option value="critical">Critical</option>
+                <option value="error">Error</option>
+                <option value="warning">Warning</option>
+                <option value="info">Info</option>
+              </select>
+            </label>
+
+            <label
+              style={{
+                display: "grid",
+                gap: 6,
+                color: "#49674e",
+                fontSize: 12,
+                fontWeight: 800,
+              }}
+            >
+              Role
+              <select
+                name="role"
+                defaultValue={roleFilter}
+                style={{
+                  width: "100%",
+                  minHeight: 42,
+                  padding: "0 12px",
+                  borderRadius: 10,
+                  border: "1px solid #cfd9cc",
+                  background: "#fff",
+                  color: "#294431",
+                  fontWeight: 700,
+                }}
+              >
+                <option value="">Semua Role</option>
+                <option value="reader">Pembaca</option>
+                <option value="writer">Penulis</option>
+                <option value="admin">Admin</option>
+                <option value="superadmin">Superadmin</option>
+                <option value="system">Sistem</option>
+              </select>
+            </label>
+
+            <label
+              style={{
+                display: "grid",
+                gap: 6,
+                color: "#49674e",
+                fontSize: 12,
+                fontWeight: 800,
+              }}
+            >
+              Cari
+              <input
+                type="search"
+                name="q"
+                defaultValue={searchFilter}
+                maxLength={100}
+                placeholder="Email, error code, module, action..."
+                autoComplete="off"
+                style={{
+                  width: "100%",
+                  minHeight: 42,
+                  padding: "0 12px",
+                  borderRadius: 10,
+                  border: "1px solid #cfd9cc",
+                  background: "#fff",
+                  color: "#294431",
+                  fontWeight: 700,
+                }}
+              />
+            </label>
+
+            <div
+              style={{
+                display: "flex",
+                gap: 8,
+                flexWrap: "wrap",
+              }}
+            >
+              <button
+                type="submit"
+                style={{
+                  minHeight: 42,
+                  padding: "0 16px",
+                  border: "1px solid #49674e",
+                  borderRadius: 10,
+                  background: "#49674e",
+                  color: "#fff",
+                  fontWeight: 900,
+                  cursor: "pointer",
+                }}
+              >
+                Terapkan Filter
+              </button>
+
+              {hasActiveFilter && (
+                <Link
+                  href="/admin/superadmin/system-monitoring"
+                  style={{
+                    minHeight: 42,
+                    padding: "0 16px",
+                    border: "1px solid #c8d2c5",
+                    borderRadius: 10,
+                    background: "#fff",
+                    color: "#49674e",
+                    fontWeight: 900,
+                    textDecoration: "none",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  Reset
+                </Link>
+              )}
+            </div>
+          </form>
+
+          {hasActiveFilter && (
+            <div
+              style={{
+                margin: "-8px 0 18px",
+                color: "#758078",
+                fontSize: 12,
+                fontWeight: 700,
+              }}
+            >
+              Menampilkan {filteredTotalCount} kejadian sesuai filter.
+            </div>
+          )}
 
           {error && (
             <p style={{ color: "#8c3b3b" }}>
@@ -799,7 +1143,7 @@ export default async function SystemMonitoringPage({
                     return (
                       <Link
                         key={pageNumber}
-                        href={`/admin/superadmin/system-monitoring?page=${pageNumber}`}
+                        href={monitoringPageHref(pageNumber)}
                         aria-current={active ? "page" : undefined}
                         style={{
                           minWidth: 36,
