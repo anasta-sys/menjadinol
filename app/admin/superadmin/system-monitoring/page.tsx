@@ -676,7 +676,7 @@ export default async function SystemMonitoringPage({
                 );
               })}
 
-              {totalPages > 1 && (
+              {totalPages >= 1 && (
                 <nav
                   aria-label="Halaman Monitoring Sistem"
                   style={{
