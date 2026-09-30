@@ -382,39 +382,84 @@ export default async function SystemMonitoringPage({
             gap: 14,
           }}
         >
-          {cards.map(([label, value]) => (
-            <div
-              key={String(label)}
-              style={{
-                padding: 20,
-                borderRadius: 20,
-                background: "#fff",
-                border: "1px solid rgba(73,103,78,.12)",
-                boxShadow: "0 8px 24px rgba(55,78,59,.05)",
-              }}
-            >
-              <div
-                style={{
-                  color: "#758078",
-                  fontSize: 12,
-                  fontWeight: 800,
-                }}
-              >
-                {label}
-              </div>
+          {cards.map(([label, value]) => {
+            const cardStyle =
+              label === "Critical"
+                ? {
+                    background: "#f8e8e8",
+                    border: "#e5bcbc",
+                    text: "#8c3b3b",
+                  }
+                : label === "Error"
+                  ? {
+                      background: "#faeeee",
+                      border: "#e8caca",
+                      text: "#a34b4b",
+                    }
+                  : label === "Warning"
+                    ? {
+                        background: "#fbf3dc",
+                        border: "#e5d29c",
+                        text: "#856b24",
+                      }
+                    : label === "Baru"
+                      ? {
+                          background: "#eaf3f7",
+                          border: "#bed5df",
+                          text: "#426b7b",
+                        }
+                      : label === "Dibaca"
+                        ? {
+                            background: "#f1edf7",
+                            border: "#d5c8e4",
+                            text: "#67547d",
+                          }
+                        : label === "Diselesaikan"
+                          ? {
+                              background: "#eaf4e8",
+                              border: "#c4d9bf",
+                              text: "#49674e",
+                            }
+                          : {
+                              background: "#edf3ea",
+                              border: "#cbd9c7",
+                              text: "#36583e",
+                            };
 
+            return (
               <div
+                key={String(label)}
                 style={{
-                  marginTop: 8,
-                  color: "#294431",
-                  fontSize: 30,
-                  fontWeight: 900,
+                  padding: 20,
+                  borderRadius: 20,
+                  background: cardStyle.background,
+                  border: `1px solid ${cardStyle.border}`,
+                  boxShadow: "0 8px 24px rgba(55,78,59,.05)",
                 }}
               >
-                {value}
+                <div
+                  style={{
+                    color: cardStyle.text,
+                    fontSize: 12,
+                    fontWeight: 800,
+                  }}
+                >
+                  {label}
+                </div>
+
+                <div
+                  style={{
+                    marginTop: 8,
+                    color: cardStyle.text,
+                    fontSize: 30,
+                    fontWeight: 900,
+                  }}
+                >
+                  {value}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </section>
 
         <section
