@@ -12,10 +12,13 @@ function cleanString(value: unknown, max: number) {
 }
 
 export async function POST(request: Request) {
+  let monitoringEmail: string | null = null;
+
   try {
     const body = await request.json();
 
     const email = cleanString(body?.email, 320).toLowerCase();
+    monitoringEmail = email || null;
     const password =
       typeof body?.password === "string" ? body.password : "";
 
@@ -374,7 +377,7 @@ await logSystemError({
             technicalMessage: error instanceof Error ? error.message : String(error),
             userMessage: "Permohonan akses mengalami gangguan.",
             userId: null,
-            userEmail: null,
+            userEmail: monitoringEmail,
             userType: "writer",
             requestPath: "/api/writer-register",
           });

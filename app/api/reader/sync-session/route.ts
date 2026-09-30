@@ -1,5 +1,6 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { logSystemError } from "@/lib/system-monitoring/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -78,6 +79,23 @@ export async function POST(request: NextRequest) {
   } = await supabase.auth.getUser(accessToken);
 
   if (userError || !userData.user) {
+    await logSystemError({
+      severity: "warning",
+      module: "reader",
+      action: "sync-session-user-invalid",
+      errorCode:
+        userError?.code ||
+        "READER_SYNC_SESSION_USER_INVALID",
+      technicalMessage:
+        userError?.message ||
+        "Browser session tidak menghasilkan user yang valid.",
+      userMessage: "Session browser tidak valid.",
+      userId: null,
+      userEmail: null,
+      userType: "reader",
+      requestPath: "/api/reader/sync-session",
+    });
+
     return noStore(
       { error: "Session browser tidak valid." },
       401
@@ -93,6 +111,23 @@ export async function POST(request: NextRequest) {
   });
 
   if (sessionError || !sessionData.session) {
+    await logSystemError({
+      severity: "error",
+      module: "reader",
+      action: "sync-session-set-session",
+      errorCode:
+        sessionError?.code ||
+        "READER_SYNC_SESSION_SET_SESSION_FAILED",
+      technicalMessage:
+        sessionError?.message ||
+        "Session Supabase tidak tersedia setelah setSession.",
+      userMessage: "Session tidak dapat disimpan.",
+      userId: userData.user.id,
+      userEmail: userData.user.email ?? null,
+      userType: "reader",
+      requestPath: "/api/reader/sync-session",
+    });
+
     return noStore(
       { error: "Session tidak dapat disimpan." },
       401
@@ -100,6 +135,20 @@ export async function POST(request: NextRequest) {
   }
 
   if (sessionData.user?.id !== userData.user.id) {
+    await logSystemError({
+      severity: "critical",
+      module: "reader",
+      action: "sync-session-identity-mismatch",
+      errorCode: "READER_SYNC_SESSION_IDENTITY_MISMATCH",
+      technicalMessage:
+        "User ID setelah setSession tidak sama dengan user yang telah diverifikasi.",
+      userMessage: "Identitas session tidak sesuai.",
+      userId: userData.user.id,
+      userEmail: userData.user.email ?? null,
+      userType: "reader",
+      requestPath: "/api/reader/sync-session",
+    });
+
     await supabase.auth.signOut();
 
     return noStore(

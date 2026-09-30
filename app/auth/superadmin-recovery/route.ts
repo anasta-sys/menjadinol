@@ -19,6 +19,9 @@ export const dynamic =
 export async function GET(
   request: NextRequest
 ) {
+  let monitoringUserId: string | null = null;
+  let monitoringEmail: string | null = null;
+
   const requestUrl =
     new URL(
       request.url
@@ -100,6 +103,9 @@ export async function GET(
      * ROLE CHECK memakai
      * service role di server.
      */
+    monitoringUserId = data.user.id;
+    monitoringEmail = data.user.email ?? null;
+
     const admin =
       createAdminClient();
 
@@ -187,8 +193,8 @@ export async function GET(
             errorCode: "RECOVERY_UNHANDLED",
             technicalMessage: error instanceof Error ? error.message : String(error),
             userMessage: "Pemulihan akun mengalami gangguan.",
-            userId: null,
-            userEmail: null,
+            userId: monitoringUserId,
+            userEmail: monitoringEmail,
             userType: "superadmin",
             requestPath: "/auth/superadmin-recovery",
           });

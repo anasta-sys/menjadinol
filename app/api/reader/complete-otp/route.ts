@@ -139,6 +139,9 @@ function parseDeviceInfo(
 export async function POST(
   request: NextRequest
 ) {
+  let monitoringUserId: string | null = null;
+  let monitoringEmail: string | null = null;
+
   try {
     const url =
       process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -196,6 +199,9 @@ export async function POST(
       claimsData?.claims?.email as
         | string
         | undefined;
+
+    monitoringUserId = userId ?? null;
+    monitoringEmail = email ?? null;
 
     if (
       claimsError ||
@@ -624,8 +630,8 @@ export async function POST(
         errorCode: "READER_COMPLETE_OTP_UNHANDLED",
         technicalMessage: error instanceof Error ? error.message : String(error),
         userMessage: "Verifikasi OTP pembaca mengalami gangguan.",
-        userId: null,
-        userEmail: null,
+        userId: monitoringUserId,
+        userEmail: monitoringEmail,
         userType: "reader",
         requestPath: "/api/reader/complete-otp",
       });

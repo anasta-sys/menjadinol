@@ -7,6 +7,9 @@ import { logSystemError } from "@/lib/system-monitoring/logger";
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
+  let monitoringUserId: string | null = null;
+  let monitoringEmail: string | null = null;
+
   const requestUrl = new URL(request.url);
   const tokenHash =
     requestUrl.searchParams.get("token_hash");
@@ -54,6 +57,9 @@ export async function GET(request: NextRequest) {
     }
 
     // Validasi role dilakukan di server memakai service role.
+    monitoringUserId = data.user.id;
+    monitoringEmail = data.user.email ?? null;
+
     const admin = createAdminClient();
 
     const { data: profile, error: profileError } =
@@ -120,8 +126,8 @@ export async function GET(request: NextRequest) {
             errorCode: "RECOVERY_UNHANDLED",
             technicalMessage: error instanceof Error ? error.message : String(error),
             userMessage: "Pemulihan akun mengalami gangguan.",
-            userId: null,
-            userEmail: null,
+            userId: monitoringUserId,
+            userEmail: monitoringEmail,
             userType: "writer",
             requestPath: "/auth/writer-recovery",
           });

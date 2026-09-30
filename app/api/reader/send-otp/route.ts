@@ -44,6 +44,12 @@ import { logSystemError } from "@/lib/system-monitoring/logger";
 export async function POST(
   request: NextRequest
 ) {
+  /*
+   * Hanya konteks Monitoring Sistem.
+   * Bukan sumber autentikasi Reader.
+   */
+  let monitoringEmail: string | null = null;
+
   try {
 
     /*
@@ -67,6 +73,7 @@ export async function POST(
           /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(candidateEmail)
         ) {
           requestEmail = candidateEmail;
+          monitoringEmail = candidateEmail;
         }
       }
     } catch {
@@ -657,9 +664,14 @@ export async function POST(
         technicalMessage: error instanceof Error ? error.message : String(error),
         userMessage: "Terjadi gangguan saat mengirim OTP pembaca.",
         userId: null,
-        userEmail: null,
+        userEmail: monitoringEmail,
         userType: "reader",
         requestPath: "/api/reader/send-otp",
+        metadata: {
+          emailSource: monitoringEmail
+            ? "request-input-unverified"
+            : "unavailable",
+        },
       });
 
     return NextResponse.json(

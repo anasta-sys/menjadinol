@@ -151,18 +151,6 @@ function getDiagnosis(log: SystemLog) {
   }
 
   if (
-    code.includes("OTP") ||
-    action.includes("otp") ||
-    module.includes("otp")
-  ) {
-    return {
-      diagnosis: "Gangguan teknis pada proses OTP.",
-      solution:
-        "Periksa akses database OTP, masa berlaku OTP, proses penyimpanan/pembaruan OTP, dan log server. OTP salah atau kedaluwarsa karena input pengguna tidak perlu dianggap sebagai gangguan sistem.",
-    };
-  }
-
-  if (
     code.includes("SESSION") ||
     action.includes("session") ||
     message.includes("session")
@@ -171,6 +159,18 @@ function getDiagnosis(log: SystemLog) {
       diagnosis: "Sistem gagal membuat atau mempertahankan sesi pengguna.",
       solution:
         "Periksa tabel sesi, permission/RLS, koneksi Supabase, cookie/session server, dan log server pada waktu kejadian.",
+    };
+  }
+
+  if (
+    code.includes("OTP") ||
+    action.includes("otp") ||
+    module.includes("otp")
+  ) {
+    return {
+      diagnosis: "Gangguan teknis pada proses OTP.",
+      solution:
+        "Periksa akses database OTP, masa berlaku OTP, proses penyimpanan/pembaruan OTP, dan log server. OTP salah atau kedaluwarsa karena input pengguna tidak perlu dianggap sebagai gangguan sistem.",
     };
   }
 
@@ -563,9 +563,7 @@ export default async function SystemMonitoringPage() {
                             <form action={updateLogStatus}>
                               <input type="hidden" name="id" value={log.id} />
                               <input type="hidden" name="status" value="read" />
-                              <ActionButton>
-                                Tandai Dibaca
-                              </ActionButton>
+                              <ActionButton variant="read">Tandai Dibaca</ActionButton>
                             </form>
                           )}
 
@@ -576,9 +574,7 @@ export default async function SystemMonitoringPage() {
                               name="status"
                               value="resolved"
                             />
-                            <ActionButton>
-                              Tandai Diselesaikan
-                            </ActionButton>
+                            <ActionButton variant="resolved">Tandai Diselesaikan</ActionButton>
                           </form>
                         </div>
                       )}
@@ -690,23 +686,63 @@ function Panel({
 
 function ActionButton({
   children,
+  variant,
 }: {
   children: React.ReactNode;
+  variant: "read" | "resolved";
 }) {
+  const isRead = variant === "read";
+
   return (
-    <button
-      type="submit"
-      style={{
-        border: 0,
+    <>
+      <style>{`
+        .monitoring-action:hover {
+          transform: translateY(-2px);
+        }
+
+        .monitoring-action:active {
+          transform: translateY(0);
+        }
+
+        .monitoring-action:focus-visible {
+          outline: 3px solid rgba(181, 145, 62, 0.32);
+          outline-offset: 3px;
+        }
+
+        .monitoring-action-read:hover {
+          background: #dfe9dc !important;
+          color: #294431 !important;
+          border-color: #49674e !important;
+          box-shadow: 0 6px 16px rgba(73, 103, 78, 0.16);
+        }
+
+        .monitoring-action-resolved:hover {
+          background: #b5913e !important;
+          color: #ffffff !important;
+          border-color: #b5913e !important;
+          box-shadow: 0 6px 16px rgba(181, 145, 62, 0.24);
+        }
+      `}</style>
+
+      <button
+        type="submit"
+        className={`monitoring-action monitoring-action-${variant}`}
+        style={{
+        border: isRead
+          ? "1px solid #78917d"
+          : "1px solid #49674e",
         borderRadius: 999,
-        padding: "10px 16px",
-        background: "#49674e",
-        color: "#fff",
+        padding: "10px 17px",
+        background: isRead ? "#f7f5e9" : "#49674e",
+        color: isRead ? "#36583e" : "#ffffff",
         fontWeight: 900,
         cursor: "pointer",
+        transition:
+          "background-color 160ms ease, color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease",
       }}
     >
       {children}
     </button>
+    </>
   );
 }
