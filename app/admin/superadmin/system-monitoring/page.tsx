@@ -500,7 +500,7 @@ export default async function SystemMonitoringPage() {
                             overflowWrap: "anywhere",
                           }}
                         >
-                          {log.user_email ?? "Sistem"}
+                          {log.user_email ?? "Email tidak tercatat"}
                         </span>
                       </div>
                     </summary>
