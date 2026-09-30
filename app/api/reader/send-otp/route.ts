@@ -47,6 +47,33 @@ export async function POST(
   try {
 
     /*
+     * Email dari request hanya untuk konteks Monitoring Sistem.
+     * Autentikasi Reader tetap menggunakan session Supabase.
+     */
+    let requestEmail: string | null = null;
+
+    try {
+      const requestBody = await request.json();
+
+      if (
+        requestBody &&
+        typeof requestBody.email === "string"
+      ) {
+        const candidateEmail =
+          requestBody.email.trim().toLowerCase();
+
+        if (
+          candidateEmail.length <= 254 &&
+          /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(candidateEmail)
+        ) {
+          requestEmail = candidateEmail;
+        }
+      }
+    } catch {
+      requestEmail = null;
+    }
+
+    /*
      * =====================================
      * CEK ENV SERVER
      * =====================================
@@ -197,11 +224,16 @@ export async function POST(
         userMessage:
           "Sesi login pembaca tidak ditemukan.",
         userId: userId ?? null,
-        userEmail: email ?? null,
+        userEmail: email ?? requestEmail,
         userType: "reader",
         requestPath: "/api/reader/send-otp",
         metadata: {
           source: "reader-login",
+          emailSource: email
+            ? "verified-session"
+            : requestEmail
+              ? "request-input-unverified"
+              : "unavailable",
         },
       });
 
