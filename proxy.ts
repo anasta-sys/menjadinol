@@ -21,6 +21,7 @@ const PUBLIC_ROUTES = [
   "/api/reader/send-otp",
   "/api/reader/complete-otp",
   "/api/reader/forgot-password",
+  "/api/reader/sync-session",
 
   /* =========================
    * WRITER
