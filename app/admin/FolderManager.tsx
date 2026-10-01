@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 import ContentTableBuilder, { type ContentTableData } from "@/app/components/ContentTableBuilder";
 import RichTextEditor from "@/app/components/RichTextEditor";
 
@@ -186,6 +187,102 @@ export default function FolderManager({
     });
   }
 
+  async function handleEntrySubmit(
+    event: React.FormEvent<HTMLFormElement>
+  ) {
+    event.preventDefault();
+
+    const form = event.currentTarget;
+    const fd = new FormData(form);
+    const file = fd.get("attachment");
+
+    try {
+      if (file instanceof File && file.size > 0) {
+        const folderId = String(fd.get("folder_id") ?? "").trim();
+
+        if (!folderId) {
+          throw new Error("Folder materi tidak valid.");
+        }
+
+        const response = await fetch("/api/admin/material-upload", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            folderId,
+            fileName: file.name,
+            mime: file.type,
+            size: file.size,
+          }),
+        });
+
+        const permission = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          throw new Error(
+            permission?.error || "Gagal menyiapkan upload materi."
+          );
+        }
+
+        const supabase = createClient();
+
+        const { error: uploadError } = await supabase.storage
+          .from(permission.bucket)
+          .uploadToSignedUrl(
+            permission.path,
+            permission.token,
+            file
+          );
+
+        if (uploadError) {
+          throw new Error(
+            `Upload materi gagal: ${uploadError.message}`
+          );
+        }
+
+        fd.delete("attachment");
+
+        fd.set(
+          "uploaded_attachment_path",
+          permission.path
+        );
+
+        fd.set(
+          "uploaded_attachment_name",
+          permission.fileName
+        );
+
+        fd.set(
+          "uploaded_attachment_mime",
+          permission.mime
+        );
+
+        fd.set(
+          "uploaded_attachment_size",
+          String(permission.size)
+        );
+      }
+
+      const entryId = String(fd.get("id") ?? "").trim();
+
+      if (entryId) {
+        await updateFolderEntry(fd);
+      } else {
+        await createFolderEntry(fd);
+      }
+
+      window.location.reload();
+    } catch (error) {
+      console.error("Gagal menyimpan materi:", error);
+
+      window.alert(
+        error instanceof Error
+          ? error.message
+          : "Gagal menyimpan materi."
+      );
+    }
+  }
   return (
     <section className="proper-dashboard-card folder-manager-card">
       <div className="dashboard-list-head">
@@ -454,7 +551,7 @@ export default function FolderManager({
                     </p>
                   </div>
 
-                  <form action={createFolderEntry} className="proper-admin-form">
+                  <form onSubmit={handleEntrySubmit} className="proper-admin-form">
                     <input type="hidden" name="folder_id" value={folder.id}/>
 
                     <div className="admin-two-col">
@@ -577,10 +674,7 @@ export default function FolderManager({
                           </div>
 
                           {entryEditOpen && (
-                            <form
-                              action={updateFolderEntry}
-                              className="proper-admin-form folder-entry-edit-form"
-                            >
+                            <form onSubmit={handleEntrySubmit} className="proper-admin-form folder-entry-edit-form">
                               <input type="hidden" name="id" value={entry.id}/>
 
                               <div className="admin-two-col">

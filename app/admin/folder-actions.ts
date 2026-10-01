@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 import { requireAdminSession } from "@/lib/admin-auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -103,6 +103,49 @@ async function uploadMaterial(
     name: material.originalName,
     mime: material.mime,
     size: material.size,
+  };
+}
+
+function getDirectUploadedMaterial(
+  fd: FormData,
+  folderId: string
+) {
+  const path = clean(fd.get("uploaded_attachment_path"), 500);
+  const name = clean(fd.get("uploaded_attachment_name"), 255);
+  const mime = clean(fd.get("uploaded_attachment_mime"), 100);
+  const sizeRaw = clean(fd.get("uploaded_attachment_size"), 30);
+
+  if (!path && !name && !mime && !sizeRaw) {
+    return null;
+  }
+
+  const size = Number(sizeRaw);
+
+  if (!path || !name || !mime || !Number.isFinite(size) || size <= 0) {
+    throw new Error("Metadata materi hasil upload tidak valid.");
+  }
+
+  if (!path.startsWith(`${folderId}/`)) {
+    throw new Error("Lokasi materi tidak sesuai dengan folder.");
+  }
+
+  if (
+    mime !== "application/pdf" &&
+    mime !== "image/jpeg" &&
+    mime !== "image/png"
+  ) {
+    throw new Error("Jenis materi tidak diizinkan.");
+  }
+
+  if (size > 12 * 1024 * 1024) {
+    throw new Error("Ukuran materi maksimal 12 MB.");
+  }
+
+  return {
+    path,
+    name,
+    mime,
+    size,
   };
 }
 
@@ -400,7 +443,7 @@ const status =
         ? "review"
         : "draft";
 
-  const attachment = await uploadMaterial(supabase, folderId, fd.get("attachment"));
+  const attachment = getDirectUploadedMaterial(fd, folderId);
 
   if (!title || !slug || (!richTextHasContent(body) && !hasTable && !attachment)) {
     if (attachment) await removeMaterial(supabase, attachment.path);
