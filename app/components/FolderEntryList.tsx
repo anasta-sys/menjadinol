@@ -524,6 +524,30 @@ export function EntryContent({
           RESPONSIVE PDF / IMAGE
          ============================== */}
 
+      <style jsx global>{`
+        @media (min-width: 768px) {
+          .entry-index-list {
+            display: grid !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+            align-items: stretch;
+          }
+
+          .entry-index-list > * {
+            min-width: 0;
+            height: 100%;
+            box-sizing: border-box;
+          }
+        }
+
+        @media (max-width: 767px) {
+          .entry-index-list {
+            display: grid !important;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 12px;
+          }
+        }
+      `}</style>
       <style jsx>{`
         .material-attachment {
           width: 100%;
@@ -657,6 +681,19 @@ export default function FolderEntryList({
   folderSlug: string;
 }) {
   const searchParams = useSearchParams();
+  const PAGE_SIZE = 10;
+  const [page, setPage] = useState(1);
+  const [paginationMounted, setPaginationMounted] = useState(false);
+
+  useEffect(() => {
+    setPaginationMounted(true);
+  }, []);
+
+  const totalPages = Math.max(1, Math.ceil(entries.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const startIndex = (currentPage - 1) * PAGE_SIZE;
+  const visibleEntries = entries.slice(startIndex, startIndex + PAGE_SIZE);
+
   const entryFromUrl = searchParams.get("entry");
   const [selectedId, setSelectedId] =
     useState<string | null>(() => entryFromUrl);
@@ -718,7 +755,7 @@ export default function FolderEntryList({
       </div>
 
       <div className="entry-index-list">
-        {entries.map((entry, index) => (
+        {visibleEntries.map((entry, index) => (
           <button
             key={entry.id}
             type="button"
@@ -726,7 +763,7 @@ export default function FolderEntryList({
             onClick={() => { window.location.href = `/${publicSectionPath(section)}/${encodeURIComponent(folderSlug)}/${encodeURIComponent(entry.slug)}`; }}
           >
             <span className="entry-index-no">
-              {String(index + 1).padStart(2, "0")}
+              {String(startIndex + index + 1).padStart(2, "0")}
             </span>
 
             <span className="entry-index-text">
@@ -755,6 +792,99 @@ export default function FolderEntryList({
           </button>
         ))}
       </div>
+      {paginationMounted && totalPages > 1 && (
+        <nav className="entry-pagination" aria-label="Navigasi halaman tulisan">
+          <button
+            type="button"
+            disabled={currentPage === 1}
+            onClick={() => setPage(currentPage - 1)}
+          >
+            Sebelumnya
+          </button>
+
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
+            <button
+              key={number}
+              type="button"
+              aria-current={currentPage === number ? "page" : undefined}
+              onClick={() => setPage(number)}
+            >
+              [{number}]
+            </button>
+          ))}
+
+          <button
+            type="button"
+            disabled={currentPage === totalPages}
+            onClick={() => setPage(currentPage + 1)}
+          >
+            Berikutnya
+          </button>
+        </nav>
+      )}
+
+      <style jsx global>{`
+        @media (min-width: 768px) {
+          .entry-index-list {
+            display: grid !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+            align-items: stretch;
+          }
+
+          .entry-index-list > * {
+            min-width: 0;
+            height: 100%;
+            box-sizing: border-box;
+          }
+        }
+
+        @media (max-width: 767px) {
+          .entry-index-list {
+            display: grid !important;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 12px;
+          }
+        }
+      `}</style>
+      <style jsx>{`
+        .entry-pagination {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin-top: 28px;
+        }
+
+        .entry-pagination button {
+          padding: 9px 12px;
+          border: 1px solid #b9c8b6;
+          border-radius: 8px;
+          background: transparent;
+          color: inherit;
+          font: inherit;
+          font-size: 13px;
+          cursor: pointer;
+        }
+
+        .entry-pagination button[aria-current="page"] {
+          background: #345b43;
+          border-color: #345b43;
+          color: white;
+          font-weight: 600;
+        }
+
+        .entry-pagination button:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+        }
+
+        .entry-pagination button:focus-visible {
+          outline: 2px solid #345b43;
+          outline-offset: 3px;
+        }
+      `}</style>
     </section>
   );
 }
